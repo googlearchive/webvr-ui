@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>WebVR UI Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Karla font is used by WebVR UI -->
+    <link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet">
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+        }
+        #ui {
+            font-family: 'Karla', sans-serif;
+            color: white;
+            position: fixed;
+            text-align: center;
+            width: 100%;
+            top: 0;
+            z-index: 1;
+        }
+    </style>
+
+</head>
+<body>
+
+<div id="ui">
+    <h2>WebVR UI Example</h2>
+    <div id="webvr-ui"></div>
+</div>
+
+
+</body>
+
+<!-- three.js library -->
+<script src="node_modules/three/build/three.js"></script>
+
+<!-- VRControls.js applies the WebVR transformations to a three.js camera object. -->
+<script src="node_modules/three/examples/js/controls/VRControls.js"></script>
+
+<!-- VREffect.js handles stereo camera setup and rendering.  -->
+<script src="node_modules/three/examples/js/effects/VREffect.js"></script>
+
+<!-- A polyfill for the WebVR API.  -->
+<script src="node_modules/webvr-polyfill/build/webvr-polyfill.js"></script>
+
+<!-- Include WebVR UI -->
+<script src="../build/webvr-ui.js"></script>
+
+
+<script>
+    // Setup three.js WebGL renderer. Note: Antialiasing is a big performance hit.
+    // Only enable it if you actually need to.
+    var renderer = new THREE.WebGLRenderer({antialias: false});
+    renderer.setPixelRatio(Math.floor(window.devicePixelRatio));
+    // Append the canvas element created by the renderer to document body element.
+    document.body.appendChild(renderer.domElement);
+
+    // Create WebVR UI Button
+    var ui = new WebVRUI(renderer.domElement);
+    document.getElementById("webvr-ui").appendChild(ui.domElement)
+
+    // Create a three.js scene.
+    var scene = new THREE.Scene();
+
+    // Create a three.js camera.
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+    var controls = new THREE.VRControls(camera);
+    controls.standing = true;
+
+    // Apply VR stereo rendering to renderer.
+    var effect = new THREE.VREffect(renderer);
+    effect.setSize(window.innerWidth, window.innerHeight);
+
+    // Create 3D objects.
+    var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+    var material = new THREE.MeshNormalMaterial();
+    var cube = new THREE.Mesh(geometry, material);
+
+
+    // Position cube mesh to be right in front of you.
+    cube.position.set(0, controls.userHeight, -1);
+    // Add cube mesh to your three.js scene
+    scene.add(cube);
+
+    window.addEventListener('resize', onResize, true);
+    window.addEventListener('vrdisplaypresentchange', onResize, true);
+
+
+    function onResize(e) {
+        effect.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+    }
+
+
+    var vrDisplay;
+    // Get the HMD, and if we're dealing with something that specifies
+    // stageParameters, rearrange the scene.
+    navigator.getVRDisplays().then(function(displays) {
+        if (displays.length > 0) {
+            vrDisplay = displays[0];
+            if (vrDisplay.stageParameters) {
+//                    setStageDimensions(vrDisplay.stageParameters);
+            }
+            vrDisplay.requestAnimationFrame(animate);
+        }
+    });
+
+
+    // Request animation frame loop function
+    var lastRender = 0;
+    function animate(timestamp) {
+        var delta = Math.min(timestamp - lastRender, 500);
+        lastRender = timestamp;
+        // Apply rotation to cube mesh
+        cube.rotation.y += delta * 0.0006;
+        controls.update();
+        // Render the scene through the manager.
+//        manager.render(scene, camera, timestamp);
+        effect.render(scene, camera);
+        vrDisplay.requestAnimationFrame(animate);
+    }
+
+
+</script>
+
+</html>
