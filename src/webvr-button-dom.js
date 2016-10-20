@@ -1,8 +1,8 @@
-import WebVRButtonStyle from './webvr-button-style.js'
+import { WebVRButtonStyle } from './webvr-button-style';
 
 let _WebVRUI_css_injected = false;
 
-export default class WebVRButtonDOM {
+export class WebVRButtonDOM {
     constructor(height){
         this.onClickBinding = (e) => {};
         this.cssClassPrefix = "webvr-ui-button";

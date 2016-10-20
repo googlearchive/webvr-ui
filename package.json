@@ -7,8 +7,8 @@
     "Jonas Jongejan <jonas@halfdanj.dk>"
   ],
   "scripts": {
-    "build": "browserify src/webvr-button.js | derequire > build/webvr-ui.js",
-    "watch": "watchify src/webvr-button.js -v -d -o 'derequire > build/webvr-ui.js'",
+    "build": "browserify src/index.js --standalone webvrui | derequire > build/webvr-ui.js",
+    "watch": "watchify src/webvr-button.js --standalone webvrui -v -d -o 'derequire > build/webvr-ui.js'",
     "start": "npm run watch & serve ./",
     "prepublish": "npm run build"
   },
@@ -28,7 +28,12 @@
   "license": "Apache-2.0",
   "browserify": {
     "transform": [
-      "babelify"
+      [
+        "babelify",
+        {
+          "presets": ["es2015"]
+        }
+      ]
     ]
   },
   "author": "Jonas Jongejan"
