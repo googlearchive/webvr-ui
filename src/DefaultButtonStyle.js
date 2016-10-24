@@ -4,7 +4,7 @@ export class WebVRButtonStyle {
         let borderRadius = height / 2;
         // borderRadius = 0;
 
-        let errorColor = 'red';
+        let errorColor = 'rgba(255,255,255,0.4)';
 
         let css = `
 
@@ -19,6 +19,8 @@ export class WebVRButtonStyle {
         min-width: ${height}px;
         display: inline-block;
         position: relative;
+        
+        margin-top: 8px;
 
         font-family: 'Karla', sans-serif;
         cursor: pointer;

@@ -7,7 +7,7 @@ export class WebVRManager {
     /**
      * Promise returns true if there is at least one HMD device available.
      */
-    getPresentableDevice(type = VRDisplay) {
+    static getPresentableDevice(type = VRDisplay) {
         return new Promise((resolve, reject) => {
             if(!navigator || !navigator.getVRDisplays){
 

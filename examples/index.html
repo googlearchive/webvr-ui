@@ -18,6 +18,7 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
+            position: relative;
         }
         canvas {
             position: absolute;
@@ -26,20 +27,29 @@
         #ui {
             font-family: 'Karla', sans-serif;
             color: white;
-            position: fixed;
             text-align: center;
-            width: 100%;
-            top: 0;
             z-index: 1;
+
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
+
+        #entervr-button {
+            margin-top: 40px;
+        }
+
     </style>
 
 </head>
 <body>
 
 <div id="ui">
-    <h2>WebVR UI Example</h2>
-    <div id="webvr-ui"></div>
+    <h1>WebVR UI Example</h1>
+    <b>Example showing how to enter VR and 360 mode</b>
+    <div id="entervr-button"></div>
+    <div id="enter360-button"></div>
 </div>
 
 
@@ -62,6 +72,8 @@
 
 
 <script>
+    var mode = 'NORMAL';
+
     // Setup three.js WebGL renderer. Note: Antialiasing is a big performance hit.
     // Only enable it if you actually need to.
     var renderer = new THREE.WebGLRenderer({antialias: false});
@@ -71,7 +83,21 @@
 
     // Create WebVR UI Enter VR Button
     var enterVR = new webvrui.EnterVRButton(renderer.domElement);
-    document.getElementById("webvr-ui").appendChild(enterVR.domElement)
+    document.getElementById("entervr-button").appendChild(enterVR.domElement);
+
+    // Create WebVR UI Enter 360 Button
+    var enter360 = new webvrui.Enter360Button(renderer.domElement);
+    enter360.onEnter(function(){
+        mode = '360';
+    });
+    enter360.onExit(function(){
+        mode = 'NORMAL';
+        camera.quaternion.set(0,0,0,1);
+    });
+    document.getElementById("enter360-button").appendChild(enter360.domElement);
+
+
+
 
     // Create a three.js scene.
     var scene = new THREE.Scene();
@@ -80,6 +106,8 @@
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
     var controls = new THREE.VRControls(camera);
     controls.standing = true;
+    camera.position.y = controls.userHeight;
+
 
     // Apply VR stereo rendering to renderer.
     var effect = new THREE.VREffect(renderer);
@@ -92,7 +120,7 @@
 
 
     // Position cube mesh to be right in front of you.
-    cube.position.set(0, controls.userHeight, -1);
+    cube.position.set(0, controls.userHeight, -0.8);
     // Add cube mesh to your three.js scene
     scene.add(cube);
 
@@ -127,11 +155,20 @@
         var delta = Math.min(timestamp - lastRender, 500);
         lastRender = timestamp;
         // Apply rotation to cube mesh
-        cube.rotation.y += delta * 0.0006;
-        controls.update();
+        cube.rotation.y += delta * 0.0003;
+        if(mode == 'NORMAL'){
+            renderer.render(scene,camera);
+
+        } else {
+            controls.update();
+            effect.render(scene, camera);
+        }
+//
+//        console.log(camera.position);
         // Render the scene through the manager.
 //        manager.render(scene, camera, timestamp);
-        effect.render(scene, camera);
+//
+
         vrDisplay.requestAnimationFrame(animate);
     }
 
