@@ -1,5 +1,5 @@
-import { WebVRManager } from './webvr-manager';
-import { WebVRButtonDOM } from './webvr-button-dom';
+import { WebVRManager } from './WebVRManager';
+import { DefaultButtonDom } from './DefaultButtonDom';
 
 
 export const State = {
@@ -8,7 +8,7 @@ export const State = {
     ERROR_BROWSER_NOT_SUPPORTED: 'ERROR_BROWSER_NOT_SUPPORTED'
 };
 
-export class Button {
+export class AbstractButton {
     constructor(canvasDom, options){
         if(!options) options = {};
 
@@ -17,10 +17,14 @@ export class Button {
             options.size = 40;
         }
 
+        if(!options.domClass){
+            options.domClass = DefaultButtonDom;
+        }
+
         this.webvrmanager = new WebVRManager(canvasDom);
 
 
-        this.button = new WebVRButtonDOM(options.size);
+        this.button = new options.domClass(options.size);
         this.button.injectCss();
         this.button.onClick(this.onClickEvent.bind(this));
         this.domElement = this.button.domElement;

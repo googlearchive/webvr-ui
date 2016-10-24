@@ -69,9 +69,9 @@
     // Append the canvas element created by the renderer to document body element.
     document.body.appendChild(renderer.domElement);
 
-    // Create WebVR UI Button
-    var ui = new webvrui.Button(renderer.domElement);
-    document.getElementById("webvr-ui").appendChild(ui.domElement)
+    // Create WebVR UI Enter VR Button
+    var enterVR = new webvrui.EnterVRButton(renderer.domElement);
+    document.getElementById("webvr-ui").appendChild(enterVR.domElement)
 
     // Create a three.js scene.
     var scene = new THREE.Scene();

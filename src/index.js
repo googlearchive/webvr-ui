@@ -1,10 +1,13 @@
-import { State, Button } from './webvr-button';
-import { WebVRManager as Manager } from './webvr-manager';
+import { State, AbstractButton } from './AbstractButton';
+import { WebVRManager } from './WebVRManager';
+import { EnterVRButton } from './EnterVRButton';
+
 
 export {
-    Button,
+    EnterVRButton,
+    AbstractButton,
     State,
-    Manager
+    WebVRManager
 };
 
 

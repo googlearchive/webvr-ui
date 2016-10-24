@@ -1,9 +1,12 @@
-import { WebVRButtonStyle } from './webvr-button-style';
+import { WebVRButtonStyle } from './DefaultButtonStyle';
+import {AbstractButtonDom} from "./AbstractButtonDom";
 
 let _WebVRUI_css_injected = false;
 
-export class WebVRButtonDOM {
+export class DefaultButtonDom extends AbstractButtonDom {
     constructor(height){
+        super();
+
         this.onClickBinding = (e) => {};
         this.cssClassPrefix = "webvr-ui-button";
 
@@ -28,7 +31,7 @@ export class WebVRButtonDOM {
         this.domElement.appendChild(this.descriptionElm);
 
         this.logoElm = document.createElement("div");
-        this.logoElm.appendChild(WebVRButtonDOM.generateSvgIcon(this.fontSize));
+        this.logoElm.appendChild(DefaultButtonDom.generateSvgIcon(this.fontSize));
         this.logoElm.className = this.cssClassPrefix  + "-logo";
         this.buttonElm.appendChild(this.logoElm);
 
@@ -41,8 +44,6 @@ export class WebVRButtonDOM {
                 this.onClickBinding.call(this,e);
             }
         });
-
-
         return this;
     }
 
@@ -58,10 +59,6 @@ export class WebVRButtonDOM {
             var head = document.getElementsByTagName('head')[0];
             head.insertBefore(style,head.firstChild);
         }
-    }
-
-    onClick(func){
-        this.onClickBinding = func;
     }
 
     setTitle(text, error = false){
