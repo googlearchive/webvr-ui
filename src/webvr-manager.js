@@ -1,4 +1,4 @@
-export default class WebVRManager {
+export class WebVRManager {
     constructor(canvasDom){
         this.domElement = canvasDom;
     }

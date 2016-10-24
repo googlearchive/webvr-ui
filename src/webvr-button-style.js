@@ -1,5 +1,4 @@
-export default class WebVRButtonStyle
-{
+export class WebVRButtonStyle {
     static generateCss(prefix, height = 50, fontSize = 18){
         let borderWidth = 2;
         let borderRadius = height / 2;
@@ -8,30 +7,30 @@ export default class WebVRButtonStyle
         let errorColor = 'red';
 
         let css = `
-        
-    
+
+
     button.${prefix}-button {
         border: white ${borderWidth}px solid;
         border-radius: ${borderRadius}px;
         box-sizing: border-box;
         background: rgba(0,0,0, 0);
-        
+
         height: ${height}px;
         min-width: ${height}px;
         display: inline-block;
         position: relative;
-        
+
         font-family: 'Karla', sans-serif;
         cursor: pointer;
-        
+
          -webkit-transition: width 0.5s;
         transition: width 0.5s;
     }
-    
+
     /*
     * Logo
-    */  
-    
+    */
+
     .${prefix}-logo {
         width: ${height}px;
         height: ${height}px;
@@ -44,12 +43,12 @@ export default class WebVRButtonStyle
     .${prefix}-logo > svg {
         margin-top: ${(height - fontSize) / 2}px;
     }
-    
-    
+
+
     /*
     * Title
     */
-    
+
     .${prefix}-title {
         color: white;
         position: relative;
@@ -60,34 +59,34 @@ export default class WebVRButtonStyle
         padding-left: ${height * 1.05}px;
         padding-right: ${(borderRadius-10 < 5) ? 5 : borderRadius-10}px;
     }
-    
+
     /*
     * Description
     */
-    
+
     .${prefix}-description{
         font-size: 13px;
         margin-top: 5px
     }
-    
+
    .${prefix}-description, a {
         color: white
     }
-   
+
     /*
     * Error
-    */   
-     
+    */
+
     button.${prefix}-button[data-error=true] {
         border-color: ${errorColor};
-    }    
+    }
     button.${prefix}-button[data-error=true] > .${prefix}-logo {
         background-color: ${errorColor};
-    }    
+    }
     button.${prefix}-button[data-error=true] > .${prefix}-title {
         color: ${errorColor};
     }
-    
+
     `;
 
         var style = document.createElement('style');
