@@ -4,7 +4,7 @@ import { DefaultButtonDom } from './DefaultButtonDom';
 
 
 export class AbstractButton {
-    constructor(canvasDom, options){
+    constructor(canvasDom, icon, options){
         if(!options) options = {};
 
         // Option to ccange pixel height of the button.
@@ -18,8 +18,7 @@ export class AbstractButton {
 
         this.webvrmanager = new WebVRManager(canvasDom);
 
-
-        this.button = new options.domClass(options.size);
+        this.button = new options.domClass(options.size, icon);
         this.button.injectCss();
         this.button.onClick(this.onClickEvent.bind(this));
 

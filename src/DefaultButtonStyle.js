@@ -16,7 +16,7 @@ export class WebVRButtonStyle {
         background: rgba(0,0,0, 0);
 
         height: ${height}px;
-        min-width: ${height}px;
+        min-width: ${125}px;
         display: inline-block;
         position: relative;
         
@@ -68,7 +68,9 @@ export class WebVRButtonStyle {
 
     .${prefix}-description{
         font-size: 13px;
-        margin-top: 5px
+        margin-top: 5px;
+        margin-bottom: 10px;
+        
     }
 
    .${prefix}-description, a {

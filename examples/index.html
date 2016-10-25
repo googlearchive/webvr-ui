@@ -19,13 +19,16 @@
             padding: 0;
             overflow: hidden;
             position: relative;
+            font-family: 'Karla', sans-serif;
         }
         canvas {
             position: absolute;
             top: 0;
         }
+        p {
+            margin:0;
+        }
         #ui {
-            font-family: 'Karla', sans-serif;
             color: white;
             text-align: center;
             z-index: 1;
@@ -40,6 +43,17 @@
             margin-top: 40px;
         }
 
+        #config {
+            background-color: rgba(0,0,0, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+            position: fixed;
+            right: 10px;
+            top: 10px;
+            z-index: 2;
+            border: 1px solid white;
+        }
+
     </style>
 
 </head>
@@ -47,13 +61,29 @@
 
 <div id="ui">
     <h1>WebVR UI Example</h1>
-    <b>Example showing how to enter VR and 360 mode</b>
+    <p>Example showing how to enter VR and 360 mode. </p>
+    <p>Library and design is still work in progress.</p>
     <div id="entervr-button"></div>
     <div id="enter360-button"></div>
+
+
+</div>
+
+<div id="config">
+    <p>WebVR-Polyfill Config</p>
+    <input type="checkbox" id="force_enable_vr" onchange="toggleForceEnableVr(this.checked)">
+    <label for="force_enable_vr" title="Force VR on browsers without headset">Force enable VR</label>
 </div>
 
 
+
 </body>
+
+<script>
+    WebVRConfig = {
+        DEFER_INITIALIZATION: true
+    }
+</script>
 
 <!-- three.js library -->
 <script src="node_modules/three/build/three.js"></script>
@@ -72,7 +102,9 @@
 
 
 <script>
-    var mode = 'NORMAL';
+    // Config
+    WebVRConfig.FORCE_ENABLE_VR = getParameterByName('force_enable_vr') == 'true' || false
+    window.InitializeWebVRPolyfill();
 
     // Setup three.js WebGL renderer. Note: Antialiasing is a big performance hit.
     // Only enable it if you actually need to.
@@ -82,16 +114,15 @@
     document.body.appendChild(renderer.domElement);
 
     // Create WebVR UI Enter VR Button
-    var enterVR = new webvrui.EnterVRButton(renderer.domElement);
+    var enterVR = new webvrui.EnterVRButton(renderer.domElement, {
+    });
     document.getElementById("entervr-button").appendChild(enterVR.domElement);
 
     // Create WebVR UI Enter 360 Button
     var enter360 = new webvrui.Enter360Button(renderer.domElement);
     enter360.onEnter(function(){
-        mode = '360';
     });
     enter360.onExit(function(){
-        mode = 'NORMAL';
         camera.quaternion.set(0,0,0,1);
     });
     document.getElementById("enter360-button").appendChild(enter360.domElement);
@@ -156,12 +187,12 @@
         lastRender = timestamp;
         // Apply rotation to cube mesh
         cube.rotation.y += delta * 0.0003;
-        if(mode == 'NORMAL'){
-            renderer.render(scene,camera);
-
-        } else {
+        if(enter360.state == 'PRESENTING' || enterVR.state == 'PRESENTING'){
             controls.update();
             effect.render(scene, camera);
+
+        } else {
+            renderer.render(scene,camera);
         }
 //
 //        console.log(camera.position);
@@ -171,6 +202,59 @@
 
         vrDisplay.requestAnimationFrame(animate);
     }
+
+
+    function toggleForceEnableVr(value){
+        setParameterByName('force_enable_vr', value);
+    }
+
+    if (WebVRConfig.FORCE_ENABLE_VR) {
+        document.getElementById("force_enable_vr").checked = WebVRConfig.FORCE_ENABLE_VR
+    }
+
+
+
+    //
+    // Functions to get and url parameters
+    //
+
+    function getParameterByName(paramName, url) {
+        if (!url) {
+            url = window.location.href;
+        }
+        paramName = paramName.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + paramName + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+
+    function setParameterByName(paramName, paramValue)
+    {
+        var url = window.location.href;
+        var hash = location.hash;
+        url = url.replace(hash, '');
+        if (url.indexOf(paramName + "=") >= 0)
+        {
+            var prefix = url.substring(0, url.indexOf(paramName));
+            var suffix = url.substring(url.indexOf(paramName));
+            suffix = suffix.substring(suffix.indexOf("=") + 1);
+            suffix = (suffix.indexOf("&") >= 0) ? suffix.substring(suffix.indexOf("&")) : "";
+            url = prefix + paramName + "=" + paramValue + suffix;
+        }
+        else
+        {
+            if (url.indexOf("?") < 0)
+                url += "?" + paramName + "=" + paramValue;
+            else
+                url += "&" + paramName + "=" + paramValue;
+        }
+        window.location.href = url + hash;
+    }
+
+
 
 
 </script>
