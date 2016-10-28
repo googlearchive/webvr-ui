@@ -13,6 +13,7 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
+    "eventemitter3": "^2.0.2",
     "screenfull": "^3.0.2"
   },
   "devDependencies": {
