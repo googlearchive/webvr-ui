@@ -1,3 +1,4 @@
+import screenfull from 'screenfull';
 import {AbstractButton} from "./AbstractButton";
 
 export const State = {
@@ -5,18 +6,21 @@ export const State = {
     PRESENTING: 'PRESENTING'
 };
 
+
+
 export class Enter360Button extends AbstractButton {
-    constructor(canvasDom, options){
-        super(canvasDom, '360', options);
-        this.canvasDom = canvasDom;
-
-        this.setState(State.READY_TO_PRESENT);
-
-
-
+    constructor(sourceCanvas, options){
+        super(sourceCanvas, '360', options);
+        this.__setState(State.READY_TO_PRESENT);
+        
+        this.__onClick = this.__onClick.bind(this);
+        this.domElement.addEventListener('click', this.__onClick);
     }
 
-    setState(state){
+    /**
+     * @private
+     */
+    __setState(state){
         if(state != this.state) {
             this.state = state;
             switch (state) {
@@ -44,46 +48,29 @@ export class Enter360Button extends AbstractButton {
         }
     }
 
-    onClickEvent(e){
+    __onClick(e){
         if(this.state == State.READY_TO_PRESENT){
-            this.setState(State.PRESENTING);
+            this.__setState(State.PRESENTING);
             this.enterFullscreen();
         } else if(this.state == State.PRESENTING){
-            this.setState(State.READY_TO_PRESENT);
+            this.__setState(State.READY_TO_PRESENT);
         }
     }
 
     enterFullscreen() {
-        let element = this.canvasDom;
-
-        if (element.requestFullscreen) {
-            element.requestFullscreen();
-        } else if (element.webkitRequestFullscreen) {
-            element.webkitRequestFullscreen();
-        } else if (element.mozRequestFullScreen) {
-            element.mozRequestFullScreen();
-        } else if (element.msRequestFullscreen) {
-            element.msRequestFullscreen();
-        } else {
-            return false;
+        if(screenfull.enabled){
+            screenfull.request(this.sourceCanvas);
+            return true;
         }
-        return true;
+        return false;
     };
 
     exitFullscreen() {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        } else {
-            return false;
+        if(screenfull.enabled && screenfull.isFullscreen){
+            screenfull.exit();
+            return true;
         }
-
-        return true;
+        return false;
     };
 
 }

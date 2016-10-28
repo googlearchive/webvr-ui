@@ -1,5 +1,6 @@
 import {AbstractButton} from "./AbstractButton";
-import {WebVRManager} from "./WebVRManager";
+import * as manager from './WebVRManager';
+
 
 export const State = {
     READY_TO_PRESENT: 'READY_TO_PRESENT',
@@ -8,40 +9,56 @@ export const State = {
     ERROR_BROWSER_NOT_SUPPORTED: 'ERROR_BROWSER_NOT_SUPPORTED'
 };
 
+/**
+ * A button to allow easy-entry and messaging around a WebVR experience
+ * @class
+ */
 export class EnterVRButton extends AbstractButton {
-    constructor(canvasDom, options){
-        super(canvasDom, 'VR', options);
+    /**
+     * Construct a new Enter VR Button
+     * @constructor
+     * @param {HTMLCanvasElement} sourceCanvas the canvas that you want to present in WebVR
+     * @param {Object} [options] optional parameters
+     * @param {Number} [options.size=35] specify the height of the button
+     * @param {AbstractButtonDom} [options.buttonConstructor=DefaultButtonDom] specify a custom button class
+     * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
+     */
+    constructor(sourceCanvas, options){
+        super(sourceCanvas, 'VR', options);
 
-        this.checkDevices();
-
-        this.webvrmanager.onVRDisplayPresentChange(()=>{
-            if(this.webvrmanager.isPresenting()){
-                this.setState(State.PRESENTING);
-            } else {
-                this.setState(State.READY_TO_PRESENT);
-            }
-        })
-    }
-
-    checkDevices(){
         // Check if the browser is compatible with WebVR and has headsets.
-        this.webvrmanager.getPresentableDevice()
-            .then((hmd) => {
-                console.log(hmd);
-                this.hmd = hmd;
-                this.setState(State.READY_TO_PRESENT)
-
+        manager.getVRDisplay()
+            .then((display) => {
+                this.display = display;
+                this.__setState(State.READY_TO_PRESENT)
             })
             .catch((e) => {
                 if(e.name == 'NO_DISPLAYS'){
-                    this.setState(State.ERROR_NO_PRESENTABLE_DISPLAYS)
+                    this.__setState(State.ERROR_NO_PRESENTABLE_DISPLAYS)
                 } else if(e.name == 'WEBVR_UNSUPPORTED'){
-                    this.setState(State.ERROR_BROWSER_NOT_SUPPORTED)
+                    this.__setState(State.ERROR_BROWSER_NOT_SUPPORTED)
                 }
             });
+        //bind events
+        this.__onClick = this.__onClick.bind(this);
+        this.button.domElement.addEventListener('click', this.__onClick);
+
+        this.__onVRDisplayPresentChange = this.__onVRDisplayPresentChange.bind(this);
+        window.addEventListener('vrdisplaypresentchange', this.__onVRDisplayPresentChange);
     }
 
-    setState(state){
+    /**
+     * @private
+     */
+    __onVRDisplayPresentChange(){
+        const isPresenting = this.display && this.display.isPresenting;
+        this.__setState( isPresenting ? State.PRESENTING : State.READY_TO_PRESENT);
+    }
+
+    /**
+     * @private
+     */
+    __setState(state){
         if(state != this.state) {
             this.state = state;
             switch (state) {
@@ -67,13 +84,28 @@ export class EnterVRButton extends AbstractButton {
         }
     }
 
-    onClickEvent(e){
+    /**
+     * clean up object for garbage collection
+     */
+    remove(){
+        window.removeEventListener('vrdisplaypresentchage', this.__onVRDisplayPresentChange);
+        this.domElement.removeEventListener('click', this.__onClick);
+        super.remove();
+    }
+
+    __onClick(e){
+
+        const onPresent = ()=> this.__setState(State.PRESENTING);
+        const onExit = ()=> this.__setState(State.READY_TO_PRESENT);
+
         if(this.state == State.READY_TO_PRESENT){
-            this.setState(State.PRESENTING);
-            this.webvrmanager.enterVr(this.hmd)
+            manager.enterVR(this.display, this.sourceCanvas)
+                .then(onPresent, onExit);
+
         } else if(this.state == State.PRESENTING) {
-            this.setState(State.READY_TO_PRESENT);
-            this.webvrmanager.exitVr();
+            this.__setState(State.READY_TO_PRESENT);
+            manager.exitVR(this.display)
+                .then(onExit, onPresent);
         }
     }
 

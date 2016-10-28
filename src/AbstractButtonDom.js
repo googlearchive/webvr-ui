@@ -1,11 +1,10 @@
 export class AbstractButtonDom {
-    constructor(){
-        this.domElement = undefined;
-
+    constructor(domElement){
+        this.domElement = domElement;
     }
-
-    onClick(func){
-        this.onClickBinding = func;
+    
+    injectCSS(){
+        
     }
 
     setTitle(text, error = false) {
