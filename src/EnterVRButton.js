@@ -112,7 +112,7 @@ export class EnterVRButton extends AbstractButton {
                     this.emit("error", new Error(state));
             }
 
-            this.emit("change", state);
+            this.emit("change", state, this.state);
             this.state = state;
         }
     }

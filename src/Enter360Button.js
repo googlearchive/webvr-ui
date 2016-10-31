@@ -40,7 +40,7 @@ export class Enter360Button extends AbstractButton {
                     this.emit("error", new Error("Unknown state " + state));
             }
 
-            this.emit("change", state);
+            this.emit("change", state, this.state);
             this.state = state;
         }
     }
