@@ -114,17 +114,23 @@
     document.body.appendChild(renderer.domElement);
 
     // Create WebVR UI Enter VR Button
-    var enterVR = new webvrui.EnterVRButton(renderer.domElement, {
-    });
+    var enterVR = new webvrui.EnterVRButton(renderer.domElement, {});
+
+    enterVR
+        .on("enter", ()=> console.log("enter VR"))
+        .on("exit", ()=> console.log("exit VR"));
+
     document.getElementById("entervr-button").appendChild(enterVR.domElement);
 
     // Create WebVR UI Enter 360 Button
     var enter360 = new webvrui.Enter360Button(renderer.domElement);
-    enter360.onEnter(function(){
-    });
-    enter360.onExit(function(){
-        camera.quaternion.set(0,0,0,1);
-    });
+    enter360
+        .on("enter", ()=>console.log("enter 360"))
+        .on("exit", ()=>{
+            console.log("exit 360");
+            camera.quaternion.set(0,0,0,1);
+        });
+
     document.getElementById("enter360-button").appendChild(enter360.domElement);
 
 

@@ -1,6 +1,6 @@
 import {AbstractButton} from "./AbstractButton";
-import * as manager from './WebVRManager';
-import * as State from './states';
+import * as manager from "./WebVRManager";
+import * as State from "./states";
 
 
 
@@ -19,7 +19,7 @@ export class EnterVRButton extends AbstractButton {
      * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
      */
     constructor(sourceCanvas, options){
-        super(sourceCanvas, 'VR', options);
+        super(sourceCanvas, "VR", options);
 
         // Check if the browser is compatible with WebVR and has headsets.
         manager.getVRDisplay()
@@ -28,20 +28,20 @@ export class EnterVRButton extends AbstractButton {
                 this.__setState(State.READY_TO_PRESENT)
             })
             .catch((e) => {
-                if(e.name == 'NO_DISPLAYS'){
+                if(e.name == "NO_DISPLAYS"){
                     this.__setState(State.ERROR_NO_PRESENTABLE_DISPLAYS)
-                } else if(e.name == 'WEBVR_UNSUPPORTED'){
+                } else if(e.name == "WEBVR_UNSUPPORTED"){
                     this.__setState(State.ERROR_BROWSER_NOT_SUPPORTED)
                 }
             });
         //bind events
         this.__onClick = this.__onClick.bind(this);
-        this.button.domElement.addEventListener('click', this.__onClick);
+        this.domElement.addEventListener("click", this.__onClick);
 
         this.__onVRDisplayPresentChange = this.__onVRDisplayPresentChange.bind(this);
-        window.addEventListener('vrdisplaypresentchange', this.__onVRDisplayPresentChange);
+        window.addEventListener("vrdisplaypresentchange", this.__onVRDisplayPresentChange);
     }
-    
+
     /**
      * @private
      */
@@ -84,15 +84,18 @@ export class EnterVRButton extends AbstractButton {
      */
     __setState(state){
         if(state != this.state) {
-            this.state = state;
             switch (state) {
                 case State.READY_TO_PRESENT:
                     this.button.setTitle("Enter VR");
                     this.button.setDescription("");
+                    if(this.state === State.PRESENTING){
+                        this.emit("exit");
+                    }
                     break;
                 case State.PRESENTING:
                     this.button.setTitle("Exit VR");
                     this.button.setDescription("");
+                    this.emit("enter");
                     break;
                 //all errors fall-through to default, no break
                 case State.ERROR_NO_PRESENTABLE_DISPLAYS:
@@ -106,10 +109,11 @@ export class EnterVRButton extends AbstractButton {
                     this.button.setDescription("Your display refused to present");
                 case State.ERROR_EXIT_PRESENT_REJECTED:
                 default:
-                    this.emit('error', new Error(state));
+                    this.emit("error", new Error(state));
             }
-            
-            this.emit('change', state);
+
+            this.emit("change", state);
+            this.state = state;
         }
     }
 
@@ -117,8 +121,8 @@ export class EnterVRButton extends AbstractButton {
      * clean up object for garbage collection
      */
     remove(){
-        window.removeEventListener('vrdisplaypresentchage', this.__onVRDisplayPresentChange);
-        this.domElement.removeEventListener('click', this.__onClick);
+        window.removeEventListener("vrdisplaypresentchage", this.__onVRDisplayPresentChange);
+        this.domElement.removeEventListener("click", this.__onClick);
         super.remove();
     }
 

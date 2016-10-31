@@ -7,7 +7,7 @@ export const getVRDisplay = ()=>
     new Promise((resolve, reject) => {
         if(!navigator || !navigator.getVRDisplays){
             let e = new Error("Browser not supporting WebVR");
-            e.name = 'WEBVR_UNSUPPORTED';
+            e.name = "WEBVR_UNSUPPORTED";
             reject(e);
             return;
         }
@@ -15,7 +15,7 @@ export const getVRDisplay = ()=>
         const rejectNoDisplay = ()=>{
             // No displays are found.
             let e = new Error("No displays found");
-            e.name = 'NO_DISPLAYS';
+            e.name = "NO_DISPLAYS";
             reject(e);
         };
 
@@ -41,7 +41,7 @@ export const getVRDisplay = ()=>
  */
 export const enterVR = (display, canvas)=>
     display.requestPresent([{
-        source:  this.domElement
+        source:  canvas
     }]);
 
 

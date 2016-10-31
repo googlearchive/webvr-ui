@@ -1,5 +1,5 @@
-import EventEmitter from 'eventemitter3';
-import { DefaultButtonDom } from './DefaultButtonDom';
+import EventEmitter from "eventemitter3";
+import { DefaultButtonDom } from "./DefaultButtonDom";
 
 
 /**
@@ -30,10 +30,10 @@ export class AbstractButton extends EventEmitter {
         this.button = options.buttonDom || new DefaultButtonDom(options.size, icon);
 
         if(options.injectCSS) {
-            this.button.injectCss();
+            this.button.injectCSS();
         }
     }
-    
+
     get domElement(){
         return this.button.domElement;
     }

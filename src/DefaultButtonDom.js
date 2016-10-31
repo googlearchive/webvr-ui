@@ -14,16 +14,15 @@ export class DefaultButtonDom extends AbstractButtonDom {
 
         let { cssClassPrefix:cls } = this;
         this.domElement.className = cls;
-        
-        const svgString = DefaultButtonDom[ 'generate' + (icon.toLowerCase() === 'vr' ? 'VR' : '360') + 'Icon'](this.cssClassPrefix + '-svg', this.fontSize);
+
+        const svgString = DefaultButtonDom[ "generate" + (icon.toLowerCase() === "vr" ? "VR" : "360") + "Icon"](this.cssClassPrefix + "-svg", this.fontSize);
 
         this.domElement.innerHTML = (
             `<button class="${cls}-button" data-error="false">
-                <div class="${cls}-title"'>
+                <div class="${cls}-title"></div>
                 <div class="${cls}-logo">`+
                     svgString +
                 `</div>
-            </div>
             </button>
             <div class="${cls}-description" />`
         );
@@ -36,30 +35,30 @@ export class DefaultButtonDom extends AbstractButtonDom {
             _WebVRUI_css_injected = true;
 
             // Create the css
-            const style = document.createElement('style');
+            const style = document.createElement("style");
             style.innerHTML = DefaultButtonDom.generateCss(this.cssClassPrefix , this.height, this.fontSize);
 
-            var head = document.getElementsByTagName('head')[0];
+            var head = document.getElementsByTagName("head")[0];
             head.insertBefore(style,head.firstChild);
         }
     }
 
     setTitle(text, error = false){
-        const btn = this.domElement.querySelector(this.cssClassPrefix+'-button');
-        const title = this.domElement.querySelector(this.cssClassPrefix + '-title');
+        const btn = this.domElement.querySelector("." +this.cssClassPrefix+"-button");
+        const title = this.domElement.querySelector("."+this.cssClassPrefix + "-title");
         btn.title = text;
         btn.dataset.error = error;
 
         if(!text){
-            title.style.display = 'none';
+            title.style.display = "none";
         } else {
             title.innerText = text;
-            title.style.display = 'inherit';
+            title.style.display = "inherit";
         }
     }
 
     setDescription(text){
-        this.domElement.querySelector(this.cssClassPrefix + '-description').innerHTML = text;
+        this.domElement.querySelector("."+this.cssClassPrefix + "-description").innerHTML = text;
     }
 
     static generateVRIcon(cssClass, height){
@@ -76,7 +75,7 @@ export class DefaultButtonDom extends AbstractButtonDom {
         );
     }
 
-    static generate360SvgIcon(cssClass, height){
+    static generate360Icon(cssClass, height){
         let aspect = 28/18;
         return (
             `<svg class="${cssClass}" version="1.1" x="0px" y="0px" width="${aspect*height}px" height="${height}px" viewBox="0 0 28 11" xml:space="preserve">
@@ -93,8 +92,8 @@ export class DefaultButtonDom extends AbstractButtonDom {
             </svg>`
         );
     }
-    
-    static generateCss(prefix, height = 50, fontSize = 18, errorColor='rgba(255,255,255,0.4)'){
+
+    static generateCss(prefix, height = 50, fontSize = 18, errorColor="rgba(255,255,255,0.4)"){
         let borderWidth = 2;
         let borderRadius = height / 2;
         // borderRadius = 0;
@@ -110,7 +109,7 @@ export class DefaultButtonDom extends AbstractButtonDom {
                 min-width: ${125}px;
                 display: inline-block;
                 position: relative;
-                
+
                 margin-top: 8px;
 
                 font-family: 'Karla', sans-serif;
@@ -161,7 +160,7 @@ export class DefaultButtonDom extends AbstractButtonDom {
                 font-size: 13px;
                 margin-top: 5px;
                 margin-bottom: 10px;
-                
+
             }
 
         .${prefix}-description, a {
