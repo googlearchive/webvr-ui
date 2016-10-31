@@ -14,7 +14,7 @@ export class AbstractButton extends EventEmitter {
      * @param {HTMLCanvasElement} sourceCanvas
      * @param {String} icon a reference to which icon to use
      * @param {Object} [options] optionally provide parameters
-     * @param {Number} [options.size=35] set the height of the button
+     * @param {Number} [options.height=35] set the height of the button
      * @param {AbstractButtonDom} [options.buttonDom=DefaultButtonDom] set a custom AbstractButtonDom
      * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
      */
@@ -22,20 +22,20 @@ export class AbstractButton extends EventEmitter {
         super();
         options = options || {};
         // Option to change pixel height of the button.
-        options.size =  options.size || 35;
+        options.height =  options.height || 35;
         options.injectCSS = options.injectCSS !== false;
 
         this.sourceCanvas = sourceCanvas;
 
-        this.button = options.buttonDom || new DefaultButtonDom(options.size, icon);
+        this.buttonDom = options.buttonDom || new DefaultButtonDom(options.height, icon);
 
         if(options.injectCSS) {
-            this.button.injectCSS();
+            this.buttonDom.injectCSS();
         }
     }
 
     get domElement(){
-        return this.button.domElement;
+        return this.buttonDom.domElement;
     }
 
     /**

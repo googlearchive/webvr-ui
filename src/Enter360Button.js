@@ -23,16 +23,16 @@ export class Enter360Button extends AbstractButton {
         if(state != this.state) {
             switch (state) {
                 case State.READY_TO_PRESENT:
-                    this.button.setTitle("Enter 360");
-                    this.button.setDescription("");
+                    this.buttonDom.setTitle("Enter 360");
+                    this.buttonDom.setDescription("");
 
                     if(this.state == State.PRESENTING){
                         this.emit("exit");
                     }
                     break;
                 case State.PRESENTING:
-                    this.button.setTitle("Exit 360");
-                    this.button.setDescription("");
+                    this.buttonDom.setTitle("Exit 360");
+                    this.buttonDom.setDescription("");
 
                     this.emit("enter");
                     break;

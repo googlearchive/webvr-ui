@@ -14,8 +14,8 @@ export class EnterVRButton extends AbstractButton {
      * @constructor
      * @param {HTMLCanvasElement} sourceCanvas the canvas that you want to present in WebVR
      * @param {Object} [options] optional parameters
-     * @param {Number} [options.size=35] specify the height of the button
-     * @param {AbstractButtonDom} [options.buttonConstructor=DefaultButtonDom] specify a custom button class
+     * @param {Number} [options.height=35] specify the height of the button
+     * @param {AbstractButtonDom} [options.buttonDom=DefaultButtonDom] specify a custom button class
      * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
      */
     constructor(sourceCanvas, options){
@@ -86,27 +86,27 @@ export class EnterVRButton extends AbstractButton {
         if(state != this.state) {
             switch (state) {
                 case State.READY_TO_PRESENT:
-                    this.button.setTitle("Enter VR");
-                    this.button.setDescription("");
+                    this.buttonDom.setTitle("Enter VR");
+                    this.buttonDom.setDescription("");
                     if(this.state === State.PRESENTING){
                         this.emit("exit");
                     }
                     break;
                 case State.PRESENTING:
-                    this.button.setTitle("Exit VR");
-                    this.button.setDescription("");
+                    this.buttonDom.setTitle("Exit VR");
+                    this.buttonDom.setDescription("");
                     this.emit("enter");
                     break;
                 //all errors fall-through to default, no break
                 case State.ERROR_NO_PRESENTABLE_DISPLAYS:
-                    this.button.setTitle("Enter VR", true);
-                    this.button.setDescription("No VR Headset found");
+                    this.buttonDom.setTitle("Enter VR", true);
+                    this.buttonDom.setDescription("No VR Headset found");
                 case State.ERROR_BROWSER_NOT_SUPPORTED:
-                    this.button.setTitle("Browser not supported", true);
-                    this.button.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
+                    this.buttonDom.setTitle("Browser not supported", true);
+                    this.buttonDom.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
                 case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
-                    this.button.setTitle("Display can't present", true);
-                    this.button.setDescription("Your display refused to present");
+                    this.buttonDom.setTitle("Display can't present", true);
+                    this.buttonDom.setDescription("Your display refused to present");
                 case State.ERROR_EXIT_PRESENT_REJECTED:
                 default:
                     this.emit("error", new Error(state));
