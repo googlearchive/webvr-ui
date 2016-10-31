@@ -1,10 +1,6 @@
 import screenfull from 'screenfull';
 import {AbstractButton} from "./AbstractButton";
-
-export const State = {
-    READY_TO_PRESENT: 'READY_TO_PRESENT',
-    PRESENTING: 'PRESENTING'
-};
+import * as State from './states';
 
 
 

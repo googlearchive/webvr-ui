@@ -1,3 +1,4 @@
+import EventEmitter from 'eventemitter3';
 import { DefaultButtonDom } from './DefaultButtonDom';
 
 
@@ -6,7 +7,7 @@ import { DefaultButtonDom } from './DefaultButtonDom';
  * @class
  * @abstract
  */
-export class AbstractButton {
+export class AbstractButton extends EventEmitter {
     /**
      * Constructs a new Abstract Button
      * @constructor
@@ -18,6 +19,7 @@ export class AbstractButton {
      * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
      */
     constructor(sourceCanvas, icon, options){
+        super();
         options = options || {};
         // Option to change pixel height of the button.
         options.size =  options.size || 35;
@@ -37,9 +39,9 @@ export class AbstractButton {
     }
 
     /**
-     * dispose of anything that should be garbage collected
+     * remove any listeners and remove from DOM if currently in it
      */
-    dispose(){
+    remove(){
         if(this.domElement.parentElement){
             this.domElement.parentElement.removeChild(this.domElement);
         }

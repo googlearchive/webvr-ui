@@ -1,7 +1,7 @@
-import { WebVRButtonStyle } from './DefaultButtonStyle';
 import {AbstractButtonDom} from "./AbstractButtonDom";
 
 let _WebVRUI_css_injected = false;
+
 
 export class DefaultButtonDom extends AbstractButtonDom {
     constructor(height, icon){
@@ -15,11 +15,13 @@ export class DefaultButtonDom extends AbstractButtonDom {
         let { cssClassPrefix:cls } = this;
         this.domElement.className = cls;
         
+        const svgString = DefaultButtonDom[ 'generate' + (icon.toLowerCase() === 'vr' ? 'VR' : '360') + 'Icon'](this.cssClassPrefix + '-svg', this.fontSize);
+
         this.domElement.innerHTML = (
             `<button class="${cls}-button" data-error="false">
                 <div class="${cls}-title"'>
                 <div class="${cls}-logo">`+
-                    DefaultButtonDom[ 'generate' + (icon.toLowerCase() === 'vr' ? 'VR' : '360') + 'Icon'](this.cssClassPrefix + '-svg', this.fontSize) + 
+                    svgString +
                 `</div>
             </div>
             </button>
@@ -34,7 +36,8 @@ export class DefaultButtonDom extends AbstractButtonDom {
             _WebVRUI_css_injected = true;
 
             // Create the css
-            let style = WebVRButtonStyle.generateCss(this.cssClassPrefix , this.height, this.fontSize);
+            const style = document.createElement('style');
+            style.innerHTML = DefaultButtonDom.generateCss(this.cssClassPrefix , this.height, this.fontSize);
 
             var head = document.getElementsByTagName('head')[0];
             head.insertBefore(style,head.firstChild);
@@ -89,5 +92,97 @@ export class DefaultButtonDom extends AbstractButtonDom {
             C7.4,2,8.2,1.9,9,1.8c0.7-0.1,1.2-0.1,1.6-0.2c0.2,0,0.3,0,0.3,0V0L14,2.9l-3.1,2.9V3.9C10.9,3.9,10.7,3.8,10.5,3.8z"/>
             </svg>`
         );
+    }
+    
+    static generateCss(prefix, height = 50, fontSize = 18, errorColor='rgba(255,255,255,0.4)'){
+        let borderWidth = 2;
+        let borderRadius = height / 2;
+        // borderRadius = 0;
+
+        return (`
+            button.${prefix}-button {
+                border: white ${borderWidth}px solid;
+                border-radius: ${borderRadius}px;
+                box-sizing: border-box;
+                background: rgba(0,0,0, 0);
+
+                height: ${height}px;
+                min-width: ${125}px;
+                display: inline-block;
+                position: relative;
+                
+                margin-top: 8px;
+
+                font-family: 'Karla', sans-serif;
+                cursor: pointer;
+
+                -webkit-transition: width 0.5s;
+                transition: width 0.5s;
+            }
+
+            /*
+            * Logo
+            */
+
+            .${prefix}-logo {
+                width: ${height}px;
+                height: ${height}px;
+                border-radius: ${borderRadius}px;
+                background-color: white;
+                position: absolute;
+                top:-${borderWidth}px;
+                left:-${borderWidth}px;
+            }
+            .${prefix}-logo > svg {
+                margin-top: ${(height - fontSize) / 2}px;
+            }
+
+
+            /*
+            * Title
+            */
+
+            .${prefix}-title {
+                color: white;
+                position: relative;
+                font-size: ${fontSize}px;
+                top: -${borderWidth}px;
+                line-height: ${height - borderWidth * 2}px;
+                text-align: left;
+                padding-left: ${height * 1.05}px;
+                padding-right: ${(borderRadius-10 < 5) ? 5 : borderRadius-10}px;
+            }
+
+            /*
+            * Description
+            */
+
+            .${prefix}-description{
+                font-size: 13px;
+                margin-top: 5px;
+                margin-bottom: 10px;
+                
+            }
+
+        .${prefix}-description, a {
+                color: white
+            }
+
+            /*
+            * Error
+            */
+
+            button.${prefix}-button[data-error=true] {
+                border-color: ${errorColor};
+            }
+            button.${prefix}-button[data-error=true] > .${prefix}-logo {
+                background-color: ${errorColor};
+            }
+            button.${prefix}-button[data-error=true] > .${prefix}-title {
+                color: ${errorColor};
+            }
+
+        `);
+
     }
 }

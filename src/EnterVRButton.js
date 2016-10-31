@@ -1,13 +1,8 @@
 import {AbstractButton} from "./AbstractButton";
 import * as manager from './WebVRManager';
+import * as State from './states';
 
 
-export const State = {
-    READY_TO_PRESENT: 'READY_TO_PRESENT',
-    PRESENTING: 'PRESENTING',
-    ERROR_NO_PRESENTABLE_DISPLAYS: 'ERROR_NO_PRESENTABLE_DISPLAYS',
-    ERROR_BROWSER_NOT_SUPPORTED: 'ERROR_BROWSER_NOT_SUPPORTED'
-};
 
 /**
  * A button to allow easy-entry and messaging around a WebVR experience
@@ -46,6 +41,35 @@ export class EnterVRButton extends AbstractButton {
         this.__onVRDisplayPresentChange = this.__onVRDisplayPresentChange.bind(this);
         window.addEventListener('vrdisplaypresentchange', this.__onVRDisplayPresentChange);
     }
+    
+    /**
+     * @private
+     */
+    __onClick(e){
+
+        if(this.state == State.READY_TO_PRESENT){
+            manager.enterVR(this.display, this.sourceCanvas)
+                .then(
+                    ()=> this.__setState(State.PRESENTING),
+                    //this could fail if:
+                    //1. Display `canPresent` is false
+                    //2. Canvas is invalid
+                    //3. not executed via user interaction
+                    ()=> this.__setState(State.ERROR_REQUEST_TO_PRESENT_REJECTED)
+                );
+
+        } else if(this.state == State.PRESENTING) {
+            this.__setState(State.READY_TO_PRESENT);
+            manager.exitVR(this.display)
+                .then(
+                    ()=> this.__setState(State.READY_TO_PRESENT),
+                    //this could fail if:
+                    //1. exit requested while not currently presenting
+                    ()=> this.__setState(State.ERROR_EXIT_PRESENT_REJECTED)
+                 );
+        }
+    }
+
 
     /**
      * @private
@@ -70,17 +94,22 @@ export class EnterVRButton extends AbstractButton {
                     this.button.setTitle("Exit VR");
                     this.button.setDescription("");
                     break;
+                //all errors fall-through to default, no break
                 case State.ERROR_NO_PRESENTABLE_DISPLAYS:
                     this.button.setTitle("Enter VR", true);
                     this.button.setDescription("No VR Headset found");
-                    break;
                 case State.ERROR_BROWSER_NOT_SUPPORTED:
                     this.button.setTitle("Browser not supported", true);
                     this.button.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
-                    break;
+                case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
+                    this.button.setTitle("Display can't present", true);
+                    this.button.setDescription("Your display refused to present");
+                case State.ERROR_EXIT_PRESENT_REJECTED:
                 default:
-                    console.error("Unkown WebVR state " + state);
+                    this.emit('error', new Error(state));
             }
+            
+            this.emit('change', state);
         }
     }
 
@@ -91,22 +120,6 @@ export class EnterVRButton extends AbstractButton {
         window.removeEventListener('vrdisplaypresentchage', this.__onVRDisplayPresentChange);
         this.domElement.removeEventListener('click', this.__onClick);
         super.remove();
-    }
-
-    __onClick(e){
-
-        const onPresent = ()=> this.__setState(State.PRESENTING);
-        const onExit = ()=> this.__setState(State.READY_TO_PRESENT);
-
-        if(this.state == State.READY_TO_PRESENT){
-            manager.enterVR(this.display, this.sourceCanvas)
-                .then(onPresent, onExit);
-
-        } else if(this.state == State.PRESENTING) {
-            this.__setState(State.READY_TO_PRESENT);
-            manager.exitVR(this.display)
-                .then(onExit, onPresent);
-        }
     }
 
 }
