@@ -512,10 +512,10 @@ var AbstractButton = exports.AbstractButton = function (_EventEmitter) {
 
         _this.sourceCanvas = sourceCanvas;
 
-        _this.button = options.buttonDom || new _DefaultButtonDom.DefaultButtonDom(options.height, icon);
+        _this.buttonDom = options.buttonDom || new _DefaultButtonDom.DefaultButtonDom(options.height, icon);
 
         if (options.injectCSS) {
-            _this.button.injectCSS();
+            _this.buttonDom.injectCSS();
         }
         return _this;
     }
@@ -535,7 +535,7 @@ var AbstractButton = exports.AbstractButton = function (_EventEmitter) {
     }, {
         key: "domElement",
         get: function get() {
-            return this.button.domElement;
+            return this.buttonDom.domElement;
         }
     }]);
 
@@ -554,7 +554,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var AbstractButtonDom = exports.AbstractButtonDom = function () {
-    function AbstractButtonDom(domElement) {
+    function AbstractButtonDom() {
+        var domElement = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document.createElement("div");
+
         _classCallCheck(this, AbstractButtonDom);
 
         this.domElement = domElement;
@@ -602,7 +604,7 @@ var DefaultButtonDom = exports.DefaultButtonDom = function (_AbstractButtonDom) 
     function DefaultButtonDom(height, icon) {
         _classCallCheck(this, DefaultButtonDom);
 
-        var _this = _possibleConstructorReturn(this, (DefaultButtonDom.__proto__ || Object.getPrototypeOf(DefaultButtonDom)).call(this, document.createElement("div")));
+        var _this = _possibleConstructorReturn(this, (DefaultButtonDom.__proto__ || Object.getPrototypeOf(DefaultButtonDom)).call(this));
 
         _this.cssClassPrefix = "webvr-ui-button";
 
@@ -659,14 +661,18 @@ var DefaultButtonDom = exports.DefaultButtonDom = function (_AbstractButtonDom) 
     }], [{
         key: "generateVRIcon",
         value: function generateVRIcon(cssClass, height) {
+            var fill = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "#000000";
+
             var aspect = 28 / 18;
-            return "<svg class=\"" + cssClass + "\" version=\"1.1\" x=\"0px\" y=\"0px\" width=\"" + aspect * height + "px\" height=\"" + height + "px\" viewBox=\"0 0 28 18\" xml:space=\"preserve\">\n                <path fill=\"#000000\" d=\"M26.8,1.1C26.1,0.4,25.1,0,24.2,0H3.4c-1,0-1.7,0.4-2.4,1.1C0.3,1.7,0,2.7,0,3.6v10.7\n            c0,1,0.3,1.9,0.9,2.6C1.6,17.6,2.4,18,3.4,18h5c0.7,0,1.3-0.2,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.5-2.6C13.2,13.1,13,13,14,13v0h-0.2\n            h0c0.3,0,0.7,0.1,0.8,0.5l1.4,2.6c0.3,0.6,0.8,1.1,1.3,1.4c0.6,0.3,1.2,0.5,1.8,0.5h5c1,0,2-0.4,2.7-1.1c0.7-0.7,1.2-1.6,1.2-2.6\n            V3.6C28,2.7,27.5,1.7,26.8,1.1z M7.4,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8c1.6,0,2.8,1.3,2.8,2.8\n            C10.2,10.5,8.9,11.8,7.4,11.8z M20.1,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8C21.7,6.2,23,7.4,23,9\n            C23,10.5,21.7,11.8,20.1,11.8z\"/>\n            </svg>";
+            return "<svg class=\"" + cssClass + "\" version=\"1.1\" x=\"0px\" y=\"0px\" width=\"" + aspect * height + "px\" height=\"" + height + "px\" viewBox=\"0 0 28 18\" xml:space=\"preserve\">\n                <path fill=\"" + fill + "\" d=\"M26.8,1.1C26.1,0.4,25.1,0,24.2,0H3.4c-1,0-1.7,0.4-2.4,1.1C0.3,1.7,0,2.7,0,3.6v10.7\n            c0,1,0.3,1.9,0.9,2.6C1.6,17.6,2.4,18,3.4,18h5c0.7,0,1.3-0.2,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.5-2.6C13.2,13.1,13,13,14,13v0h-0.2\n            h0c0.3,0,0.7,0.1,0.8,0.5l1.4,2.6c0.3,0.6,0.8,1.1,1.3,1.4c0.6,0.3,1.2,0.5,1.8,0.5h5c1,0,2-0.4,2.7-1.1c0.7-0.7,1.2-1.6,1.2-2.6\n            V3.6C28,2.7,27.5,1.7,26.8,1.1z M7.4,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8c1.6,0,2.8,1.3,2.8,2.8\n            C10.2,10.5,8.9,11.8,7.4,11.8z M20.1,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8C21.7,6.2,23,7.4,23,9\n            C23,10.5,21.7,11.8,20.1,11.8z\"/>\n            </svg>";
         }
     }, {
         key: "generate360Icon",
         value: function generate360Icon(cssClass, height) {
+            var fill = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "#000000";
+
             var aspect = 28 / 18;
-            return "<svg class=\"" + cssClass + "\" version=\"1.1\" x=\"0px\" y=\"0px\" width=\"" + aspect * height + "px\" height=\"" + height + "px\" viewBox=\"0 0 28 11\" xml:space=\"preserve\">\n                <path id=\"XMLID_16_\" d=\"M17.3,7.1c0.3,0,0.9,0,1.6,0c0.7,0,1.5-0.1,2.4-0.2c0.9-0.1,2-0.3,3-0.6c0.5-0.2,1.1-0.4,1.6-0.7\n            c0.5-0.3,0.8-0.7,0.8-0.9c0-0.1-0.1-0.3-0.3-0.5c-0.2-0.2-0.5-0.3-0.8-0.5c-0.6-0.3-1.3-0.5-2-0.6c-1.4-0.3-3-0.5-4.6-0.6\n            c-0.7-0.1-1.7-0.1-2.3-0.1v-1c0.6,0,1.6,0,2.4,0.1c1.6,0.1,3.2,0.2,4.7,0.5c0.8,0.2,1.5,0.3,2.2,0.6c0.4,0.2,0.7,0.3,1.1,0.6\n            C27.5,3.6,27.9,4,28,4.6c0.1,0.6-0.2,1.1-0.4,1.5c-0.3,0.3-0.6,0.6-0.9,0.8c-0.6,0.4-1.2,0.7-1.8,0.9c-1.2,0.5-2.3,0.7-3.3,1\n            c-1,0.2-1.9,0.3-2.6,0.4c-0.7,0.1-1.4,0.1-1.8,0.2c-0.2,0-0.5,0-0.5,0v1.6L13.7,8l3.1-2.9v1.9C16.8,7.1,17.1,7.1,17.3,7.1z\"/>\n            <path id=\"XMLID_15_\" d=\"M10.5,3.8c-0.3,0-0.8,0-1.5,0C8.4,3.8,7.6,3.9,6.7,4c-0.9,0.1-2,0.3-3,0.6C3.1,4.8,2.6,5,2.1,5.3\n            C1.6,5.6,1.3,6,1.3,6.2c0,0.1,0.1,0.3,0.3,0.5C1.8,6.8,2.1,7,2.4,7.1c0.6,0.3,1.3,0.5,2,0.6c1.4,0.3,2.8,0.5,4.4,0.6\n            c0.7,0.1,1.5,0.1,2.1,0.1v1c-0.6,0-1.4,0-2.2-0.1C7.1,9.3,5.6,9.1,4.1,8.8C3.3,8.7,2.6,8.5,1.9,8.2C1.5,8,1.2,7.9,0.8,7.6\n            C0.5,7.4,0.1,7,0,6.4c-0.1-0.6,0.2-1.1,0.4-1.5C0.7,4.6,1,4.3,1.3,4.1c0.6-0.4,1.2-0.7,1.8-0.9c1.2-0.5,2.3-0.7,3.3-1\n            C7.4,2,8.2,1.9,9,1.8c0.7-0.1,1.2-0.1,1.6-0.2c0.2,0,0.3,0,0.3,0V0L14,2.9l-3.1,2.9V3.9C10.9,3.9,10.7,3.8,10.5,3.8z\"/>\n            </svg>";
+            return "<svg class=\"" + cssClass + "\" version=\"1.1\" x=\"0px\" y=\"0px\" width=\"" + aspect * height + "px\" height=\"" + height + "px\" viewBox=\"0 0 28 11\" xml:space=\"preserve\">\n                <path fill=\"" + fill + "\" d=\"M17.3,7.1c0.3,0,0.9,0,1.6,0c0.7,0,1.5-0.1,2.4-0.2c0.9-0.1,2-0.3,3-0.6c0.5-0.2,1.1-0.4,1.6-0.7\n            c0.5-0.3,0.8-0.7,0.8-0.9c0-0.1-0.1-0.3-0.3-0.5c-0.2-0.2-0.5-0.3-0.8-0.5c-0.6-0.3-1.3-0.5-2-0.6c-1.4-0.3-3-0.5-4.6-0.6\n            c-0.7-0.1-1.7-0.1-2.3-0.1v-1c0.6,0,1.6,0,2.4,0.1c1.6,0.1,3.2,0.2,4.7,0.5c0.8,0.2,1.5,0.3,2.2,0.6c0.4,0.2,0.7,0.3,1.1,0.6\n            C27.5,3.6,27.9,4,28,4.6c0.1,0.6-0.2,1.1-0.4,1.5c-0.3,0.3-0.6,0.6-0.9,0.8c-0.6,0.4-1.2,0.7-1.8,0.9c-1.2,0.5-2.3,0.7-3.3,1\n            c-1,0.2-1.9,0.3-2.6,0.4c-0.7,0.1-1.4,0.1-1.8,0.2c-0.2,0-0.5,0-0.5,0v1.6L13.7,8l3.1-2.9v1.9C16.8,7.1,17.1,7.1,17.3,7.1z\"/>\n            <path id=\"XMLID_15_\" d=\"M10.5,3.8c-0.3,0-0.8,0-1.5,0C8.4,3.8,7.6,3.9,6.7,4c-0.9,0.1-2,0.3-3,0.6C3.1,4.8,2.6,5,2.1,5.3\n            C1.6,5.6,1.3,6,1.3,6.2c0,0.1,0.1,0.3,0.3,0.5C1.8,6.8,2.1,7,2.4,7.1c0.6,0.3,1.3,0.5,2,0.6c1.4,0.3,2.8,0.5,4.4,0.6\n            c0.7,0.1,1.5,0.1,2.1,0.1v1c-0.6,0-1.4,0-2.2-0.1C7.1,9.3,5.6,9.1,4.1,8.8C3.3,8.7,2.6,8.5,1.9,8.2C1.5,8,1.2,7.9,0.8,7.6\n            C0.5,7.4,0.1,7,0,6.4c-0.1-0.6,0.2-1.1,0.4-1.5C0.7,4.6,1,4.3,1.3,4.1c0.6-0.4,1.2-0.7,1.8-0.9c1.2-0.5,2.3-0.7,3.3-1\n            C7.4,2,8.2,1.9,9,1.8c0.7-0.1,1.2-0.1,1.6-0.2c0.2,0,0.3,0,0.3,0V0L14,2.9l-3.1,2.9V3.9C10.9,3.9,10.7,3.8,10.5,3.8z\"/>\n            </svg>";
         }
     }, {
         key: "generateCss",
@@ -747,16 +753,16 @@ var Enter360Button = exports.Enter360Button = function (_AbstractButton) {
             if (state != this.state) {
                 switch (state) {
                     case State.READY_TO_PRESENT:
-                        this.button.setTitle("Enter 360");
-                        this.button.setDescription("");
+                        this.buttonDom.setTitle("Enter 360");
+                        this.buttonDom.setDescription("");
 
                         if (this.state == State.PRESENTING) {
                             this.emit("exit");
                         }
                         break;
                     case State.PRESENTING:
-                        this.button.setTitle("Exit 360");
-                        this.button.setDescription("");
+                        this.buttonDom.setTitle("Exit 360");
+                        this.buttonDom.setDescription("");
 
                         this.emit("enter");
                         break;
@@ -940,27 +946,27 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
             if (state != this.state) {
                 switch (state) {
                     case State.READY_TO_PRESENT:
-                        this.button.setTitle("Enter VR");
-                        this.button.setDescription("");
+                        this.buttonDom.setTitle("Enter VR");
+                        this.buttonDom.setDescription("");
                         if (this.state === State.PRESENTING) {
                             this.emit("exit");
                         }
                         break;
                     case State.PRESENTING:
-                        this.button.setTitle("Exit VR");
-                        this.button.setDescription("");
+                        this.buttonDom.setTitle("Exit VR");
+                        this.buttonDom.setDescription("");
                         this.emit("enter");
                         break;
                     //all errors fall-through to default, no break
                     case State.ERROR_NO_PRESENTABLE_DISPLAYS:
-                        this.button.setTitle("Enter VR", true);
-                        this.button.setDescription("No VR Headset found");
+                        this.buttonDom.setTitle("Enter VR", true);
+                        this.buttonDom.setDescription("No VR Headset found");
                     case State.ERROR_BROWSER_NOT_SUPPORTED:
-                        this.button.setTitle("Browser not supported", true);
-                        this.button.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
+                        this.buttonDom.setTitle("Browser not supported", true);
+                        this.buttonDom.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
                     case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
-                        this.button.setTitle("Display can't present", true);
-                        this.button.setDescription("Your display refused to present");
+                        this.buttonDom.setTitle("Display can't present", true);
+                        this.buttonDom.setDescription("Your display refused to present");
                     case State.ERROR_EXIT_PRESENT_REJECTED:
                     default:
                         this.emit("error", new Error(state));
