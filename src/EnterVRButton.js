@@ -88,25 +88,28 @@ export class EnterVRButton extends AbstractButton {
                 case State.READY_TO_PRESENT:
                     this.buttonDom.setTitle("Enter VR");
                     this.buttonDom.setDescription("");
+                    this.buttonDom.setTooltip("Enter VR on "+this.display.displayName)
                     if(this.state === State.PRESENTING){
                         this.emit("exit");
                     }
                     break;
+                
                 case State.PRESENTING:
                     this.buttonDom.setTitle("Exit VR");
                     this.buttonDom.setDescription("");
                     this.emit("enter");
                     break;
+                
                 //all errors fall-through to default, no break
-                case State.ERROR_NO_PRESENTABLE_DISPLAYS:
-                    this.buttonDom.setTitle("Enter VR", true);
-                    this.buttonDom.setDescription("No VR Headset found");
                 case State.ERROR_BROWSER_NOT_SUPPORTED:
                     this.buttonDom.setTitle("Browser not supported", true);
                     this.buttonDom.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
+                
+                case State.ERROR_NO_PRESENTABLE_DISPLAYS:
                 case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
-                    this.buttonDom.setTitle("Display can't present", true);
-                    this.buttonDom.setDescription("Your display refused to present");
+                    this.buttonDom.setTitle("Enter VR", true);
+                    this.buttonDom.setDescription("No VR headset found. <a href='http://webvr.info'>Learn more</a>");
+                
                 case State.ERROR_EXIT_PRESENT_REJECTED:
                 default:
                     this.emit("error", new Error(state));

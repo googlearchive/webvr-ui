@@ -43,17 +43,6 @@
             margin-top: 40px;
         }
 
-        #config {
-            background-color: rgba(0,0,0, 0.5);
-            padding: 10px;
-            border-radius: 10px;
-            position: fixed;
-            right: 10px;
-            top: 10px;
-            z-index: 2;
-            border: 1px solid white;
-        }
-
     </style>
 
 </head>
@@ -69,14 +58,6 @@
 
 </div>
 
-<div id="config">
-    <p>WebVR-Polyfill Config</p>
-    <input type="checkbox" id="force_enable_vr" onchange="toggleForceEnableVr(this.checked)">
-    <label for="force_enable_vr" title="Force VR on browsers without headset">Force enable VR</label>
-</div>
-
-
-
 </body>
 
 <script>
@@ -84,6 +65,9 @@
         DEFER_INITIALIZATION: true
     }
 </script>
+
+<!-- three.js library -->
+<script src="js/config.js"></script>
 
 <!-- three.js library -->
 <script src="node_modules/three/build/three.js"></script>
@@ -102,38 +86,35 @@
 
 
 <script>
-    // Config
-    WebVRConfig.FORCE_ENABLE_VR = getParameterByName('force_enable_vr') == 'true' || false
     window.InitializeWebVRPolyfill();
 
-    // Setup three.js WebGL renderer. Note: Antialiasing is a big performance hit.
-    // Only enable it if you actually need to.
-    var renderer = new THREE.WebGLRenderer({antialias: false});
+    // Setup three.js WebGL renderer. 
+    var renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio(Math.floor(window.devicePixelRatio));
     // Append the canvas element created by the renderer to document body element.
     document.body.appendChild(renderer.domElement);
 
     // Create WebVR UI Enter VR Button
-    var enterVR = new webvrui.EnterVRButton(renderer.domElement, {});
-
-    enterVR
+    var enterVR = new webvrui.EnterVRButton(renderer.domElement, {})
         .on("enter", ()=> console.log("enter VR"))
-        .on("exit", ()=> console.log("exit VR"));
+        .on("exit", ()=> {
+            console.log("exit VR")
+            camera.quaternion.set(0,0,0,1);
+            camera.position.set(0,controls.userHeight,0)
+        });
 
     document.getElementById("entervr-button").appendChild(enterVR.domElement);
 
     // Create WebVR UI Enter 360 Button
-    var enter360 = new webvrui.Enter360Button(renderer.domElement);
-    enter360
+    var enter360 = new webvrui.Enter360Button(renderer.domElement)
         .on("enter", ()=>console.log("enter 360"))
         .on("exit", ()=>{
             console.log("exit 360");
             camera.quaternion.set(0,0,0,1);
+            camera.position.set(0,controls.userHeight,0)
         });
 
     document.getElementById("enter360-button").appendChild(enter360.domElement);
-
-
 
 
     // Create a three.js scene.
@@ -145,25 +126,20 @@
     controls.standing = true;
     camera.position.y = controls.userHeight;
 
-
-    // Apply VR stereo rendering to renderer.
+    // Create VR Effect rendering in stereoscopic mode
     var effect = new THREE.VREffect(renderer);
     effect.setSize(window.innerWidth, window.innerHeight);
 
-    // Create 3D objects.
+    // Create 3D objects in scene.
     var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
     var material = new THREE.MeshNormalMaterial();
     var cube = new THREE.Mesh(geometry, material);
-
-
-    // Position cube mesh to be right in front of you.
     cube.position.set(0, controls.userHeight, -0.8);
-    // Add cube mesh to your three.js scene
     scene.add(cube);
 
+    // Hande canvas resizing
     window.addEventListener('resize', onResize, true);
     window.addEventListener('vrdisplaypresentchange', onResize, true);
-
 
     function onResize(e) {
         effect.setSize(window.innerWidth, window.innerHeight);
@@ -171,20 +147,15 @@
         camera.updateProjectionMatrix();
     }
 
-
     var vrDisplay;
     // Get the HMD, and if we're dealing with something that specifies
     // stageParameters, rearrange the scene.
     navigator.getVRDisplays().then(function(displays) {
         if (displays.length > 0) {
             vrDisplay = displays[0];
-            if (vrDisplay.stageParameters) {
-//                    setStageDimensions(vrDisplay.stageParameters);
-            }
             vrDisplay.requestAnimationFrame(animate);
-        }
+        } 
     });
-
 
     // Request animation frame loop function
     var lastRender = 0;
@@ -193,76 +164,16 @@
         lastRender = timestamp;
         // Apply rotation to cube mesh
         cube.rotation.y += delta * 0.0003;
-        if(enter360.state == 'PRESENTING' || enterVR.state == 'PRESENTING'){
+        
+        if(enter360.state == webvrui.State.PRESENTING || enterVR.state == webvrui.State.PRESENTING){
             controls.update();
+            renderer.render(scene,camera);
             effect.render(scene, camera);
-
         } else {
             renderer.render(scene,camera);
         }
-//
-//        console.log(camera.position);
-        // Render the scene through the manager.
-//        manager.render(scene, camera, timestamp);
-//
-
         vrDisplay.requestAnimationFrame(animate);
     }
-
-
-    function toggleForceEnableVr(value){
-        setParameterByName('force_enable_vr', value);
-    }
-
-    if (WebVRConfig.FORCE_ENABLE_VR) {
-        document.getElementById("force_enable_vr").checked = WebVRConfig.FORCE_ENABLE_VR
-    }
-
-
-
-    //
-    // Functions to get and url parameters
-    //
-
-    function getParameterByName(paramName, url) {
-        if (!url) {
-            url = window.location.href;
-        }
-        paramName = paramName.replace(/[\[\]]/g, "\\$&");
-        var regex = new RegExp("[?&]" + paramName + "(=([^&#]*)|&|#|$)"),
-                results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, " "));
-    }
-
-
-    function setParameterByName(paramName, paramValue)
-    {
-        var url = window.location.href;
-        var hash = location.hash;
-        url = url.replace(hash, '');
-        if (url.indexOf(paramName + "=") >= 0)
-        {
-            var prefix = url.substring(0, url.indexOf(paramName));
-            var suffix = url.substring(url.indexOf(paramName));
-            suffix = suffix.substring(suffix.indexOf("=") + 1);
-            suffix = (suffix.indexOf("&") >= 0) ? suffix.substring(suffix.indexOf("&")) : "";
-            url = prefix + paramName + "=" + paramValue + suffix;
-        }
-        else
-        {
-            if (url.indexOf("?") < 0)
-                url += "?" + paramName + "=" + paramValue;
-            else
-                url += "&" + paramName + "=" + paramValue;
-        }
-        window.location.href = url + hash;
-    }
-
-
-
-
 </script>
 
 </html>

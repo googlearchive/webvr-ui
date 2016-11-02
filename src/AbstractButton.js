@@ -22,7 +22,7 @@ export class AbstractButton extends EventEmitter {
         super();
         options = options || {};
         // Option to change pixel height of the button.
-        options.height =  options.height || 35;
+        options.height =  options.height || 45;
         options.injectCSS = options.injectCSS !== false;
 
         this.sourceCanvas = sourceCanvas;

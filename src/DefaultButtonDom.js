@@ -57,6 +57,11 @@ export class DefaultButtonDom extends AbstractButtonDom {
         }
     }
 
+    setTooltip(tooltip){
+        const btn = this.domElement.querySelector("." +this.cssClassPrefix+"-button");
+        btn.title = tooltip;
+    }
+
     setDescription(text){
         this.domElement.querySelector("."+this.cssClassPrefix + "-description").innerHTML = text;
     }
