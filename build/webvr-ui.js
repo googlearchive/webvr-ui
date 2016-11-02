@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.webvrui = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty
@@ -507,7 +507,7 @@ var AbstractButton = exports.AbstractButton = function (_EventEmitter) {
 
         options = options || {};
         // Option to change pixel height of the button.
-        options.height = options.height || 35;
+        options.height = options.height || 45;
         options.injectCSS = options.injectCSS !== false;
 
         _this.sourceCanvas = sourceCanvas;
@@ -652,6 +652,12 @@ var DefaultButtonDom = exports.DefaultButtonDom = function (_AbstractButtonDom) 
                 title.innerText = text;
                 title.style.display = "inherit";
             }
+        }
+    }, {
+        key: "setTooltip",
+        value: function setTooltip(tooltip) {
+            var btn = this.domElement.querySelector("." + this.cssClassPrefix + "-button");
+            btn.title = tooltip;
         }
     }, {
         key: "setDescription",
@@ -932,6 +938,7 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
     }, {
         key: "__onVRDisplayPresentChange",
         value: function __onVRDisplayPresentChange() {
+            console.log("Chjange", this.display);
             var isPresenting = this.display && this.display.isPresenting;
             this.__setState(isPresenting ? State.PRESENTING : State.READY_TO_PRESENT);
         }
@@ -948,25 +955,28 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
                     case State.READY_TO_PRESENT:
                         this.buttonDom.setTitle("Enter VR");
                         this.buttonDom.setDescription("");
+                        this.buttonDom.setTooltip("Enter VR on " + this.display.displayName);
                         if (this.state === State.PRESENTING) {
                             this.emit("exit");
                         }
                         break;
+
                     case State.PRESENTING:
                         this.buttonDom.setTitle("Exit VR");
                         this.buttonDom.setDescription("");
                         this.emit("enter");
                         break;
+
                     //all errors fall-through to default, no break
-                    case State.ERROR_NO_PRESENTABLE_DISPLAYS:
-                        this.buttonDom.setTitle("Enter VR", true);
-                        this.buttonDom.setDescription("No VR Headset found");
                     case State.ERROR_BROWSER_NOT_SUPPORTED:
                         this.buttonDom.setTitle("Browser not supported", true);
                         this.buttonDom.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
+
+                    case State.ERROR_NO_PRESENTABLE_DISPLAYS:
                     case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
-                        this.buttonDom.setTitle("Display can't present", true);
-                        this.buttonDom.setDescription("Your display refused to present");
+                        this.buttonDom.setTitle("Enter VR", true);
+                        this.buttonDom.setDescription("No VR headset found. <a href='http://webvr.info'>Learn more</a>");
+
                     case State.ERROR_EXIT_PRESENT_REJECTED:
                     default:
                         this.emit("error", new Error(state));
@@ -1054,7 +1064,7 @@ var exitVR = exports.exitVR = function exitVR(display) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.manager = exports.State = exports.AbstractButton = exports.Enter360Button = exports.EnterVRButton = undefined;
+exports.webvrui = undefined;
 
 var _WebVRManager = _dereq_("./WebVRManager");
 
@@ -1072,11 +1082,15 @@ var _Enter360Button = _dereq_("./Enter360Button");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-exports.EnterVRButton = _EnterVRButton.EnterVRButton;
-exports.Enter360Button = _Enter360Button.Enter360Button;
-exports.AbstractButton = _AbstractButton.AbstractButton;
-exports.State = State;
-exports.manager = manager;
+var webvrui = exports.webvrui = {
+    EnterVRButton: _EnterVRButton.EnterVRButton,
+    Enter360Button: _Enter360Button.Enter360Button,
+    AbstractButton: _AbstractButton.AbstractButton,
+    State: State,
+    manager: manager
+};
+
+window.webvrui = webvrui;
 
 },{"./AbstractButton":3,"./Enter360Button":6,"./EnterVRButton":7,"./WebVRManager":8,"./states":10}],10:[function(_dereq_,module,exports){
 "use strict";
@@ -1091,5 +1105,4 @@ var ERROR_BROWSER_NOT_SUPPORTED = exports.ERROR_BROWSER_NOT_SUPPORTED = "error-b
 var ERROR_REQUEST_TO_PRESENT_REJECTED = exports.ERROR_REQUEST_TO_PRESENT_REJECTED = "error-request-to-present-rejected";
 var ERROR_EXIT_PRESENT_REJECTED = exports.ERROR_EXIT_PRESENT_REJECTED = "error-exit-present-rejected";
 
-},{}]},{},[9])(9)
-});
+},{}]},{},[9]);
