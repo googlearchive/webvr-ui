@@ -4,8 +4,8 @@ import { AbstractButton } from "./AbstractButton";
 import { EnterVRButton } from "./EnterVRButton";
 import { Enter360Button } from "./Enter360Button";
 
-
-export {
+export var webvrui = 
+{
     EnterVRButton,
     Enter360Button,
     AbstractButton,
@@ -13,4 +13,4 @@ export {
     manager
 };
 
-
+window.webvrui = webvrui;

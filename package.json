@@ -7,9 +7,8 @@
     "Jonas Jongejan <jonas@halfdanj.dk>"
   ],
   "scripts": {
-    "build": "browserify src/index.js --standalone webvrui | derequire > build/webvr-ui.js",
-    "watch": "watchify src/index.js --standalone webvrui -v -d -o 'derequire > build/webvr-ui.js'",
-    "start": "npm run watch & serve ./",
+    "build": "browserify src/index.js | derequire > build/webvr-ui.js",
+    "start": "budo src/index.js:build/webvr-ui.js --live --verbose --port 3000",
     "prepublish": "npm run build"
   },
   "dependencies": {
@@ -21,7 +20,7 @@
     "babelify": "^7.3.0",
     "browserify": "^13.1.0",
     "derequire": "^2.0.3",
-    "serve": "^1.4.0",
+    "budo": "^9.2.1",
     "tape": "^4.6.2",
     "watchify": "^3.7.0"
   },
