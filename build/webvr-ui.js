@@ -743,8 +743,10 @@ var Enter360Button = exports.Enter360Button = function (_AbstractButton) {
         _this.__onClick = _this.__onClick.bind(_this);
         _this.__onChangeFullscreen = _this.__onChangeFullscreen.bind(_this);
         _this.domElement.addEventListener("click", _this.__onClick);
-        console.log(_screenfull2.default.raw.fullscreenchange);
-        document.addEventListener(_screenfull2.default.raw.fullscreenchange, _this.__onChangeFullscreen);
+
+        // TODO: Disabled for now, fails on iOS
+        // console.log(screenfull.raw.fullscreenchange);
+        // document.addEventListener(screenfull.raw.fullscreenchange, this.__onChangeFullscreen);
         return _this;
     }
 
@@ -938,7 +940,6 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
     }, {
         key: "__onVRDisplayPresentChange",
         value: function __onVRDisplayPresentChange() {
-            console.log("Chjange", this.display);
             var isPresenting = this.display && this.display.isPresenting;
             this.__setState(isPresenting ? State.PRESENTING : State.READY_TO_PRESENT);
         }

@@ -12,8 +12,10 @@ export class Enter360Button extends AbstractButton {
         this.__onClick = this.__onClick.bind(this);
         this.__onChangeFullscreen = this.__onChangeFullscreen.bind(this);
         this.domElement.addEventListener("click", this.__onClick);
-        console.log(screenfull.raw.fullscreenchange);
-        document.addEventListener(screenfull.raw.fullscreenchange, this.__onChangeFullscreen);
+
+        // TODO: Disabled for now, fails on iOS
+        // console.log(screenfull.raw.fullscreenchange);
+        // document.addEventListener(screenfull.raw.fullscreenchange, this.__onChangeFullscreen);
     }
 
     /**
