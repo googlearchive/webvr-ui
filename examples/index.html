@@ -96,8 +96,8 @@
 
     // Create WebVR UI Enter VR Button
     var enterVR = new webvrui.EnterVRButton(renderer.domElement, {})
-        .on("enter", ()=> console.log("enter VR"))
-        .on("exit", ()=> {
+        .on("enter", function(){ console.log("enter VR") })
+        .on("exit", function(){
             console.log("exit VR")
             camera.quaternion.set(0,0,0,1);
             camera.position.set(0,controls.userHeight,0)
@@ -107,8 +107,8 @@
 
     // Create WebVR UI Enter 360 Button
     var enter360 = new webvrui.Enter360Button(renderer.domElement)
-        .on("enter", ()=>console.log("enter 360"))
-        .on("exit", ()=>{
+        .on("enter", function(){ console.log("enter 360") })
+        .on("exit", function(){
             console.log("exit 360");
             camera.quaternion.set(0,0,0,1);
             camera.position.set(0,controls.userHeight,0)
