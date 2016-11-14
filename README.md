@@ -39,6 +39,15 @@ document.body.appendChild(enter360.domElement);
 Options
 **TBD**
 
+### A-Frame
+To use the button in [A-Frame](https://aframe.io/), include the component like this. 
+
+```
+require('webvr-ui/build/webvr-ui.aframe');
+```
+
+This will disable the default UI (by adding `vr-mode-ui="enabled:false"` on the a-scene entity), and add a *Enter VR* button to the document DOM.  
+
 ## Run Example
 To run the example, install dependencies 
 
@@ -60,4 +69,4 @@ npm install
 npm run build
 ```
 
-and the library will be build to `build/webvr-ui.js`
+and the library will be build to `build/webvr-ui.js` and `build/webvr-ui.aframe.js`

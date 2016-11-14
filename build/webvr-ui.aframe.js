@@ -542,7 +542,7 @@ var AbstractButton = exports.AbstractButton = function (_EventEmitter) {
     return AbstractButton;
 }(_eventemitter2.default);
 
-},{"./DefaultButtonDom":5,"eventemitter3":1}],4:[function(_dereq_,module,exports){
+},{"./DefaultButtonDom":6,"eventemitter3":1}],4:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -579,6 +579,38 @@ var AbstractButtonDom = exports.AbstractButtonDom = function () {
 }();
 
 },{}],5:[function(_dereq_,module,exports){
+'use strict';
+
+var _index = _dereq_('./index');
+
+AFRAME.registerSystem('webvr-ui', {
+    schema: {
+        // apiKey: {type: 'string'},
+        // authDomain: {type: 'string'},
+        // channel: {type: 'string'},
+        // databaseURL: {type: 'string'},
+        // interval: {type: 'number'},
+        // storageBucket: {type: 'string'}
+    },
+
+    init: function init() {
+        var scene = document.querySelector('a-scene');
+        scene.setAttribute("vr-mode-ui", { enabled: false });
+
+        var options = {};
+        var enterVR = new _index.webvrui.EnterVRButton(scene.canvas, options);
+        document.body.appendChild(enterVR.domElement);
+
+        enterVR.domElement.style.position = "absolute";
+        enterVR.domElement.style.bottom = "10px";
+
+        enterVR.domElement.style.left = "50%";
+        enterVR.domElement.style.transform = "translate(-50%, -50%)";
+        enterVR.domElement.style.textAlign = "center";
+    }
+});
+
+},{"./index":10}],6:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -698,7 +730,7 @@ var DefaultButtonDom = exports.DefaultButtonDom = function (_AbstractButtonDom) 
     return DefaultButtonDom;
 }(_AbstractButtonDom2.AbstractButtonDom);
 
-},{"./AbstractButtonDom":4}],6:[function(_dereq_,module,exports){
+},{"./AbstractButtonDom":4}],7:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -828,7 +860,7 @@ var Enter360Button = exports.Enter360Button = function (_AbstractButton) {
     return Enter360Button;
 }(_AbstractButton2.AbstractButton);
 
-},{"./AbstractButton":3,"./states":10,"screenfull":2}],7:[function(_dereq_,module,exports){
+},{"./AbstractButton":3,"./states":11,"screenfull":2}],8:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1004,7 +1036,7 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
     return EnterVRButton;
 }(_AbstractButton2.AbstractButton);
 
-},{"./AbstractButton":3,"./WebVRManager":8,"./states":10}],8:[function(_dereq_,module,exports){
+},{"./AbstractButton":3,"./WebVRManager":9,"./states":11}],9:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1059,7 +1091,7 @@ var exitVR = exports.exitVR = function exitVR(display) {
     return display.exitPresent();
 };
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1093,7 +1125,7 @@ var webvrui = exports.webvrui = {
 
 window.webvrui = webvrui;
 
-},{"./AbstractButton":3,"./Enter360Button":6,"./EnterVRButton":7,"./WebVRManager":8,"./states":10}],10:[function(_dereq_,module,exports){
+},{"./AbstractButton":3,"./Enter360Button":7,"./EnterVRButton":8,"./WebVRManager":9,"./states":11}],11:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1106,4 +1138,4 @@ var ERROR_BROWSER_NOT_SUPPORTED = exports.ERROR_BROWSER_NOT_SUPPORTED = "error-b
 var ERROR_REQUEST_TO_PRESENT_REJECTED = exports.ERROR_REQUEST_TO_PRESENT_REJECTED = "error-request-to-present-rejected";
 var ERROR_EXIT_PRESENT_REJECTED = exports.ERROR_EXIT_PRESENT_REJECTED = "error-exit-present-rejected";
 
-},{}]},{},[9]);
+},{}]},{},[5]);
