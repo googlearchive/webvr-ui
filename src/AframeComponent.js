@@ -22,7 +22,6 @@ if(AFRAME){
         
                 var options = {
                     onRequestStateChange: function(state){
-                        console.log("STATE",state)
                         if(state == State.PRESENTING){
                             scene.enterVR();
                         } else {

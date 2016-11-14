@@ -614,7 +614,6 @@ if (AFRAME) {
 
                 var options = {
                     onRequestStateChange: function onRequestStateChange(state) {
-                        console.log("STATE", state);
                         if (state == State.PRESENTING) {
                             scene.enterVR();
                         } else {
@@ -988,7 +987,6 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
         value: function __onClick(e) {
             var _this2 = this;
 
-            console.log("ASD");
             if (this.state == State.READY_TO_PRESENT) {
                 if (this.onRequestStateChange(State.PRESENTING)) {
                     manager.enterVR(this.display, this.sourceCanvas).then(function () {

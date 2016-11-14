@@ -4,7 +4,7 @@ A javascript library allowing easily to create the UI around a WebVR site. The m
 
 The library also supports adding a *Enter 360* that allows entering a mode where on desktop you can use the mouse to drag around, and on mobile rotate the camera based on the gyroscope without rendering in stereoscopic mode (also known as *Magic Window*)
  
-View example here: [halfdanj.github.io/webvr-ui/examples](http://halfdanj.github.io/webvr-ui/examples)
+View example here: [halfdanj.github.io/webvr-ui/](http://halfdanj.github.io/webvr-ui/)
 
 ## Library Usage
 ### Include WebVR UI
