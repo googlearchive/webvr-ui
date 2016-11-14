@@ -14,7 +14,17 @@ AFRAME.registerSystem('webvr-ui', {
         var scene = document.querySelector('a-scene') 
         scene.setAttribute("vr-mode-ui", {enabled:false})
         
-        var options = {}
+        var options = {
+            onRequestStateChange: function(state){
+                if(state == webvrui.State.PRESENTING){
+                    scene.enterVR();
+                } else {
+                    scene.exitVR();
+                }
+                return false;
+            }
+        };
+
         var enterVR = new webvrui.EnterVRButton(scene.canvas, options);
         document.body.appendChild(enterVR.domElement);
 
@@ -22,7 +32,7 @@ AFRAME.registerSystem('webvr-ui', {
         enterVR.domElement.style.bottom = "10px";
 
         enterVR.domElement.style.left = "50%";
-        enterVR.domElement.style.transform = "translate(-50%, -50%)"
+        enterVR.domElement.style.transform = "translate(-50%, -50%)";
         enterVR.domElement.style.textAlign = "center";
 
     }
