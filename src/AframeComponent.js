@@ -2,7 +2,7 @@ import { EnterVRButton } from "./EnterVRButton";
 // import * as manager from "./WebVRManager";
 import * as State from "./states";
 
-if(AFRAME){
+if(typeof AFRAME !== 'undefined' && AFRAME){
     AFRAME.registerComponent('webvr-ui', {
         dependencies: ['canvas'],
 
