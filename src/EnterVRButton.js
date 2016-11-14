@@ -49,6 +49,7 @@ export class EnterVRButton extends AbstractButton {
      * @private
      */
     __onClick(e){
+        console.log("ASD")
         if(this.state == State.READY_TO_PRESENT){
             if(this.onRequestStateChange(State.PRESENTING)) {
                 manager.enterVR(this.display, this.sourceCanvas)

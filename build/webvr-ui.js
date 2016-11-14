@@ -510,6 +510,10 @@ var AbstractButton = exports.AbstractButton = function (_EventEmitter) {
         options.height = options.height || 45;
         options.injectCSS = options.injectCSS !== false;
 
+        _this.onRequestStateChange = options.onRequestStateChange || function () {
+            return true;
+        };
+
         _this.sourceCanvas = sourceCanvas;
 
         _this.buttonDom = options.buttonDom || new _DefaultButtonDom.DefaultButtonDom(options.height, icon);
@@ -542,7 +546,7 @@ var AbstractButton = exports.AbstractButton = function (_EventEmitter) {
     return AbstractButton;
 }(_eventemitter2.default);
 
-},{"./DefaultButtonDom":5,"eventemitter3":1}],4:[function(_dereq_,module,exports){
+},{"./DefaultButtonDom":6,"eventemitter3":1}],4:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -579,6 +583,78 @@ var AbstractButtonDom = exports.AbstractButtonDom = function () {
 }();
 
 },{}],5:[function(_dereq_,module,exports){
+"use strict";
+
+var _EnterVRButton = _dereq_("./EnterVRButton");
+
+var _states = _dereq_("./states");
+
+var State = _interopRequireWildcard(_states);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+if (!AFRAME) {
+    AFRAME.registerComponent('webvr-ui', {
+        dependencies: ['canvas'],
+
+        schema: {
+            enabled: { type: 'boolean', default: true }
+        },
+
+        init: function init() {},
+
+        update: function update() {
+            var scene = document.querySelector('a-scene');
+            scene.setAttribute("vr-mode-ui", { enabled: !this.data.enabled });
+
+            if (this.data.enabled) {
+                if (this.enterVREl) {
+                    return;
+                }
+
+                var options = {
+                    onRequestStateChange: function onRequestStateChange(state) {
+                        console.log("STATE", state);
+                        if (state == State.PRESENTING) {
+                            scene.enterVR();
+                        } else {
+                            scene.exitVR();
+                        }
+                        return false;
+                    }
+                };
+
+                var enterVR = this.enterVR = new _EnterVRButton.EnterVRButton(scene.canvas, options);
+
+                this.enterVREl = enterVR.domElement;
+
+                document.body.appendChild(enterVR.domElement);
+
+                enterVR.domElement.style.position = "absolute";
+                enterVR.domElement.style.bottom = "10px";
+
+                enterVR.domElement.style.left = "50%";
+                enterVR.domElement.style.transform = "translate(-50%, -50%)";
+                enterVR.domElement.style.textAlign = "center";
+            } else {
+                if (this.enterVREl) {
+                    this.enterVREl.parentNode.removeChild(this.enterVREl);
+                    this.enterVR.remove();
+                }
+            }
+        },
+
+        remove: function remove() {
+            if (this.enterVREl) {
+                this.enterVREl.parentNode.removeChild(this.enterVREl);
+                this.enterVR.remove();
+            }
+        }
+    });
+}
+// import * as manager from "./WebVRManager";
+
+},{"./EnterVRButton":8,"./states":10}],6:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -698,7 +774,7 @@ var DefaultButtonDom = exports.DefaultButtonDom = function (_AbstractButtonDom) 
     return DefaultButtonDom;
 }(_AbstractButtonDom2.AbstractButtonDom);
 
-},{"./AbstractButtonDom":4}],6:[function(_dereq_,module,exports){
+},{"./AbstractButtonDom":4}],7:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -828,7 +904,7 @@ var Enter360Button = exports.Enter360Button = function (_AbstractButton) {
     return Enter360Button;
 }(_AbstractButton2.AbstractButton);
 
-},{"./AbstractButton":3,"./states":10,"screenfull":2}],7:[function(_dereq_,module,exports){
+},{"./AbstractButton":3,"./states":10,"screenfull":2}],8:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -873,6 +949,7 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
      * @param {Number} [options.height=35] specify the height of the button
      * @param {AbstractButtonDom} [options.buttonDom=DefaultButtonDom] specify a custom button class
      * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
+     * @param {Function} [options.onRequestStateChange] set to a function returning false to prevent default state changes
      */
     function EnterVRButton(sourceCanvas, options) {
         _classCallCheck(this, EnterVRButton);
@@ -890,10 +967,12 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
                 _this.__setState(State.ERROR_BROWSER_NOT_SUPPORTED);
             }
         });
-        //bind events
+
+        // Bind button click events to __onClick
         _this.__onClick = _this.__onClick.bind(_this);
         _this.domElement.addEventListener("click", _this.__onClick);
 
+        // Bind vr display present change event to __onVRDisplayPresentChange
         _this.__onVRDisplayPresentChange = _this.__onVRDisplayPresentChange.bind(_this);
         window.addEventListener("vrdisplaypresentchange", _this.__onVRDisplayPresentChange);
         return _this;
@@ -909,27 +988,31 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
         value: function __onClick(e) {
             var _this2 = this;
 
+            console.log("ASD");
             if (this.state == State.READY_TO_PRESENT) {
-                manager.enterVR(this.display, this.sourceCanvas).then(function () {
-                    return _this2.__setState(State.PRESENTING);
-                },
-                //this could fail if:
-                //1. Display `canPresent` is false
-                //2. Canvas is invalid
-                //3. not executed via user interaction
-                function () {
-                    return _this2.__setState(State.ERROR_REQUEST_TO_PRESENT_REJECTED);
-                });
+                if (this.onRequestStateChange(State.PRESENTING)) {
+                    manager.enterVR(this.display, this.sourceCanvas).then(function () {
+                        return _this2.__setState(State.PRESENTING);
+                    },
+                    //this could fail if:
+                    //1. Display `canPresent` is false
+                    //2. Canvas is invalid
+                    //3. not executed via user interaction
+                    function () {
+                        return _this2.__setState(State.ERROR_REQUEST_TO_PRESENT_REJECTED);
+                    });
+                }
             } else if (this.state == State.PRESENTING) {
-                this.__setState(State.READY_TO_PRESENT);
-                manager.exitVR(this.display).then(function () {
-                    return _this2.__setState(State.READY_TO_PRESENT);
-                },
-                //this could fail if:
-                //1. exit requested while not currently presenting
-                function () {
-                    return _this2.__setState(State.ERROR_EXIT_PRESENT_REJECTED);
-                });
+                if (this.onRequestStateChange(State.READY_TO_PRESENT)) {
+                    manager.exitVR(this.display).then(function () {
+                        return _this2.__setState(State.READY_TO_PRESENT);
+                    },
+                    //this could fail if:
+                    //1. exit requested while not currently presenting
+                    function () {
+                        return _this2.__setState(State.ERROR_EXIT_PRESENT_REJECTED);
+                    });
+                }
             }
         }
 
@@ -974,9 +1057,12 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
                         this.buttonDom.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
 
                     case State.ERROR_NO_PRESENTABLE_DISPLAYS:
-                    case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
                         this.buttonDom.setTitle("Enter VR", true);
                         this.buttonDom.setDescription("No VR headset found. <a href='http://webvr.info'>Learn more</a>");
+
+                    case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
+                        this.buttonDom.setTitle("Enter VR", true);
+                        this.buttonDom.setDescription("Something went wrong trying to start presenting to your headset.");
 
                     case State.ERROR_EXIT_PRESENT_REJECTED:
                     default:
@@ -1004,7 +1090,7 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
     return EnterVRButton;
 }(_AbstractButton2.AbstractButton);
 
-},{"./AbstractButton":3,"./WebVRManager":8,"./states":10}],8:[function(_dereq_,module,exports){
+},{"./AbstractButton":3,"./WebVRManager":9,"./states":10}],9:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1059,7 +1145,20 @@ var exitVR = exports.exitVR = function exitVR(display) {
     return display.exitPresent();
 };
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var READY_TO_PRESENT = exports.READY_TO_PRESENT = "ready";
+var PRESENTING = exports.PRESENTING = "presenting";
+var ERROR_NO_PRESENTABLE_DISPLAYS = exports.ERROR_NO_PRESENTABLE_DISPLAYS = "error-no-presentable-displays";
+var ERROR_BROWSER_NOT_SUPPORTED = exports.ERROR_BROWSER_NOT_SUPPORTED = "error-browser-not-supported";
+var ERROR_REQUEST_TO_PRESENT_REJECTED = exports.ERROR_REQUEST_TO_PRESENT_REJECTED = "error-request-to-present-rejected";
+var ERROR_EXIT_PRESENT_REJECTED = exports.ERROR_EXIT_PRESENT_REJECTED = "error-exit-present-rejected";
+
+},{}],11:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1081,6 +1180,8 @@ var _EnterVRButton = _dereq_("./EnterVRButton");
 
 var _Enter360Button = _dereq_("./Enter360Button");
 
+_dereq_("./AframeComponent");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var webvrui = exports.webvrui = {
@@ -1093,17 +1194,4 @@ var webvrui = exports.webvrui = {
 
 window.webvrui = webvrui;
 
-},{"./AbstractButton":3,"./Enter360Button":6,"./EnterVRButton":7,"./WebVRManager":8,"./states":10}],10:[function(_dereq_,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var READY_TO_PRESENT = exports.READY_TO_PRESENT = "ready";
-var PRESENTING = exports.PRESENTING = "presenting";
-var ERROR_NO_PRESENTABLE_DISPLAYS = exports.ERROR_NO_PRESENTABLE_DISPLAYS = "error-no-presentable-displays";
-var ERROR_BROWSER_NOT_SUPPORTED = exports.ERROR_BROWSER_NOT_SUPPORTED = "error-browser-not-supported";
-var ERROR_REQUEST_TO_PRESENT_REJECTED = exports.ERROR_REQUEST_TO_PRESENT_REJECTED = "error-request-to-present-rejected";
-var ERROR_EXIT_PRESENT_REJECTED = exports.ERROR_EXIT_PRESENT_REJECTED = "error-exit-present-rejected";
-
-},{}]},{},[9]);
+},{"./AbstractButton":3,"./AframeComponent":5,"./Enter360Button":7,"./EnterVRButton":8,"./WebVRManager":9,"./states":10}]},{},[11]);
