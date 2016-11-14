@@ -42,11 +42,13 @@ Options
 - `onRequestStateChange`: A function called before state is changed, use to intercept entering or exiting VR for example. Return `true` to continue with default behaviour, or `false` to stop the default behaviour.    
 
 ### A-Frame
-To use the button in [A-Frame](https://aframe.io/), include the component like this. 
+To use the button in [A-Frame](https://aframe.io/), include the library as above, and add `webvr-ui` to the scene.
 
 ```
-require('webvr-ui/build/webvr-ui.aframe');
-```
+<a-scene webvr-ui>
+    ...
+</a-scene>
+``` 
 
 This will disable the default UI (by adding `vr-mode-ui="enabled:false"` on the a-scene entity), and add a *Enter VR* button to the document DOM.  
 
