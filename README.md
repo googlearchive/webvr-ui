@@ -37,7 +37,9 @@ document.body.appendChild(enter360.domElement);
 ```
 
 Options
-**TBD**
+- `height`: Height in pixels of the button. *Default 45* 
+- `injectCSS`: Set to false to disable CSS injection of button style. *Default `true`*
+- `onRequestStateChange`: A function called before state is changed, use to intercept entering or exiting VR for example. Return `true` to continue with default behaviour, or `false` to stop the default behaviour.    
 
 ### A-Frame
 To use the button in [A-Frame](https://aframe.io/), include the component like this. 
@@ -63,6 +65,7 @@ npm start
 
 ## Build
 To build the transpiled es5 version of the library, run 
+
 ```
 npm install
 npm run build

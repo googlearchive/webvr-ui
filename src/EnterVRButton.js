@@ -17,6 +17,7 @@ export class EnterVRButton extends AbstractButton {
      * @param {Number} [options.height=35] specify the height of the button
      * @param {AbstractButtonDom} [options.buttonDom=DefaultButtonDom] specify a custom button class
      * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
+     * @param {Function} [options.onRequestStateChange] set to a function returning false to prevent default state changes
      */
     constructor(sourceCanvas, options){
         super(sourceCanvas, "VR", options);
@@ -34,10 +35,12 @@ export class EnterVRButton extends AbstractButton {
                     this.__setState(State.ERROR_BROWSER_NOT_SUPPORTED)
                 }
             });
-        //bind events
+
+        // Bind button click events to __onClick
         this.__onClick = this.__onClick.bind(this);
         this.domElement.addEventListener("click", this.__onClick);
 
+        // Bind vr display present change event to __onVRDisplayPresentChange
         this.__onVRDisplayPresentChange = this.__onVRDisplayPresentChange.bind(this);
         window.addEventListener("vrdisplaypresentchange", this.__onVRDisplayPresentChange);
     }
@@ -46,27 +49,28 @@ export class EnterVRButton extends AbstractButton {
      * @private
      */
     __onClick(e){
-
         if(this.state == State.READY_TO_PRESENT){
-            manager.enterVR(this.display, this.sourceCanvas)
-                .then(
-                    ()=> this.__setState(State.PRESENTING),
-                    //this could fail if:
-                    //1. Display `canPresent` is false
-                    //2. Canvas is invalid
-                    //3. not executed via user interaction
-                    ()=> this.__setState(State.ERROR_REQUEST_TO_PRESENT_REJECTED)
-                );
-
+            if(this.onRequestStateChange(State.PRESENTING)) {
+                manager.enterVR(this.display, this.sourceCanvas)
+                    .then(
+                        ()=> this.__setState(State.PRESENTING),
+                        //this could fail if:
+                        //1. Display `canPresent` is false
+                        //2. Canvas is invalid
+                        //3. not executed via user interaction
+                        ()=> this.__setState(State.ERROR_REQUEST_TO_PRESENT_REJECTED)
+                    );
+            }
         } else if(this.state == State.PRESENTING) {
-            this.__setState(State.READY_TO_PRESENT);
-            manager.exitVR(this.display)
-                .then(
-                    ()=> this.__setState(State.READY_TO_PRESENT),
-                    //this could fail if:
-                    //1. exit requested while not currently presenting
-                    ()=> this.__setState(State.ERROR_EXIT_PRESENT_REJECTED)
-                 );
+            if(this.onRequestStateChange(State.READY_TO_PRESENT)) {
+                manager.exitVR(this.display)
+                    .then(
+                        ()=> this.__setState(State.READY_TO_PRESENT),
+                        //this could fail if:
+                        //1. exit requested while not currently presenting
+                        ()=> this.__setState(State.ERROR_EXIT_PRESENT_REJECTED)
+                    );
+            }
         }
     }
 
@@ -106,9 +110,12 @@ export class EnterVRButton extends AbstractButton {
                     this.buttonDom.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
                 
                 case State.ERROR_NO_PRESENTABLE_DISPLAYS:
-                case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
                     this.buttonDom.setTitle("Enter VR", true);
                     this.buttonDom.setDescription("No VR headset found. <a href='http://webvr.info'>Learn more</a>");
+
+                case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
+                    this.buttonDom.setTitle("Enter VR", true);
+                    this.buttonDom.setDescription("Something went wrong trying to start presenting to your headset.");
                 
                 case State.ERROR_EXIT_PRESENT_REJECTED:
                 default:

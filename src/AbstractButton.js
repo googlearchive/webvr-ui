@@ -25,6 +25,8 @@ export class AbstractButton extends EventEmitter {
         options.height =  options.height || 45;
         options.injectCSS = options.injectCSS !== false;
 
+        this.onRequestStateChange = options.onRequestStateChange || () => true;
+
         this.sourceCanvas = sourceCanvas;
 
         this.buttonDom = options.buttonDom || new DefaultButtonDom(options.height, icon);
