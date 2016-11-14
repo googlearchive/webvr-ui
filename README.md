@@ -54,6 +54,7 @@ npm start
 
 ## Build
 To build the transpiled es5 version of the library, run 
+
 ```
 npm install
 npm run build
