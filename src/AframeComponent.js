@@ -13,9 +13,24 @@ AFRAME.registerSystem('webvr-ui', {
     init: function () {
         var scene = document.querySelector('a-scene') 
         scene.setAttribute("vr-mode-ui", {enabled:false})
-        
+        console.log(scene.enterVR) 
         var options = {}
-        var enterVR = new webvrui.EnterVRButton(scene.canvas, options);
+        
+
+    },
+     
+
+     update: function(){
+        if(this.enterVREl){ return }
+        var enterVR = this.enterVR = new webvrui.EnterVRButton(scene.canvas, options)
+        .on("enter", function(){ console.log("enter 360") })
+        .on("exit", function(){
+            console.log("exit 360");
+            camera.quaternion.set(0,0,0,1);
+            camera.position.set(0,controls.userHeight,0)
+        });
+
+        this.enterVREl = enterVR.domElement;
         document.body.appendChild(enterVR.domElement);
 
         enterVR.domElement.style.position = "absolute";
@@ -24,6 +39,12 @@ AFRAME.registerSystem('webvr-ui', {
         enterVR.domElement.style.left = "50%";
         enterVR.domElement.style.transform = "translate(-50%, -50%)"
         enterVR.domElement.style.textAlign = "center";
+     },
 
-    }
+     remove: function(){
+        if (this.enterVREl) {
+            this.enterVREl.parentNode.removeChild(this.enterVREl);
+            this.enterVR.remove();
+        }         
+     }
 });
