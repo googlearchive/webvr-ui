@@ -70,7 +70,6 @@ export class WebVRManager extends EventEmitter {
                 function (displays) {
                     // Promise succeeds, but check if there are any displays actually.
                     for (var i = 0; i < displays.length; i++) {
-                        console.log(displays[i]);
                         if (displays[i].capabilities.canPresent) {
                             resolve(displays[i]);
                             break;
@@ -87,12 +86,12 @@ export class WebVRManager extends EventEmitter {
     /**
      * Enter presentation mode with your set VR display
      */
-    static enterVR(display, canvas) {
+    enterVR(display, canvas) {
         return display.requestPresent([{
             source: canvas
         }])
             .then(
-                ()=> this.__setState(State.PRESENTING),
+                ()=>{},
                 //this could fail if:
                 //1. Display `canPresent` is false
                 //2. Canvas is invalid
@@ -102,10 +101,10 @@ export class WebVRManager extends EventEmitter {
     }
 
 
-    static exitVR(display){
+    exitVR(display){
         return display.exitPresent()
             .then(
-                ()=> this.__setState(State.READY_TO_PRESENT),
+                ()=> {},
                 //this could fail if:
                 //1. exit requested while not currently presenting
                 ()=> this.__setState(State.ERROR_EXIT_PRESENT_REJECTED)
@@ -130,7 +129,7 @@ export class WebVRManager extends EventEmitter {
      * @private
      */
     __onVRDisplayPresentChange(){
-        const isPresenting = this.display && this.display.isPresenting;
+        const isPresenting = this.defaultDisplay && this.defaultDisplay.isPresenting;
         this.__setState( isPresenting ? State.PRESENTING : State.READY_TO_PRESENT);
     }
 

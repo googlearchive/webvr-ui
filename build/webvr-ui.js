@@ -988,11 +988,11 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
         value: function __onClick() {
             if (this.state == State.READY_TO_PRESENT) {
                 if (this.onRequestStateChange(State.PRESENTING)) {
-                    _WebVRManager.WebVRManager.enterVR(this.manager.defaultDisplay, this.sourceCanvas);
+                    this.manager.enterVR(this.manager.defaultDisplay, this.sourceCanvas);
                 }
             } else if (this.state == State.PRESENTING) {
                 if (this.onRequestStateChange(State.READY_TO_PRESENT)) {
-                    _WebVRManager.WebVRManager.exitVR(this.manager.defaultDisplay);
+                    this.manager.exitVR(this.manager.defaultDisplay);
                 }
             }
         }
@@ -1146,12 +1146,45 @@ var WebVRManager = exports.WebVRManager = function (_EventEmitter) {
          */
 
     }, {
-        key: "__setState",
+        key: "enterVR",
 
+
+        /**
+         * Enter presentation mode with your set VR display
+         */
+        value: function enterVR(display, canvas) {
+            var _this3 = this;
+
+            return display.requestPresent([{
+                source: canvas
+            }]).then(function () {},
+            //this could fail if:
+            //1. Display `canPresent` is false
+            //2. Canvas is invalid
+            //3. not executed via user interaction
+            function () {
+                return _this3.__setState(State.ERROR_REQUEST_TO_PRESENT_REJECTED);
+            });
+        }
+    }, {
+        key: "exitVR",
+        value: function exitVR(display) {
+            var _this4 = this;
+
+            return display.exitPresent().then(function () {},
+            //this could fail if:
+            //1. exit requested while not currently presenting
+            function () {
+                return _this4.__setState(State.ERROR_EXIT_PRESENT_REJECTED);
+            });
+        }
 
         /**
          * @private
          */
+
+    }, {
+        key: "__setState",
         value: function __setState(state) {
             if (state != this.state) {
                 this.emit('state_change', state, this.state);
@@ -1166,7 +1199,7 @@ var WebVRManager = exports.WebVRManager = function (_EventEmitter) {
     }, {
         key: "__onVRDisplayPresentChange",
         value: function __onVRDisplayPresentChange() {
-            var isPresenting = this.display && this.display.isPresenting;
+            var isPresenting = this.defaultDisplay && this.defaultDisplay.isPresenting;
             this.__setState(isPresenting ? State.PRESENTING : State.READY_TO_PRESENT);
         }
     }], [{
@@ -1190,7 +1223,6 @@ var WebVRManager = exports.WebVRManager = function (_EventEmitter) {
                 navigator.getVRDisplays().then(function (displays) {
                     // Promise succeeds, but check if there are any displays actually.
                     for (var i = 0; i < displays.length; i++) {
-                        console.log(displays[i]);
                         if (displays[i].capabilities.canPresent) {
                             resolve(displays[i]);
                             break;
@@ -1199,43 +1231,6 @@ var WebVRManager = exports.WebVRManager = function (_EventEmitter) {
 
                     rejectNoDisplay();
                 }, rejectNoDisplay);
-            });
-        }
-
-        /**
-         * Enter presentation mode with your set VR display
-         */
-
-    }, {
-        key: "enterVR",
-        value: function enterVR(display, canvas) {
-            var _this3 = this;
-
-            return display.requestPresent([{
-                source: canvas
-            }]).then(function () {
-                return _this3.__setState(State.PRESENTING);
-            },
-            //this could fail if:
-            //1. Display `canPresent` is false
-            //2. Canvas is invalid
-            //3. not executed via user interaction
-            function () {
-                return _this3.__setState(State.ERROR_REQUEST_TO_PRESENT_REJECTED);
-            });
-        }
-    }, {
-        key: "exitVR",
-        value: function exitVR(display) {
-            var _this4 = this;
-
-            return display.exitPresent().then(function () {
-                return _this4.__setState(State.READY_TO_PRESENT);
-            },
-            //this could fail if:
-            //1. exit requested while not currently presenting
-            function () {
-                return _this4.__setState(State.ERROR_EXIT_PRESENT_REJECTED);
             });
         }
     }]);

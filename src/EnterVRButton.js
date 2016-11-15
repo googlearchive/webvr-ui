@@ -46,11 +46,11 @@ export class EnterVRButton extends AbstractButton {
     __onClick(){
         if(this.state == State.READY_TO_PRESENT){
             if(this.onRequestStateChange(State.PRESENTING)) {
-                WebVRManager.enterVR(this.manager.defaultDisplay, this.sourceCanvas)
+                this.manager.enterVR(this.manager.defaultDisplay, this.sourceCanvas)
             }
         } else if(this.state == State.PRESENTING) {
             if(this.onRequestStateChange(State.READY_TO_PRESENT)) {
-                WebVRManager.exitVR(this.manager.defaultDisplay)
+                this.manager.exitVR(this.manager.defaultDisplay)
             }
         }
     }
