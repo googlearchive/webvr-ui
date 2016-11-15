@@ -1,4 +1,4 @@
-import * as manager from "./WebVRManager";
+import WebVRManager from "./WebVRManager";
 import * as State from "./states";
 import { AbstractButton } from "./AbstractButton";
 import { EnterVRButton } from "./EnterVRButton";
@@ -11,7 +11,7 @@ export var webvrui =
     Enter360Button,
     AbstractButton,
     State,
-    manager
+    WebVRManager
 };
 
 window.webvrui = webvrui;
