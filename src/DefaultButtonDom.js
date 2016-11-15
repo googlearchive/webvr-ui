@@ -18,7 +18,7 @@ export class DefaultButtonDom extends AbstractButtonDom {
         const svgString = DefaultButtonDom[ "generate" + (icon.toLowerCase() === "vr" ? "VR" : "360") + "Icon"](this.cssClassPrefix + "-svg", this.fontSize);
 
         this.domElement.innerHTML = (
-            `<button class="${cls}-button" data-error="false">
+            `<button class="${cls}-button" data-disabled="false">
                 <div class="${cls}-title"></div>
                 <div class="${cls}-logo">`+
                     svgString +
@@ -43,11 +43,11 @@ export class DefaultButtonDom extends AbstractButtonDom {
         }
     }
 
-    setTitle(text, error = false){
+    setTitle(text, disabled = false){
         const btn = this.domElement.querySelector("." +this.cssClassPrefix+"-button");
         const title = this.domElement.querySelector("."+this.cssClassPrefix + "-title");
         btn.title = text;
-        btn.dataset.error = error;
+        btn.dataset.disabled = disabled;
 
         if(!text){
             title.style.display = "none";
@@ -98,7 +98,7 @@ export class DefaultButtonDom extends AbstractButtonDom {
         );
     }
 
-    static generateCss(prefix, height = 50, fontSize = 18, errorColor="rgba(255,255,255,0.4)"){
+    static generateCss(prefix, height = 50, fontSize = 18, disabledColor="rgba(255,255,255,0.4)"){
         let borderWidth = 2;
         let borderRadius = height / 2;
         // borderRadius = 0;
@@ -186,22 +186,31 @@ export class DefaultButtonDom extends AbstractButtonDom {
 
             }
 
-        .${prefix}-description, a {
+            .${prefix}-description, a {
                 color: white
             }
 
             /*
-            * Error
+            * disabled
             */
 
-            button.${prefix}-button[data-error=true] {
-                border-color: ${errorColor};
+            button.${prefix}-button[data-disabled=true] {
+                border-color: ${disabledColor};
             }
-            button.${prefix}-button[data-error=true] > .${prefix}-logo {
-                background-color: ${errorColor};
+            button.${prefix}-button[data-disabled=true] > .${prefix}-logo {
+                background-color: ${disabledColor};
+                top:0;
+                left:0;
+                width: ${height-4}px;
+                height: ${height-4}px;
             }
-            button.${prefix}-button[data-error=true] > .${prefix}-title {
-                color: ${errorColor};
+            button.${prefix}-button[data-disabled=true] > .${prefix}-logo > svg {
+                margin-top: ${(height - fontSize) / 2 - 2}px;
+                margin-left: -2px;
+            }
+            
+            button.${prefix}-button[data-disabled=true] > .${prefix}-title {
+                color: ${disabledColor};
             }
 
         `);
