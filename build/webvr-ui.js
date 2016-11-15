@@ -692,7 +692,7 @@ var DefaultButtonDom = exports.DefaultButtonDom = function (_AbstractButtonDom) 
 
         var svgString = DefaultButtonDom["generate" + (icon.toLowerCase() === "vr" ? "VR" : "360") + "Icon"](_this.cssClassPrefix + "-svg", _this.fontSize);
 
-        _this.domElement.innerHTML = "<button class=\"" + cls + "-button\" data-error=\"false\">\n                <div class=\"" + cls + "-title\"></div>\n                <div class=\"" + cls + "-logo\">" + svgString + ("</div>\n            </button>\n            <div class=\"" + cls + "-description\" />");
+        _this.domElement.innerHTML = "<button class=\"" + cls + "-button\" data-disabled=\"false\">\n                <div class=\"" + cls + "-title\"></div>\n                <div class=\"" + cls + "-logo\">" + svgString + ("</div>\n            </button>\n            <div class=\"" + cls + "-description\" />");
         return _this;
     }
 
@@ -714,12 +714,12 @@ var DefaultButtonDom = exports.DefaultButtonDom = function (_AbstractButtonDom) 
     }, {
         key: "setTitle",
         value: function setTitle(text) {
-            var error = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+            var disabled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
             var btn = this.domElement.querySelector("." + this.cssClassPrefix + "-button");
             var title = this.domElement.querySelector("." + this.cssClassPrefix + "-title");
             btn.title = text;
-            btn.dataset.error = error;
+            btn.dataset.disabled = disabled;
 
             if (!text) {
                 title.style.display = "none";
@@ -760,13 +760,13 @@ var DefaultButtonDom = exports.DefaultButtonDom = function (_AbstractButtonDom) 
         value: function generateCss(prefix) {
             var height = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 50;
             var fontSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 18;
-            var errorColor = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "rgba(255,255,255,0.4)";
+            var disabledColor = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "rgba(255,255,255,0.4)";
 
             var borderWidth = 2;
             var borderRadius = height / 2;
             // borderRadius = 0;
 
-            return "\n            @font-face {\n                font-family: 'Karla';\n                font-style: normal;\n                font-weight: 400;\n                src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format('woff2');\n                unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n            }\n            @font-face {\n                font-family: 'Karla';\n                font-style: normal;\n                font-weight: 400;\n                src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format('woff2');\n                unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n            }\n            \n            ." + prefix + " {\n                font-family: 'Karla', sans-serif;\n            }\n\n            button." + prefix + "-button {\n                border: white " + borderWidth + "px solid;\n                border-radius: " + borderRadius + "px;\n                box-sizing: border-box;\n                background: rgba(0,0,0, 0);\n\n                height: " + height + "px;\n                min-width: " + 125 + "px;\n                display: inline-block;\n                position: relative;\n\n                margin-top: 8px;\n\n                cursor: pointer;\n\n                -webkit-transition: width 0.5s;\n                transition: width 0.5s;\n            }\n\n            /*\n            * Logo\n            */\n\n            ." + prefix + "-logo {\n                width: " + height + "px;\n                height: " + height + "px;\n                border-radius: " + borderRadius + "px;\n                background-color: white;\n                position: absolute;\n                top:-" + borderWidth + "px;\n                left:-" + borderWidth + "px;\n            }\n            ." + prefix + "-logo > svg {\n                margin-top: " + (height - fontSize) / 2 + "px;\n            }\n\n\n            /*\n            * Title\n            */\n\n            ." + prefix + "-title {\n                color: white;\n                position: relative;\n                font-size: " + fontSize + "px;\n                top: -" + borderWidth + "px;\n                line-height: " + (height - borderWidth * 2) + "px;\n                text-align: left;\n                padding-left: " + height * 1.05 + "px;\n                padding-right: " + (borderRadius - 10 < 5 ? 5 : borderRadius - 10) + "px;\n            }\n\n            /*\n            * Description\n            */\n\n            ." + prefix + "-description{\n                font-size: 13px;\n                margin-top: 5px;\n                margin-bottom: 10px;\n\n            }\n\n        ." + prefix + "-description, a {\n                color: white\n            }\n\n            /*\n            * Error\n            */\n\n            button." + prefix + "-button[data-error=true] {\n                border-color: " + errorColor + ";\n            }\n            button." + prefix + "-button[data-error=true] > ." + prefix + "-logo {\n                background-color: " + errorColor + ";\n            }\n            button." + prefix + "-button[data-error=true] > ." + prefix + "-title {\n                color: " + errorColor + ";\n            }\n\n        ";
+            return "\n            @font-face {\n                font-family: 'Karla';\n                font-style: normal;\n                font-weight: 400;\n                src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format('woff2');\n                unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n            }\n            @font-face {\n                font-family: 'Karla';\n                font-style: normal;\n                font-weight: 400;\n                src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format('woff2');\n                unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n            }\n            \n            ." + prefix + " {\n                font-family: 'Karla', sans-serif;\n            }\n\n            button." + prefix + "-button {\n                border: white " + borderWidth + "px solid;\n                border-radius: " + borderRadius + "px;\n                box-sizing: border-box;\n                background: rgba(0,0,0, 0);\n\n                height: " + height + "px;\n                min-width: " + 125 + "px;\n                display: inline-block;\n                position: relative;\n\n                margin-top: 8px;\n\n                cursor: pointer;\n\n                -webkit-transition: width 0.5s;\n                transition: width 0.5s;\n            }\n\n            /*\n            * Logo\n            */\n\n            ." + prefix + "-logo {\n                width: " + height + "px;\n                height: " + height + "px;\n                border-radius: " + borderRadius + "px;\n                background-color: white;\n                position: absolute;\n                top:-" + borderWidth + "px;\n                left:-" + borderWidth + "px;\n            }\n            ." + prefix + "-logo > svg {\n                margin-top: " + (height - fontSize) / 2 + "px;\n            }\n\n\n            /*\n            * Title\n            */\n\n            ." + prefix + "-title {\n                color: white;\n                position: relative;\n                font-size: " + fontSize + "px;\n                top: -" + borderWidth + "px;\n                line-height: " + (height - borderWidth * 2) + "px;\n                text-align: left;\n                padding-left: " + height * 1.05 + "px;\n                padding-right: " + (borderRadius - 10 < 5 ? 5 : borderRadius - 10) + "px;\n            }\n\n            /*\n            * Description\n            */\n\n            ." + prefix + "-description{\n                font-size: 13px;\n                margin-top: 5px;\n                margin-bottom: 10px;\n\n            }\n\n            ." + prefix + "-description, a {\n                color: white\n            }\n\n            /*\n            * disabled\n            */\n\n            button." + prefix + "-button[data-disabled=true] {\n                border-color: " + disabledColor + ";\n            }\n            button." + prefix + "-button[data-disabled=true] > ." + prefix + "-logo {\n                background-color: " + disabledColor + ";\n                top:0;\n                left:0;\n                width: " + (height - 4) + "px;\n                height: " + (height - 4) + "px;\n            }\n            button." + prefix + "-button[data-disabled=true] > ." + prefix + "-logo > svg {\n                margin-top: " + ((height - fontSize) / 2 - 2) + "px;\n                margin-left: -2px;\n            }\n            \n            button." + prefix + "-button[data-disabled=true] > ." + prefix + "-title {\n                color: " + disabledColor + ";\n            }\n\n        ";
         }
     }]);
 
@@ -919,8 +919,6 @@ var _AbstractButton2 = _dereq_("./AbstractButton");
 
 var _WebVRManager = _dereq_("./WebVRManager");
 
-var manager = _interopRequireWildcard(_WebVRManager);
-
 var _states = _dereq_("./states");
 
 var State = _interopRequireWildcard(_states);
@@ -944,6 +942,7 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
      * Construct a new Enter VR Button
      * @constructor
      * @param {HTMLCanvasElement} sourceCanvas the canvas that you want to present in WebVR
+     *
      * @param {Object} [options] optional parameters
      * @param {Number} [options.height=35] specify the height of the button
      * @param {AbstractButtonDom} [options.buttonDom=DefaultButtonDom] specify a custom button class
@@ -953,23 +952,149 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
     function EnterVRButton(sourceCanvas, options) {
         _classCallCheck(this, EnterVRButton);
 
-        // Check if the browser is compatible with WebVR and has headsets.
         var _this = _possibleConstructorReturn(this, (EnterVRButton.__proto__ || Object.getPrototypeOf(EnterVRButton)).call(this, sourceCanvas, "VR", options));
 
-        manager.getVRDisplay().then(function (display) {
-            _this.display = display;
-            _this.__setState(State.READY_TO_PRESENT);
-        }).catch(function (e) {
-            if (e.name == "NO_DISPLAYS") {
-                _this.__setState(State.ERROR_NO_PRESENTABLE_DISPLAYS);
-            } else if (e.name == "WEBVR_UNSUPPORTED") {
-                _this.__setState(State.ERROR_BROWSER_NOT_SUPPORTED);
-            }
+        _this.manager = new _WebVRManager.WebVRManager();
+        _this.manager.addListener('state_change', function (state) {
+            return _this.__onStateChange(state);
         });
 
         // Bind button click events to __onClick
         _this.__onClick = _this.__onClick.bind(_this);
         _this.domElement.addEventListener("click", _this.__onClick);
+        return _this;
+    }
+
+    /**
+     * clean up object for garbage collection
+     */
+
+
+    _createClass(EnterVRButton, [{
+        key: "remove",
+        value: function remove() {
+            this.manager.remove();
+            this.domElement.removeEventListener("click", this.__onClick);
+            _get(EnterVRButton.prototype.__proto__ || Object.getPrototypeOf(EnterVRButton.prototype), "remove", this).call(this);
+        }
+
+        /**
+         * @private
+         * Handling click event from button
+         */
+
+    }, {
+        key: "__onClick",
+        value: function __onClick() {
+            if (this.state == State.READY_TO_PRESENT) {
+                if (this.onRequestStateChange(State.PRESENTING)) {
+                    _WebVRManager.WebVRManager.enterVR(this.manager.defaultDisplay, this.sourceCanvas);
+                }
+            } else if (this.state == State.PRESENTING) {
+                if (this.onRequestStateChange(State.READY_TO_PRESENT)) {
+                    _WebVRManager.WebVRManager.exitVR(this.manager.defaultDisplay);
+                }
+            }
+        }
+
+        /**
+         * @private
+         */
+
+    }, {
+        key: "__onStateChange",
+        value: function __onStateChange(state) {
+            if (state != this.state) {
+                switch (state) {
+                    case State.READY_TO_PRESENT:
+                        this.buttonDom.setTitle("Enter VR");
+                        this.buttonDom.setDescription("");
+                        this.buttonDom.setTooltip("Enter VR using " + this.manager.defaultDisplay.displayName);
+                        if (this.state === State.PRESENTING) {
+                            this.emit("exit");
+                        }
+                        break;
+
+                    case State.PRESENTING:
+                        this.buttonDom.setTitle("Exit VR");
+                        this.buttonDom.setDescription("");
+                        this.emit("enter");
+                        break;
+
+                    // Error states
+                    case State.ERROR_BROWSER_NOT_SUPPORTED:
+                        this.buttonDom.setTitle("Browser not supported", true);
+                        this.buttonDom.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
+                        this.emit("error", new Error(state));
+                        break;
+
+                    case State.ERROR_NO_PRESENTABLE_DISPLAYS:
+                        this.buttonDom.setTitle("Enter VR", true);
+                        this.buttonDom.setDescription("No VR headset found. <a href='http://webvr.info'>Learn more</a>");
+                        this.emit("error", new Error(state));
+                        break;
+
+                    case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
+                        this.buttonDom.setTitle("Enter VR", true);
+                        this.buttonDom.setDescription("Something went wrong trying to start presenting to your headset.");
+                        this.emit("error", new Error(state));
+                        break;
+
+                    case State.ERROR_EXIT_PRESENT_REJECTED:
+                    default:
+                        this.buttonDom.setTitle("Enter VR", true);
+                        this.buttonDom.setDescription("Unknown error.");
+                        this.emit("error", new Error(state));
+                }
+                this.state = state;
+            }
+        }
+    }]);
+
+    return EnterVRButton;
+}(_AbstractButton2.AbstractButton);
+
+},{"./AbstractButton":3,"./WebVRManager":9,"./states":10}],9:[function(_dereq_,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.WebVRManager = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _states = _dereq_("./states");
+
+var State = _interopRequireWildcard(_states);
+
+var _eventemitter = _dereq_("eventemitter3");
+
+var _eventemitter2 = _interopRequireDefault(_eventemitter);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var WebVRManager = exports.WebVRManager = function (_EventEmitter) {
+    _inherits(WebVRManager, _EventEmitter);
+
+    function WebVRManager() {
+        _classCallCheck(this, WebVRManager);
+
+        var _this = _possibleConstructorReturn(this, (WebVRManager.__proto__ || Object.getPrototypeOf(WebVRManager)).call(this));
+
+        _this.state = State.PREPARING;
+
+        _this.checkDisplays();
 
         // Bind vr display present change event to __onVRDisplayPresentChange
         _this.__onVRDisplayPresentChange = _this.__onVRDisplayPresentChange.bind(_this);
@@ -978,39 +1103,59 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
     }
 
     /**
-     * @private
+     * Check if the browser is compatible with WebVR and has headsets.
+     * @returns {Promise<VRDisplay>}
      */
 
 
-    _createClass(EnterVRButton, [{
-        key: "__onClick",
-        value: function __onClick(e) {
+    _createClass(WebVRManager, [{
+        key: "checkDisplays",
+        value: function checkDisplays() {
             var _this2 = this;
 
-            if (this.state == State.READY_TO_PRESENT) {
-                if (this.onRequestStateChange(State.PRESENTING)) {
-                    manager.enterVR(this.display, this.sourceCanvas).then(function () {
-                        return _this2.__setState(State.PRESENTING);
-                    },
-                    //this could fail if:
-                    //1. Display `canPresent` is false
-                    //2. Canvas is invalid
-                    //3. not executed via user interaction
-                    function () {
-                        return _this2.__setState(State.ERROR_REQUEST_TO_PRESENT_REJECTED);
-                    });
+            return WebVRManager.getVRDisplay().then(function (display) {
+                _this2.defaultDisplay = display;
+                _this2.__setState(State.READY_TO_PRESENT);
+                return display;
+            }).catch(function (e) {
+                delete _this2.defaultDisplay;
+                if (e.name == "NO_DISPLAYS") {
+                    _this2.__setState(State.ERROR_NO_PRESENTABLE_DISPLAYS);
+                } else if (e.name == "WEBVR_UNSUPPORTED") {
+                    _this2.__setState(State.ERROR_BROWSER_NOT_SUPPORTED);
+                } else {
+                    _this2.__setState(State.ERROR_UNKOWN);
                 }
-            } else if (this.state == State.PRESENTING) {
-                if (this.onRequestStateChange(State.READY_TO_PRESENT)) {
-                    manager.exitVR(this.display).then(function () {
-                        return _this2.__setState(State.READY_TO_PRESENT);
-                    },
-                    //this could fail if:
-                    //1. exit requested while not currently presenting
-                    function () {
-                        return _this2.__setState(State.ERROR_EXIT_PRESENT_REJECTED);
-                    });
-                }
+            });
+        }
+
+        /**
+         * clean up object for garbage collection
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            window.removeEventListener("vrdisplaypresentchage", this.__onVRDisplayPresentChange);
+            _get(WebVRManager.prototype.__proto__ || Object.getPrototypeOf(WebVRManager.prototype), "remove", this).call(this);
+        }
+
+        /**
+         * returns promise returning list of available VR displays.
+         * @returns Promise<VRDisplay>
+         */
+
+    }, {
+        key: "__setState",
+
+
+        /**
+         * @private
+         */
+        value: function __setState(state) {
+            if (state != this.state) {
+                this.emit('state_change', state, this.state);
+                this.state = state;
             }
         }
 
@@ -1024,137 +1169,102 @@ var EnterVRButton = exports.EnterVRButton = function (_AbstractButton) {
             var isPresenting = this.display && this.display.isPresenting;
             this.__setState(isPresenting ? State.PRESENTING : State.READY_TO_PRESENT);
         }
+    }], [{
+        key: "getVRDisplay",
+        value: function getVRDisplay() {
+            return new Promise(function (resolve, reject) {
+                if (!navigator || !navigator.getVRDisplays) {
+                    var e = new Error("Browser not supporting WebVR");
+                    e.name = "WEBVR_UNSUPPORTED";
+                    reject(e);
+                    return;
+                }
 
-        /**
-         * @private
-         */
+                var rejectNoDisplay = function rejectNoDisplay() {
+                    // No displays are found.
+                    var e = new Error("No displays found");
+                    e.name = "NO_DISPLAYS";
+                    reject(e);
+                };
 
-    }, {
-        key: "__setState",
-        value: function __setState(state) {
-            if (state != this.state) {
-                switch (state) {
-                    case State.READY_TO_PRESENT:
-                        this.buttonDom.setTitle("Enter VR");
-                        this.buttonDom.setDescription("");
-                        this.buttonDom.setTooltip("Enter VR on " + this.display.displayName);
-                        if (this.state === State.PRESENTING) {
-                            this.emit("exit");
+                navigator.getVRDisplays().then(function (displays) {
+                    // Promise succeeds, but check if there are any displays actually.
+                    for (var i = 0; i < displays.length; i++) {
+                        console.log(displays[i]);
+                        if (displays[i].capabilities.canPresent) {
+                            resolve(displays[i]);
+                            break;
                         }
-                        break;
+                    }
 
-                    case State.PRESENTING:
-                        this.buttonDom.setTitle("Exit VR");
-                        this.buttonDom.setDescription("");
-                        this.emit("enter");
-                        break;
-
-                    //all errors fall-through to default, no break
-                    case State.ERROR_BROWSER_NOT_SUPPORTED:
-                        this.buttonDom.setTitle("Browser not supported", true);
-                        this.buttonDom.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
-
-                    case State.ERROR_NO_PRESENTABLE_DISPLAYS:
-                        this.buttonDom.setTitle("Enter VR", true);
-                        this.buttonDom.setDescription("No VR headset found. <a href='http://webvr.info'>Learn more</a>");
-
-                    case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
-                        this.buttonDom.setTitle("Enter VR", true);
-                        this.buttonDom.setDescription("Something went wrong trying to start presenting to your headset.");
-
-                    case State.ERROR_EXIT_PRESENT_REJECTED:
-                    default:
-                        this.emit("error", new Error(state));
-                }
-
-                this.emit("change", state, this.state);
-                this.state = state;
-            }
+                    rejectNoDisplay();
+                }, rejectNoDisplay);
+            });
         }
 
         /**
-         * clean up object for garbage collection
+         * Enter presentation mode with your set VR display
          */
 
     }, {
-        key: "remove",
-        value: function remove() {
-            window.removeEventListener("vrdisplaypresentchage", this.__onVRDisplayPresentChange);
-            this.domElement.removeEventListener("click", this.__onClick);
-            _get(EnterVRButton.prototype.__proto__ || Object.getPrototypeOf(EnterVRButton.prototype), "remove", this).call(this);
+        key: "enterVR",
+        value: function enterVR(display, canvas) {
+            var _this3 = this;
+
+            return display.requestPresent([{
+                source: canvas
+            }]).then(function () {
+                return _this3.__setState(State.PRESENTING);
+            },
+            //this could fail if:
+            //1. Display `canPresent` is false
+            //2. Canvas is invalid
+            //3. not executed via user interaction
+            function () {
+                return _this3.__setState(State.ERROR_REQUEST_TO_PRESENT_REJECTED);
+            });
+        }
+    }, {
+        key: "exitVR",
+        value: function exitVR(display) {
+            var _this4 = this;
+
+            return display.exitPresent().then(function () {
+                return _this4.__setState(State.READY_TO_PRESENT);
+            },
+            //this could fail if:
+            //1. exit requested while not currently presenting
+            function () {
+                return _this4.__setState(State.ERROR_EXIT_PRESENT_REJECTED);
+            });
         }
     }]);
 
-    return EnterVRButton;
-}(_AbstractButton2.AbstractButton);
+    return WebVRManager;
+}(_eventemitter2.default);
 
-},{"./AbstractButton":3,"./WebVRManager":9,"./states":10}],9:[function(_dereq_,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-/**
-* Promise returns true if there is at least one HMD device available.
- * @returns Promise<VRDisplay>
-*/
-var getVRDisplay = exports.getVRDisplay = function getVRDisplay() {
-    return new Promise(function (resolve, reject) {
-        if (!navigator || !navigator.getVRDisplays) {
-            var e = new Error("Browser not supporting WebVR");
-            e.name = "WEBVR_UNSUPPORTED";
-            reject(e);
-            return;
-        }
-
-        var rejectNoDisplay = function rejectNoDisplay() {
-            // No displays are found.
-            var e = new Error("No displays found");
-            e.name = "NO_DISPLAYS";
-            reject(e);
-        };
-
-        navigator.getVRDisplays().then(function (displays) {
-            // Promise succeeds, but check if there are any displays actually.
-            for (var i = 0; i < displays.length; i++) {
-                console.log(displays[i]);
-                if (displays[i].capabilities.canPresent) {
-                    resolve(displays[i]);
-                    break;
-                }
-            }
-
-            rejectNoDisplay();
-        }, rejectNoDisplay);
-    });
-};
-
-/**
- * Enter presentation mode with your set VR display
- */
-var enterVR = exports.enterVR = function enterVR(display, canvas) {
-    return display.requestPresent([{
-        source: canvas
-    }]);
-};
-
-var exitVR = exports.exitVR = function exitVR(display) {
-    return display.exitPresent();
-};
-
-},{}],10:[function(_dereq_,module,exports){
+},{"./states":10,"eventemitter3":1}],10:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+// Not yet presenting, but ready to present
 var READY_TO_PRESENT = exports.READY_TO_PRESENT = "ready";
+
+// In presentation mode
 var PRESENTING = exports.PRESENTING = "presenting";
+
+// Checking device availability
+var PREPARING = exports.PREPARING = "preparing";
+
+// Errors
 var ERROR_NO_PRESENTABLE_DISPLAYS = exports.ERROR_NO_PRESENTABLE_DISPLAYS = "error-no-presentable-displays";
 var ERROR_BROWSER_NOT_SUPPORTED = exports.ERROR_BROWSER_NOT_SUPPORTED = "error-browser-not-supported";
 var ERROR_REQUEST_TO_PRESENT_REJECTED = exports.ERROR_REQUEST_TO_PRESENT_REJECTED = "error-request-to-present-rejected";
 var ERROR_EXIT_PRESENT_REJECTED = exports.ERROR_EXIT_PRESENT_REJECTED = "error-exit-present-rejected";
+
+var ERROR_UNKOWN = exports.ERROR_UNKOWN = "error-unkown";
 
 },{}],11:[function(_dereq_,module,exports){
 "use strict";
@@ -1166,7 +1276,7 @@ exports.webvrui = undefined;
 
 var _WebVRManager = _dereq_("./WebVRManager");
 
-var manager = _interopRequireWildcard(_WebVRManager);
+var _WebVRManager2 = _interopRequireDefault(_WebVRManager);
 
 var _states = _dereq_("./states");
 
@@ -1182,12 +1292,14 @@ _dereq_("./AframeComponent");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var webvrui = exports.webvrui = {
     EnterVRButton: _EnterVRButton.EnterVRButton,
     Enter360Button: _Enter360Button.Enter360Button,
     AbstractButton: _AbstractButton.AbstractButton,
     State: State,
-    manager: manager
+    WebVRManager: _WebVRManager2.default
 };
 
 window.webvrui = webvrui;
