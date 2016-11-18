@@ -819,9 +819,9 @@ var Enter360Button = exports.Enter360Button = function (_AbstractButton) {
         _this.__onChangeFullscreen = _this.__onChangeFullscreen.bind(_this);
         _this.domElement.addEventListener("click", _this.__onClick);
 
-        // TODO: Disabled for now, fails on iOS
-        // console.log(screenfull.raw.fullscreenchange);
-        // document.addEventListener(screenfull.raw.fullscreenchange, this.__onChangeFullscreen);
+        if (_screenfull2.default.enabled) {
+            document.addEventListener(_screenfull2.default.raw.fullscreenchange, _this.__onChangeFullscreen);
+        }
         return _this;
     }
 
@@ -895,7 +895,9 @@ var Enter360Button = exports.Enter360Button = function (_AbstractButton) {
         key: "remove",
         value: function remove() {
             this.domElement.removeEventListener('click', this.__onClick);
-            document.removeEventListener(_screenfull2.default.raw.fullscreenchanged, this.__onChangeFullscreen);
+            if (_screenfull2.default.enabled) {
+                document.removeEventListener(_screenfull2.default.raw.fullscreenchanged, this.__onChangeFullscreen);
+            }
             _get(Enter360Button.prototype.__proto__ || Object.getPrototypeOf(Enter360Button.prototype), "remove", this).call(this);
         }
     }]);
