@@ -36,7 +36,7 @@
             transform: translate(-50%, -50%);
         }
 
-        #entervr-button {
+        #webvr-ui {
             margin-top: 40px;
         }
 
@@ -49,19 +49,11 @@
     <h1>WebVR UI Example</h1>
     <p>Example showing how to enter VR and 360 mode. </p>
     <p>Library and design is still work in progress.</p>
-    <div id="entervr-button"></div>
-    <div id="enter360-button"></div>
-
 
 </div>
 
 </body>
 
-<script>
-    WebVRConfig = {
-        DEFER_INITIALIZATION: true
-    }
-</script>
 
 <!-- three.js library -->
 <script src="node_modules/three/build/three.js"></script>
@@ -80,35 +72,29 @@
 
 
 <script>
-    window.InitializeWebVRPolyfill();
-
-    // Setup three.js WebGL renderer. 
+    // Setup three.js WebGL renderer.
     var renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio(Math.floor(window.devicePixelRatio));
+
     // Append the canvas element created by the renderer to document body element.
     document.body.appendChild(renderer.domElement);
 
+
     // Create WebVR UI Enter VR Button
-    var enterVR = new webvrui.EnterVRButton(renderer.domElement, {})
-        .on("enter", function(){ console.log("enter VR") })
+    var options = {
+        add360Link: true
+    }
+    var enterVR = new webvrui.EnterVRButton(renderer.domElement, options)
+        .on("enter", function(isVR, hasOrientation){ console.log("enter VR") })
         .on("exit", function(){
-            console.log("exit VR")
+            console.log("exit VR");
             camera.quaternion.set(0,0,0,1);
-            camera.position.set(0,controls.userHeight,0)
+            camera.position.set(0,controls.userHeight,0);
         });
 
-    document.getElementById("entervr-button").appendChild(enterVR.domElement);
+    document.getElementById("ui").appendChild(enterVR.domElement);
 
-    // Create WebVR UI Enter 360 Button
-    var enter360 = new webvrui.Enter360Button(renderer.domElement)
-        .on("enter", function(){ console.log("enter 360") })
-        .on("exit", function(){
-            console.log("exit 360");
-            camera.quaternion.set(0,0,0,1);
-            camera.position.set(0,controls.userHeight,0)
-        });
 
-    document.getElementById("enter360-button").appendChild(enter360.domElement);
 
 
     // Create a three.js scene.
@@ -159,7 +145,7 @@
         // Apply rotation to cube mesh
         cube.rotation.y += delta * 0.0003;
         
-        if(enter360.state == webvrui.State.PRESENTING || enterVR.state == webvrui.State.PRESENTING){
+        if(enterVR.state == webvrui.State.PRESENTING){
             controls.update();
             renderer.render(scene,camera);
             effect.render(scene, camera);

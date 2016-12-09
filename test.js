@@ -1,29 +1,17 @@
 import test from 'tape';
 
 import { DefaultButtonDom } from './src/DefaultButtonDom';
-import { AbstractButtonDom } from './src/AbstractButtonDom';
 import * as manager from './src/WebVRManager';
 
 
 const tFn = (t, fn)=> t.equal(typeof fn, 'function');
 
-test('AbstractButtonDom', (t)=>{
-    
-    t.plan(4);
-    
-    const abd = new AbstractButtonDom(document.createElement('div'));
-    t.ok(abd.domElement instanceof HTMLElement)
-    tFn(t, abd.setTitle);
-    tFn(t, abd.setDescription);
-    tFn(t, abd.injectCSS);
-});
 
 test('DefaultButtonDom', (t)=>{
     
     t.plan(5);
     
     const bd = new DefaultButtonDom(40, 'VR');
-    t.ok(bd instanceof AbstractButtonDom);
     t.ok(bd.domElement instanceof HTMLElement);
     t.ok(bd.domElement.querySelector('.webvr-ui-button-title') instanceof HTMLElement);
     t.ok(bd.domElement.querySelector('.webvr-ui-button-button') instanceof HTMLElement);

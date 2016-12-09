@@ -1,5 +1,6 @@
 import * as State from "./states";
 import EventEmitter from "eventemitter3";
+import screenfull from "screenfull";
 
 
 export class WebVRManager extends EventEmitter {
@@ -13,6 +14,12 @@ export class WebVRManager extends EventEmitter {
         // Bind vr display present change event to __onVRDisplayPresentChange
         this.__onVRDisplayPresentChange = this.__onVRDisplayPresentChange.bind(this);
         window.addEventListener("vrdisplaypresentchange", this.__onVRDisplayPresentChange);
+
+        this.__onChangeFullscreen = this.__onChangeFullscreen.bind(this);
+        if(screenfull.enabled){
+            document.addEventListener(screenfull.raw.fullscreenchange, this.__onChangeFullscreen);
+        }
+
     }
 
     /**
@@ -43,6 +50,10 @@ export class WebVRManager extends EventEmitter {
      */
     remove(){
         window.removeEventListener("vrdisplaypresentchage", this.__onVRDisplayPresentChange);
+        if(screenfull.enabled){
+            document.removeEventListener(screenfull.raw.fullscreenchanged, this.__onChangeFullscreen);
+        }
+
         super.remove();
     }
 
@@ -111,6 +122,23 @@ export class WebVRManager extends EventEmitter {
             );
     }
 
+    /**
+     * Enter 360 mode
+     */
+
+    enter360(canvas) {
+        if(screenfull.enabled){
+            screenfull.request(canvas);
+        }
+        return true;
+    };
+
+    exit360() {
+        if(screenfull.enabled && screenfull.isFullscreen){
+            screenfull.exit();
+        }
+        return true;
+    };
 
 
 
@@ -124,6 +152,13 @@ export class WebVRManager extends EventEmitter {
         }
     }
 
+    __onChangeFullscreen(e){
+        if(screenfull.isFullscreen){
+            this.__setState(State.PRESENTING);
+        } else {
+            this.checkDisplays();
+        }
+    }
 
     /**
      * @private

@@ -1,31 +1,44 @@
-import {AbstractButtonDom} from "./AbstractButtonDom";
+import EventEmitter from "eventemitter3";
 
 let _WebVRUI_css_injected = false;
 
 
-export class DefaultButtonDom extends AbstractButtonDom {
-    constructor(height, icon){
-        super();
-
+export class DefaultButtonDom extends EventEmitter{
+    constructor(options){
+        super()
         this.cssClassPrefix = "webvr-ui-button";
+        this.domElement = document.createElement("div");
 
-        this.fontSize = height/2.5;
-        this.height = height;
+        this.height = options.height;
+        this.fontSize = this.height/2.5;
 
         let { cssClassPrefix:cls } = this;
         this.domElement.className = cls;
 
-        const svgString = DefaultButtonDom[ "generate" + (icon.toLowerCase() === "vr" ? "VR" : "360") + "Icon"](this.cssClassPrefix + "-svg", this.fontSize);
+        const svgString = DefaultButtonDom.generateVRIcon(this.cssClassPrefix + "-svg", this.fontSize);
 
-        this.domElement.innerHTML = (
+        this.domElement.innerHTML =
             `<button class="${cls}-button" data-disabled="false">
                 <div class="${cls}-title"></div>
                 <div class="${cls}-logo">`+
                     svgString +
                 `</div>
             </button>
-            <div class="${cls}-description" />`
-        );
+            <div class="${cls}-description" />`;
+
+        if(options.add360Link){
+            this.domElement.innerHTML += `
+            <div class="${cls}-enter360"></div>
+            `
+            this._enter360Dom = this.domElement.querySelector("." +this.cssClassPrefix+"-enter360");
+        }
+
+        this._buttonDom = this.domElement.querySelector("." +this.cssClassPrefix+"-button");
+        this._descriptionDom = this.domElement.querySelector("." +this.cssClassPrefix+"-description");
+
+        this._buttonDom.addEventListener("click", ()=> this.emit('entervrClick'));
+        this._enter360Dom.addEventListener("click", ()=> this.emit('enter360Click'));
+
     }
 
 
@@ -44,10 +57,9 @@ export class DefaultButtonDom extends AbstractButtonDom {
     }
 
     setTitle(text, disabled = false){
-        const btn = this.domElement.querySelector("." +this.cssClassPrefix+"-button");
-        const title = this.domElement.querySelector("."+this.cssClassPrefix + "-title");
-        btn.title = text;
-        btn.dataset.disabled = disabled;
+        const title = this._buttonDom.querySelector("."+this.cssClassPrefix + "-title");
+        this._buttonDom.title = text;
+        this._buttonDom.dataset.disabled = disabled;
 
         if(!text){
             title.style.display = "none";
@@ -58,12 +70,15 @@ export class DefaultButtonDom extends AbstractButtonDom {
     }
 
     setTooltip(tooltip){
-        const btn = this.domElement.querySelector("." +this.cssClassPrefix+"-button");
-        btn.title = tooltip;
+        this._buttonDom.title = tooltip;
     }
 
-    setDescription(text){
-        this.domElement.querySelector("."+this.cssClassPrefix + "-description").innerHTML = text;
+    setDescription(html){
+       this._descriptionDom.innerHTML = html;
+    }
+
+    set360Title(html){
+        if(this._enter360Dom) this._enter360Dom.innerText = html;
     }
 
     static generateVRIcon(cssClass, height, fill="#000000"){
@@ -79,7 +94,7 @@ export class DefaultButtonDom extends AbstractButtonDom {
             </svg>`
         );
     }
-
+/*
     static generate360Icon(cssClass, height, fill="#000000"){
         let aspect = 28/18;
         return (
@@ -96,7 +111,7 @@ export class DefaultButtonDom extends AbstractButtonDom {
             C7.4,2,8.2,1.9,9,1.8c0.7-0.1,1.2-0.1,1.6-0.2c0.2,0,0.3,0,0.3,0V0L14,2.9l-3.1,2.9V3.9C10.9,3.9,10.7,3.8,10.5,3.8z"/>
             </svg>`
         );
-    }
+    }*/
 
     static generateCss(prefix, height = 50, fontSize = 18, disabledColor="rgba(255,255,255,0.4)"){
         let borderWidth = 2;
@@ -179,15 +194,20 @@ export class DefaultButtonDom extends AbstractButtonDom {
             * Description
             */
 
-            .${prefix}-description{
+            .${prefix}-description , .${prefix}-enter360{
                 font-size: 13px;
-                margin-top: 5px;
+                margin-top: 15px;
                 margin-bottom: 10px;
 
             }
 
-            .${prefix}-description, a {
+            .${prefix}-description > a {
                 color: white
+            }
+            
+            .${prefix}-enter360 {
+                text-decoration: underline;
+                cursor: pointer;
             }
 
             /*
