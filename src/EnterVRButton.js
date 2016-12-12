@@ -34,7 +34,6 @@ export class EnterVRButton extends EventEmitter  {
 
         this.options = options;
 
-
         this.sourceCanvas = sourceCanvas;
 
         this.buttonClass = options.buttonClass || new DefaultButtonDom(options);
@@ -53,22 +52,22 @@ export class EnterVRButton extends EventEmitter  {
         this.buttonClass.getChild("button").addEventListener("click", this.__onEnterVRClick);
         this.buttonClass.getChild("enter360").addEventListener("click", this.__onEnter360Click);
 
-        // Create wrapper DOM
-        this.domElement = document.createElement("div");
+        this.buttonClass.setTitle(this.options.textEnterVRTitle);
+        this.buttonClass.set360Title(this.options.text360Title);
+    }
 
-        // Add button to wrapper DOM
-        this.domElement.appendChild(this.buttonClass.domElement)
-
-        this.buttonClass.setTitle(this.options.textEnterVRTitle)
-        this.buttonClass.set360Title(this.options.text360Title)
+    get domElement(){
+        return this.buttonClass.domElement;
     }
 
     show(){
-        this.domElement.style.display = 'inherit';
+        this.domElement.style.display = "inherit";
+        return this;
     }
 
     hide(){
-        this.domElement.style.display = 'none';
+        this.domElement.style.display = "none";
+        return this;
     }
 
     /**

@@ -49,12 +49,12 @@ export class WebVRManager extends EventEmitter {
      * clean up object for garbage collection
      */
     remove(){
-        window.removeEventListener("vrdisplaypresentchage", this.__onVRDisplayPresentChange);
+        window.removeEventListener("vrdisplaypresentchange", this.__onVRDisplayPresentChange);
         if(screenfull.enabled){
             document.removeEventListener(screenfull.raw.fullscreenchanged, this.__onChangeFullscreen);
         }
 
-        super.remove();
+        this.removeAllListeners();
     }
 
     /**
