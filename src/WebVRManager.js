@@ -147,7 +147,7 @@ export class WebVRManager extends EventEmitter {
      */
     __setState(state) {
         if (state != this.state) {
-            this.emit('state_change', state, this.state );
+            this.emit("change", state, this.state );
             this.state = state;
         }
     }

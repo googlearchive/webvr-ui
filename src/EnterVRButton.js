@@ -45,7 +45,7 @@ export class EnterVRButton extends EventEmitter  {
 
         // Create WebVR Manager
         this.manager = new WebVRManager();
-        this.manager.addListener('state_change', (state)=> this.__onStateChange(state))
+        this.manager.addListener("change", (state)=> this.__onStateChange(state))
 
         // Bind button click events to __onClick
         this.__onEnterVRClick = this.__onEnterVRClick.bind(this);
@@ -55,7 +55,6 @@ export class EnterVRButton extends EventEmitter  {
 
         // Create wrapper DOM
         this.domElement = document.createElement("div");
-        this.domElement.setAttribute('id','webvr-ui');
 
         // Add button to wrapper DOM
         this.domElement.appendChild(this.buttonClass.domElement)
@@ -130,7 +129,7 @@ export class EnterVRButton extends EventEmitter  {
                         this.buttonClass.setTooltip("Enter VR using "+this.manager.defaultDisplay.displayName);
                     this.buttonClass.set360Title(this.options.text360Title);
                     break;
-                
+
                 case State.PRESENTING:
                     this.hide();
                     this.buttonClass.setTitle(this.options.textExitVRTitle);
