@@ -1,15 +1,12 @@
-import EventEmitter from "eventemitter3";
-
 let _WebVRUI_css_injected = false;
 
-const cssPrefix = "webvr-ui-button";
+const cssPrefix = "webvr-ui";
 
 
 
 
-export class DefaultButtonDom extends EventEmitter{
+export class DefaultButtonDom {
     constructor(options){
-        super()
         this.domElement = document.createElement("div");
 
         this.domElement.className = cssPrefix;
