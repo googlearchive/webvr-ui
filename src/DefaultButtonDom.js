@@ -46,7 +46,7 @@ export class DefaultButtonDom extends EventEmitter{
         const button = this.getChild("button");
         const title = this.getChild("title");
         button.title = text;
-        button.dataset.disabled = disabled;
+        button.setAttribute("disabled", disabled);
 
         if(!text){
             title.style.display = "none";
@@ -76,7 +76,7 @@ export class DefaultButtonDom extends EventEmitter{
         const svgString = DefaultButtonDom.generateVRIcon(cssPrefix + "-svg", fontSize);
 
         return `
-            <button class="${cssPrefix}-button" data-disabled="false">
+            <button class="${cssPrefix}-button">
               <div class="${cssPrefix}-title"></div>
               <div class="${cssPrefix}-logo">${svgString}</div>
             </button>
@@ -218,22 +218,22 @@ export class DefaultButtonDom extends EventEmitter{
             * disabled
             */
 
-            button.${prefix}-button[data-disabled=true] {
+            button.${prefix}-button[disabled=true] {
                 border-color: ${disabledColor};
             }
-            button.${prefix}-button[data-disabled=true] > .${prefix}-logo {
+            button.${prefix}-button[disabled=true] > .${prefix}-logo {
                 background-color: ${disabledColor};
                 top:0;
                 left:0;
                 width: ${height-4}px;
                 height: ${height-4}px;
             }
-            button.${prefix}-button[data-disabled=true] > .${prefix}-logo > svg {
+            button.${prefix}-button[disabled=true] > .${prefix}-logo > svg {
                 margin-top: ${(height - fontSize) / 2 - 2}px;
                 margin-left: -2px;
             }
             
-            button.${prefix}-button[data-disabled=true] > .${prefix}-title {
+            button.${prefix}-button[disabled=true] > .${prefix}-title {
                 color: ${disabledColor};
             }
 
