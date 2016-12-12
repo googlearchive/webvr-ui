@@ -2,43 +2,29 @@ import EventEmitter from "eventemitter3";
 
 let _WebVRUI_css_injected = false;
 
+const cssPrefix = "webvr-ui-button";
+
+
+
 
 export class DefaultButtonDom extends EventEmitter{
     constructor(options){
         super()
-        this.cssClassPrefix = "webvr-ui-button";
         this.domElement = document.createElement("div");
 
+        this.domElement.className = cssPrefix;
         this.height = options.height;
-        this.fontSize = this.height/2.5;
+        this.fontSize = this.height / 2.5;
 
-        let { cssClassPrefix:cls } = this;
-        this.domElement.className = cls;
+        this.domElement.innerHTML = DefaultButtonDom.generateHTML(this.fontSize);
 
-        const svgString = DefaultButtonDom.generateVRIcon(this.cssClassPrefix + "-svg", this.fontSize);
-
-        this.domElement.innerHTML =
-            `<button class="${cls}-button" data-disabled="false">
-                <div class="${cls}-title"></div>
-                <div class="${cls}-logo">`+
-                    svgString +
-                `</div>
-            </button>
-            <div class="${cls}-description" />`;
-
-        if(options.add360Link){
-            this.domElement.innerHTML += `
-            <div class="${cls}-enter360"></div>
-            `
-            this._enter360Dom = this.domElement.querySelector("." +this.cssClassPrefix+"-enter360");
+        if(!options.add360Link){
+            this.getChild("enter360").style.display = "none";
         }
+    }
 
-        this._buttonDom = this.domElement.querySelector("." +this.cssClassPrefix+"-button");
-        this._descriptionDom = this.domElement.querySelector("." +this.cssClassPrefix+"-description");
-
-        this._buttonDom.addEventListener("click", ()=> this.emit('entervrClick'));
-        this._enter360Dom.addEventListener("click", ()=> this.emit('enter360Click'));
-
+    getChild(suffix){
+        return this.domElement.querySelector("."+cssPrefix+"-"+suffix);
     }
 
 
@@ -49,7 +35,7 @@ export class DefaultButtonDom extends EventEmitter{
 
             // Create the css
             const style = document.createElement("style");
-            style.innerHTML = DefaultButtonDom.generateCss(this.cssClassPrefix , this.height, this.fontSize);
+            style.innerHTML = DefaultButtonDom.generateCss(cssPrefix , this.height, this.fontSize);
 
             var head = document.getElementsByTagName("head")[0];
             head.insertBefore(style,head.firstChild);
@@ -57,9 +43,10 @@ export class DefaultButtonDom extends EventEmitter{
     }
 
     setTitle(text, disabled = false){
-        const title = this._buttonDom.querySelector("."+this.cssClassPrefix + "-title");
-        this._buttonDom.title = text;
-        this._buttonDom.dataset.disabled = disabled;
+        const button = this.getChild("button");
+        const title = this.getChild("title");
+        button.title = text;
+        button.dataset.disabled = disabled;
 
         if(!text){
             title.style.display = "none";
@@ -70,16 +57,33 @@ export class DefaultButtonDom extends EventEmitter{
     }
 
     setTooltip(tooltip){
-        this._buttonDom.title = tooltip;
+        const button = this.getChild("button");
+        button.title = tooltip;
     }
 
     setDescription(html){
-       this._descriptionDom.innerHTML = html;
+        const descrip = this.getChild("description");
+       descrip.innerHTML = html;
     }
 
     set360Title(html){
-        if(this._enter360Dom) this._enter360Dom.innerText = html;
+        const threeSixty = this.getChild("enter360");
+        threeSixty.innerText = html;
     }
+
+    static generateHTML(fontSize){
+
+        const svgString = DefaultButtonDom.generateVRIcon(cssPrefix + "-svg", fontSize);
+
+        return `
+            <button class="${cssPrefix}-button" data-disabled="false">
+              <div class="${cssPrefix}-title"></div>
+              <div class="${cssPrefix}-logo">${svgString}</div>
+            </button>
+            <div class="${cssPrefix}-description"></div>
+            <div class="${cssPrefix}-enter360"></div>`;
+    }
+
 
     static generateVRIcon(cssClass, height, fill="#000000"){
         let aspect = 28/18;

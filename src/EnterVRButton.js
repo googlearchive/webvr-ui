@@ -50,8 +50,8 @@ export class EnterVRButton extends EventEmitter  {
         // Bind button click events to __onClick
         this.__onEnterVRClick = this.__onEnterVRClick.bind(this);
         this.__onEnter360Click = this.__onEnter360Click .bind(this);
-        this.buttonClass.on("entervrClick", this.__onEnterVRClick);
-        this.buttonClass.on("enter360Click", this.__onEnter360Click);
+        this.buttonClass.getChild("button").addEventListener("click", this.__onEnterVRClick);
+        this.buttonClass.getChild("enter360").addEventListener("click", this.__onEnter360Click);
 
         // Create wrapper DOM
         this.domElement = document.createElement("div");
