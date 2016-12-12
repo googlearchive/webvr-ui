@@ -30,7 +30,7 @@ export class EnterVRButton extends EventEmitter  {
 
         options.textEnterVRTitle = options.textEnterVRTitle || 'Enter VR';
         options.textExitVRTitle = options.textExitVRTitle   || 'Exit VR';
-        options.text360Title = options.text360Title         || 'Or try it in 360 mode.';
+        options.text360Title = options.text360Title         || 'or try it in 360° mode';
 
         this.options = options;
 
