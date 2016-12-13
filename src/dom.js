@@ -36,7 +36,7 @@ const generateInnerHTML = (fontSize)=>{
           <div class="${cssPrefix}-title"></div>
           <div class="${cssPrefix}-logo">${svgString}</div>
         </button>
-        <div class="${cssPrefix}-description"></div>`;
+        `;
 };
 
 /**
@@ -137,7 +137,6 @@ export const generateCSS = (height=50, fontSize=18, disabledColor="rgba(255,255,
             display: inline-block;
             position: relative;
 
-            margin-top: 8px;
 
             cursor: pointer;
 
@@ -207,12 +206,13 @@ export const generateCSS = (height=50, fontSize=18, disabledColor="rgba(255,255,
         }
         button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-logo {
             background-color: ${disabledColor};
+            background-color: ${disabledColor};
             top:0;
             left:0;
             width: ${height-4}px;
             height: ${height-4}px;
         }
-        button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-svg {
+        button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-logo > .${cssPrefix}-svg {
             margin-top: ${(height - fontSize) / 2 - 2}px;
             margin-left: -2px;
         }

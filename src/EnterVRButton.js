@@ -45,14 +45,12 @@ export class EnterVRButton extends EventEmitter  {
      * @constructor
      * @param {HTMLCanvasElement} sourceCanvas the canvas that you want to present in WebVR
      * @param {Object} [options] optional parameters
-     * @param {boolean} [options.add360link=true] set to false if you don't wish to offer a 360 mode fallback
      * @param {Number} [options.height=35] specify the height of the button
      * @param {HTMLElement} [options.domElement] provide your own domElement to bind to
      * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
      * @param {Function} [options.onRequestStateChange] set to a function returning false to prevent default state changes
      * @param {string} [options.textEnterVRTitle] set the text for Enter VR
      * @param {string} [options.textExitVRTitle] set the text for exiting VR
-     * @param {string} [options.text360Title] set the text for trying 360 mode
      */
     constructor(sourceCanvas, options){
         super();
@@ -64,8 +62,8 @@ export class EnterVRButton extends EventEmitter  {
         options.onRequestStateChange = options.onRequestStateChange || (() => true);
 
         options.textEnterVRTitle = options.textEnterVRTitle || 'Enter VR';
+        options.textVRNotFoundTitle = options.textVRNotFoundTitle || 'VR Not Found';
         options.textExitVRTitle = options.textExitVRTitle   || 'Exit VR';
-        options.text360Title = options.text360Title         || 'Try it in 360°';
 
         this.options = options;
 
@@ -74,29 +72,19 @@ export class EnterVRButton extends EventEmitter  {
         //pass in your own domElement if you really dont want to use ours
         this.domElement = options.domElement || createView(options.height, options.injectCSS);
 
-        if(!options.add360Link){
-            ifChild(this.domElement, "enter360", (el)=> el.style.display = "none");
-        }
-
         // Create WebVR Manager
         this.manager = new WebVRManager();
         this.manager.addListener("change", (state)=> this.__onStateChange(state))
 
         // Bind button click events to __onClick
         this.__onEnterVRClick = this.__onEnterVRClick.bind(this);
-        this.__onEnter360Click = this.__onEnter360Click .bind(this);
         const button = child(this.domElement, "button");
         if(!button){
             throw new Error(`No ${cssPrefix}-button found in DOM`);
         }
         button.addEventListener("click", this.__onEnterVRClick);
 
-        ifChild(this.domElement, "enter360", (el)=>
-          el.addEventListener("click", this.__onEnter360Click)
-        );
-
         this.setTitle(this.options.textEnterVRTitle);
-        this.set360Title(this.options.text360Title);
     }
 
 
@@ -123,11 +111,6 @@ export class EnterVRButton extends EventEmitter  {
         return this;
     }
 
-    setDescription(html){
-        ifChild(this.domElement, "description", (descrip)=> descrip.innerHTML = html);
-        return this;
-    }
-
     show(){
         this.domElement.style.display = "inherit";
         return this;
@@ -149,34 +132,43 @@ export class EnterVRButton extends EventEmitter  {
         }
     }
 
+
+    requestEnterVR(){
+        if(this.options.onRequestStateChange(State.PRESENTING)) {
+            return this.manager.enterVR(this.manager.defaultDisplay, this.sourceCanvas)
+        }
+    }
+
+    requetsExitVR(){
+        if(this.options.onRequestStateChange(State.READY_TO_PRESENT)) {
+            this.manager.exitVR(this.manager.defaultDisplay)
+        }
+    }
+
+    requestEnter360(){
+        if(this.options.onRequestStateChange(State.PRESENTING_360)) {
+            return this.manager.enter360(this.sourceCanvas)
+        }
+    }
+
+    requestExit360(){
+        if(this.options.onRequestStateChange(State.READY_TO_PRESENT)) {
+            return this.manager.exit360()
+        }
+    }
+
     /**
      * @private
      * Handling click event from button
      */
     __onEnterVRClick(){
+        console.log("ASDASDA");
         if(this.state == State.READY_TO_PRESENT){
-            if(this.options.onRequestStateChange(State.PRESENTING)) {
-                this.manager.enterVR(this.manager.defaultDisplay, this.sourceCanvas)
-            }
+            this.requestEnterVR();
         } else if(this.state == State.PRESENTING) {
-            if(this.options.onRequestStateChange(State.READY_TO_PRESENT)) {
-                this.manager.exitVR(this.manager.defaultDisplay)
-            }
+            this.requetsExitVR();
         }
     }
-
-    __onEnter360Click(){
-        if(this.state != State.PRESENTING){
-            if(this.options.onRequestStateChange(State.PRESENTING)) {
-                this.manager.enter360(this.sourceCanvas)
-            }
-        } else if(this.state == State.PRESENTING) {
-            if(this.options.onRequestStateChange(State.READY_TO_PRESENT)) {
-                this.manager.exit360()
-            }
-        }
-    }
-
 
     /**
      * @private
@@ -191,46 +183,44 @@ export class EnterVRButton extends EventEmitter  {
                 case State.READY_TO_PRESENT:
                     this.show();
                     this.setTitle(this.options.textEnterVRTitle);
-                    this.setDescription("Get your headset ready. <a href='http://webvr.info' target='_blank'>Learn more.</a>");
                     if(this.manager.defaultDisplay)
                         this.setTooltip("Enter VR using "+this.manager.defaultDisplay.displayName);
-                    this.set360Title(this.options.text360Title);
                     break;
 
                 case State.PRESENTING:
+                case State.PRESENTING_360:
                     this.hide();
                     this.setTitle(this.options.textExitVRTitle);
-                    this.setDescription("");
                     this.emit("enter");
                     break;
 
                 // Error states
                 case State.ERROR_BROWSER_NOT_SUPPORTED:
                     this.show();
-                    this.setTitle("Browser not supported", true);
-                    this.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
+                    this.setTitle(this.options.textVRNotFoundTitle, true);
+                    this.setTooltip("Browser not supported", true);
                     this.emit("error", new Error(state));
                     break;
 
                 case State.ERROR_NO_PRESENTABLE_DISPLAYS:
                     this.show();
-                    this.setTitle(this.options.textEnterVRTitle, true);
-                    this.setDescription("No VR headset found. <a href='http://webvr.info'>Learn more</a>");
+                    this.setTitle(this.options.textVRNotFoundTitle, true);
+                    this.setTooltip("No VR headset found.");
                     this.emit("error", new Error(state));
                     break;
 
                 case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
                     this.show();
-                    this.setTitle(this.options.textEnterVRTitle, true);
-                    this.setDescription("Something went wrong trying to start presenting to your headset.");
+                    this.setTitle(this.options.textVRNotFoundTitle, true);
+                    this.setTooltip("Something went wrong trying to start presenting to your headset.");
                     this.emit("error", new Error(state));
                     break;
 
                 case State.ERROR_EXIT_PRESENT_REJECTED:
                 default:
                     this.show();
-                    this.setTitle(this.options.textEnterVRTitle, true);
-                    this.setDescription("Unknown error.");
+                    this.setTitle(this.options.textVRNotFoundTitle, true);
+                    this.setTooltip("Unknown error.");
                     this.emit("error", new Error(state));
             }
             this.state = state;
