@@ -3,11 +3,9 @@ import * as State from "./states";
 import { EnterVRButton } from "./EnterVRButton";
 import  "./AframeComponent";
 
-export var webvrui = 
-{
+export {
     EnterVRButton,
     State,
     WebVRManager
 };
 
-window.webvrui = webvrui;

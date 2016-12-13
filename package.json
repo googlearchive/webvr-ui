@@ -7,8 +7,8 @@
     "Jonas Jongejan <jonas@halfdanj.dk>"
   ],
   "scripts": {
-    "build": "browserify src/webvr-ui.js  | derequire > build/webvr-ui.js",
-    "start": "budo src/webvr-ui.js:build/webvr-ui.js --live --verbose --port 3000 --host localhost",
+    "build": "browserify src/webvr-ui.js --standalone webvrui | derequire > build/webvr-ui.js",
+    "start": "budo src/webvr-ui.js:build/webvr-ui.js --live --verbose --port 3000 --host localhost -- --standalone webvrui",
     "prepublish": "npm run build"
   },
   "dependencies": {
@@ -19,10 +19,9 @@
     "babel-preset-es2015": "^6.16.0",
     "babelify": "^7.3.0",
     "browserify": "^13.1.0",
-    "derequire": "^2.0.3",
     "budo": "^9.2.1",
-    "tape": "^4.6.2",
-    "watchify": "^3.7.0"
+    "derequire": "^2.0.3",
+    "tape": "^4.6.2"
   },
   "keywords": [
     "vr",
