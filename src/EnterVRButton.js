@@ -1,7 +1,24 @@
 import {WebVRManager} from "./WebVRManager";
-import { DefaultButtonDom } from "./DefaultButtonDom";
+import { cssPrefix, createView  } from "./dom";
 import * as State from "./states";
 import EventEmitter from "eventemitter3";
+
+
+const child = (el, suffix)=>
+    el.querySelector("."+cssPrefix+"-"+suffix);
+
+/**
+ * @private
+ * if ".webvr-ui-${suffix}" exists,
+ * pass it to the function provided for manipulation.
+ * @param el
+ * @param suffix
+ * @param fn
+ */
+const ifChild = (el, suffix, fn)=>{
+    const c = child(el, suffix);
+    c && fn(c);
+};
 
 /**
  * A button to allow easy-entry and messaging around a WebVR experience
@@ -36,10 +53,11 @@ export class EnterVRButton extends EventEmitter  {
 
         this.sourceCanvas = sourceCanvas;
 
-        this.buttonClass = options.buttonClass || new DefaultButtonDom(options);
+        this.domElement = createView(options.height, options.injectCSS);
 
-        if(options.injectCSS && this.buttonClass.injectCSS) {
-            this.buttonClass.injectCSS();
+
+        if(!options.add360Link){
+            ifChild(this.domElement, "enter360", (el)=> el.style.display = "none");
         }
 
         // Create WebVR Manager
@@ -49,15 +67,52 @@ export class EnterVRButton extends EventEmitter  {
         // Bind button click events to __onClick
         this.__onEnterVRClick = this.__onEnterVRClick.bind(this);
         this.__onEnter360Click = this.__onEnter360Click .bind(this);
-        this.buttonClass.getChild("button").addEventListener("click", this.__onEnterVRClick);
-        this.buttonClass.getChild("enter360").addEventListener("click", this.__onEnter360Click);
+        const button = child(this.domElement, "button");
+        if(!button){
+            throw new Error(`No ${cssPrefix}-button found in DOM`);
+        }
+        button.addEventListener("click", this.__onEnterVRClick);
 
-        this.buttonClass.setTitle(this.options.textEnterVRTitle);
-        this.buttonClass.set360Title(this.options.text360Title);
+        ifChild(this.domElement, "enter360", (el)=>
+          el.addEventListener("click", this.__onEnter360Click)
+        );
+
+        this.setTitle(this.options.textEnterVRTitle);
+        this.set360Title(this.options.text360Title);
     }
 
-    get domElement(){
-        return this.buttonClass.domElement;
+
+    setTitle(text, disabled = false){
+        ifChild(this.domElement,"button", (button)=>{
+            button.title = text;
+            button.setAttribute("disabled", disabled);
+        });
+
+        ifChild(this.domElement,"title", (title)=>{
+            if(!text){
+                title.style.display = "none";
+            } else {
+                title.innerText = text;
+                title.style.display = "inherit";
+            }
+        });
+
+        return this;
+    }
+
+    setTooltip(tooltip) {
+        ifChild(this.domElement, "button", (button)=> button.title = tooltip);
+        return this;
+    }
+
+    setDescription(html){
+        ifChild(this.domElement, "description", (descrip)=> descrip.innerHTML = html);
+        return this;
+    }
+
+    set360Title(html){
+        ifChild(this.domElement,"enter360", (el)=> el.innerHTML = html);
+        return this;
     }
 
     show(){
@@ -122,47 +177,47 @@ export class EnterVRButton extends EventEmitter  {
             switch (state) {
                 case State.READY_TO_PRESENT:
                     this.show();
-                    this.buttonClass.setTitle(this.options.textEnterVRTitle);
-                    this.buttonClass.setDescription("Get your headset ready. <a href='http://webvr.info' target='_blank'>Learn more.</a>");
+                    this.setTitle(this.options.textEnterVRTitle);
+                    this.setDescription("Get your headset ready. <a href='http://webvr.info' target='_blank'>Learn more.</a>");
                     if(this.manager.defaultDisplay)
-                        this.buttonClass.setTooltip("Enter VR using "+this.manager.defaultDisplay.displayName);
-                    this.buttonClass.set360Title(this.options.text360Title);
+                        this.setTooltip("Enter VR using "+this.manager.defaultDisplay.displayName);
+                    this.set360Title(this.options.text360Title);
                     break;
 
                 case State.PRESENTING:
                     this.hide();
-                    this.buttonClass.setTitle(this.options.textExitVRTitle);
-                    this.buttonClass.setDescription("");
+                    this.setTitle(this.options.textExitVRTitle);
+                    this.setDescription("");
                     this.emit("enter");
                     break;
 
                 // Error states
                 case State.ERROR_BROWSER_NOT_SUPPORTED:
                     this.show();
-                    this.buttonClass.setTitle("Browser not supported", true);
-                    this.buttonClass.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
+                    this.setTitle("Browser not supported", true);
+                    this.setDescription("Sorry, your browser doesn't support <a href='http://webvr.info'>WebVR</a>");
                     this.emit("error", new Error(state));
                     break;
 
                 case State.ERROR_NO_PRESENTABLE_DISPLAYS:
                     this.show();
-                    this.buttonClass.setTitle(this.options.textEnterVRTitle, true);
-                    this.buttonClass.setDescription("No VR headset found. <a href='http://webvr.info'>Learn more</a>");
+                    this.setTitle(this.options.textEnterVRTitle, true);
+                    this.setDescription("No VR headset found. <a href='http://webvr.info'>Learn more</a>");
                     this.emit("error", new Error(state));
                     break;
 
                 case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
                     this.show();
-                    this.buttonClass.setTitle(this.options.textEnterVRTitle, true);
-                    this.buttonClass.setDescription("Something went wrong trying to start presenting to your headset.");
+                    this.setTitle(this.options.textEnterVRTitle, true);
+                    this.setDescription("Something went wrong trying to start presenting to your headset.");
                     this.emit("error", new Error(state));
                     break;
 
                 case State.ERROR_EXIT_PRESENT_REJECTED:
                 default:
                     this.show();
-                    this.buttonClass.setTitle(this.options.textEnterVRTitle, true);
-                    this.buttonClass.setDescription("Unknown error.");
+                    this.setTitle(this.options.textEnterVRTitle, true);
+                    this.setDescription("Unknown error.");
                     this.emit("error", new Error(state));
             }
             this.state = state;
