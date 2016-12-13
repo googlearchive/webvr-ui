@@ -6,6 +6,8 @@ The library also supports adding a *Enter 360* that allows entering a mode where
  
 View example here: [halfdanj.github.io/webvr-ui/](http://halfdanj.github.io/webvr-ui/)
 
+Note: This is not an official Google product.
+
 ## Library Usage
 ### Include WebVR UI
 Get the library either by cloning or downloading it (will come to npm). 

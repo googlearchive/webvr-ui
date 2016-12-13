@@ -1,3 +1,18 @@
+// Copyright 2016 Google Inc.
+//
+//     Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+//     You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+//     Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+//     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//     See the License for the specific language governing permissions and
+// limitations under the License.
+
+
 import {WebVRManager} from "./WebVRManager";
 import { cssPrefix, createView  } from "./dom";
 import * as State from "./states";
@@ -50,7 +65,7 @@ export class EnterVRButton extends EventEmitter  {
 
         options.textEnterVRTitle = options.textEnterVRTitle || 'Enter VR';
         options.textExitVRTitle = options.textExitVRTitle   || 'Exit VR';
-        options.text360Title = options.text360Title         || 'or try it in 360° mode';
+        options.text360Title = options.text360Title         || 'Try it in 360°';
 
         this.options = options;
 
@@ -110,11 +125,6 @@ export class EnterVRButton extends EventEmitter  {
 
     setDescription(html){
         ifChild(this.domElement, "description", (descrip)=> descrip.innerHTML = html);
-        return this;
-    }
-
-    set360Title(html){
-        ifChild(this.domElement,"enter360", (el)=> el.innerHTML = html);
         return this;
     }
 

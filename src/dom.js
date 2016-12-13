@@ -1,3 +1,18 @@
+// Copyright 2016 Google Inc.
+//
+//     Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+//     You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+//     Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+//     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//     See the License for the specific language governing permissions and
+// limitations under the License.
+
+
 let _WebVRUI_css_injected = false;
 
 /**
@@ -21,8 +36,7 @@ const generateInnerHTML = (fontSize)=>{
           <div class="${cssPrefix}-title"></div>
           <div class="${cssPrefix}-logo">${svgString}</div>
         </button>
-        <div class="${cssPrefix}-description"></div>
-        <div class="${cssPrefix}-enter360"></div>`;
+        <div class="${cssPrefix}-description"></div>`;
 };
 
 /**
@@ -179,7 +193,7 @@ export const generateCSS = (height=50, fontSize=18, disabledColor="rgba(255,255,
             color: white
         }
         
-        .${cssPrefix}-enter360 {
+        .${cssPrefix}-description > span[enter360=true] {
             text-decoration: underline;
             cursor: pointer;
         }
