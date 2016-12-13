@@ -29,12 +29,15 @@ export class EnterVRButton extends EventEmitter  {
      * Construct a new Enter VR Button
      * @constructor
      * @param {HTMLCanvasElement} sourceCanvas the canvas that you want to present in WebVR
-     *
      * @param {Object} [options] optional parameters
+     * @param {boolean} [options.add360link=true] set to false if you don't wish to offer a 360 mode fallback
      * @param {Number} [options.height=35] specify the height of the button
-     * @param {AbstractButtonDom} [options.buttonClass=DefaultButtonDom] specify a custom button class
+     * @param {HTMLElement} [options.domElement] provide your own domElement to bind to
      * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
      * @param {Function} [options.onRequestStateChange] set to a function returning false to prevent default state changes
+     * @param {string} [options.textEnterVRTitle] set the text for Enter VR
+     * @param {string} [options.textExitVRTitle] set the text for exiting VR
+     * @param {string} [options.text360Title] set the text for trying 360 mode
      */
     constructor(sourceCanvas, options){
         super();
@@ -53,8 +56,8 @@ export class EnterVRButton extends EventEmitter  {
 
         this.sourceCanvas = sourceCanvas;
 
-        this.domElement = createView(options.height, options.injectCSS);
-
+        //pass in your own domElement if you really dont want to use ours
+        this.domElement = options.domElement || createView(options.height, options.injectCSS);
 
         if(!options.add360Link){
             ifChild(this.domElement, "enter360", (el)=> el.style.display = "none");
