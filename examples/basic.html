@@ -36,9 +36,16 @@
             transform: translate(-50%, -50%);
         }
 
-        #webvr-ui {
+        #button {
             margin-top: 40px;
+            margin-bottom: 20px;
         }
+
+        a {
+            color: white;
+        }
+
+
 
     </style>
 
@@ -46,9 +53,16 @@
 <body>
 
 <div id="ui">
-    <h1>WebVR UI Example</h1>
-    <p>Example showing how to enter VR and 360 mode. </p>
-    <p>Library and design is still work in progress.</p>
+    <h1>WebVR Button Example</h1>
+    <p>Example showing how to enter VR and 360. </p>
+
+    <div id="button"></div>
+
+    <div id="learn-more-">
+        <a href="//webvr.info" target="_blank">Learn more</a>
+        or
+        <a href="#" onclick="enterVR.requestEnter360()">try in 360°</a>
+    </div>
 
 </div>
 
@@ -81,10 +95,7 @@
 
 
     // Create WebVR UI Enter VR Button
-    var options = {
-        add360Link: true
-    }
-    var enterVR = new webvrui.EnterVRButton(renderer.domElement, options)
+    var enterVR = new webvrui.EnterVRButton(renderer.domElement)
         .on("enter", function(isVR, hasOrientation){ console.log("enter VR") })
         .on("exit", function(){
             console.log("exit VR");
@@ -92,7 +103,7 @@
             camera.position.set(0,controls.userHeight,0);
         });
 
-    document.getElementById("ui").appendChild(enterVR.domElement);
+    document.getElementById("button").appendChild(enterVR.domElement);
 
 
 
