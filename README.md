@@ -7,8 +7,8 @@ The library also supports adding a *Enter 360* link that allows entering a mode 
 Note: This is not an official Google product.
 
 ### Examples
-- [Basic Usage](http://halfdanj.github.io/webvr-ui/basic.html) Shows how to simply add a button with the default styling to a site using three.js ([source](/examples/basic.html))
-- [A-Frame Usage](http://halfdanj.github.io/webvr-ui/aframe.html) Shows how to use the library with [A-Frame](https://aframe.io) ([source](/examples/aframe.html))
+- [Basic Usage](http://halfdanj.github.io/webvr-ui/examples/basic.html) Shows how to simply add a button with the default styling to a site using three.js ([source](/examples/basic.html))
+- [A-Frame Usage](http://halfdanj.github.io/webvr-ui/examples/aframe.html) Shows how to use the library with [A-Frame](https://aframe.io) ([source](/examples/aframe.html))
 
 
 ## Library Usage
@@ -36,12 +36,10 @@ document.body.appendChild(renderer.domElement);
 var options = {}
 var enterVR = new webvrui.EnterVRButton(renderer.domElement, options);
 document.body.appendChild(enterVR.domElement);
-
-var enter360 = new webvrui.Enter360Button(renderer.domElement, options);
-document.body.appendChild(enter360.domElement);
 ```
 
-Options
+**Options**
+
 - `height`: Height in pixels of the button. *Default 45* 
 - `injectCSS`: Set to false to disable CSS injection of button style. *Default `true`*
 - `onRequestStateChange`: A function called before state is changed, use to intercept entering or exiting VR for example. Return `true` to continue with default behaviour, or `false` to stop the default behaviour.    
@@ -49,13 +47,13 @@ Options
 ### A-Frame
 To use the button in [A-Frame](https://aframe.io/), include the library as above, and add `webvr-ui` to the scene.
 
-```
+```html
 <a-scene webvr-ui>
     ...
 </a-scene>
 ``` 
 
-This will disable the default UI (by adding `vr-mode-ui="enabled:false"` on the a-scene entity), and add a *Enter VR* button to the document DOM.  
+This will disable the default UI and add a *Enter VR* button to the document DOM.  
 
 ## Run Example
 To run the example, install dependencies 
@@ -78,4 +76,4 @@ npm install
 npm run build
 ```
 
-and the library will be build to `build/webvr-ui.js` and `build/webvr-ui.aframe.js`
+and the library will be build to `build/webvr-ui.js`
