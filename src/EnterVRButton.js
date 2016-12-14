@@ -50,6 +50,7 @@ export class EnterVRButton extends EventEmitter  {
      * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
      * @param {Function} [options.onRequestStateChange] set to a function returning false to prevent default state changes
      * @param {string} [options.textEnterVRTitle] set the text for Enter VR
+     * @param {string} [options.textVRNotFoundTitle] set the text for when a VR display is not found
      * @param {string} [options.textExitVRTitle] set the text for exiting VR
      * @param {string} [options.theme] set to 'light' (default) or 'dark'
      */
@@ -138,7 +139,7 @@ export class EnterVRButton extends EventEmitter  {
         }
     }
 
-    requetsExitVR(){
+    requestExitVR(){
         if(this.options.onRequestStateChange(State.READY_TO_PRESENT)) {
             this.manager.exitVR(this.manager.defaultDisplay)
         }
@@ -164,7 +165,7 @@ export class EnterVRButton extends EventEmitter  {
         if(this.state == State.READY_TO_PRESENT){
             this.requestEnterVR();
         } else if(this.state == State.PRESENTING) {
-            this.requetsExitVR();
+            this.requestExitVR();
         }
     }
 
