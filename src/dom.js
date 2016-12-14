@@ -26,6 +26,7 @@ export const cssPrefix = "webvr-ui";
  * @private
  * generate the innerHTML for the button
  * @param {Number} fontSize
+ * @param {String} theme either 'light' or 'dark'
  * @returns {string}
  */
 const generateInnerHTML = (fontSize, theme)=>{
@@ -59,6 +60,7 @@ export const injectCSS = (cssText)=>{
  * generate DOM element view for button
  * @param {Number} height
  * @param {boolean} [injectCSSStyles=true] inject the view's CSS into the DOM
+ * @param {String} theme either 'light' or 'dark'
  * @returns {HTMLElement}
  */
 export const createView = (height, injectCSSStyles=true, theme='light')=>{
@@ -109,7 +111,7 @@ export const generateVRIcon = (height, fill="#000000")=>{
  * generate the CSS string to inject
  * @param {Number} [height=50]
  * @param {Number} [fontSize=18]
- * @param {string} [disabledColor="rgba(255,255,255,0.4)"]
+ * @param {string} theme either 'light' or 'dark'
  * @returns {string}
  */
 export const generateCSS = (height=50, fontSize=18, theme='light')=>{
