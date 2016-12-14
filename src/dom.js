@@ -31,12 +31,10 @@ export const cssPrefix = "webvr-ui";
 const generateInnerHTML = (fontSize)=>{
     const svgString = generateVRIcon(fontSize);
 
-    return `
-        <button class="${cssPrefix}-button">
+    return `<button class="${cssPrefix}-button">
           <div class="${cssPrefix}-title"></div>
           <div class="${cssPrefix}-logo">${svgString}</div>
-        </button>
-        `;
+        </button>`;
 };
 
 /**
@@ -70,7 +68,7 @@ export const createView = (height, injectCSSStyles=true)=>{
     }
     const el = document.createElement("div");
     el.innerHTML = generateInnerHTML(fontSize);
-    return el;
+    return el.firstChild;
 };
 
 

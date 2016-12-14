@@ -78,28 +78,25 @@ export class EnterVRButton extends EventEmitter  {
 
         // Bind button click events to __onClick
         this.__onEnterVRClick = this.__onEnterVRClick.bind(this);
-        const button = child(this.domElement, "button");
-        if(!button){
-            throw new Error(`No ${cssPrefix}-button found in DOM`);
+        if(this.domElement.nodeName !== 'BUTTON'){
+            throw new Error(`No ${cssPrefix}-button <button> element found in DOM`);
         }
-        button.addEventListener("click", this.__onEnterVRClick);
+        this.domElement.addEventListener("click", this.__onEnterVRClick);
 
         this.setTitle(this.options.textEnterVRTitle);
     }
 
 
     setTitle(text, disabled = false){
-        ifChild(this.domElement,"button", (button)=>{
-            button.title = text;
-            button.setAttribute("disabled", disabled);
-        });
+        this.domElement.title = text;
+        this.domElement.setAttribute("disabled", disabled);
 
         ifChild(this.domElement,"title", (title)=>{
             if(!text){
                 title.style.display = "none";
             } else {
                 title.innerText = text;
-                title.style.display = "inherit";
+                title.style.display = "initial";
             }
         });
 
@@ -112,7 +109,7 @@ export class EnterVRButton extends EventEmitter  {
     }
 
     show(){
-        this.domElement.style.display = "inherit";
+        this.domElement.style.display = "initial";
         return this;
     }
 
@@ -162,7 +159,6 @@ export class EnterVRButton extends EventEmitter  {
      * Handling click event from button
      */
     __onEnterVRClick(){
-        console.log("ASDASDA");
         if(this.state == State.READY_TO_PRESENT){
             this.requestEnterVR();
         } else if(this.state == State.PRESENTING) {
