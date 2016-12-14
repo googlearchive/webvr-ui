@@ -29,8 +29,8 @@ export const cssPrefix = "webvr-ui";
  * @param {String} theme either 'light' or 'dark'
  * @returns {string}
  */
-const generateInnerHTML = (fontSize, theme)=>{
-    const svgString = generateVRIcon(fontSize, (theme == 'dark') ? 'white' : 'black');
+const generateInnerHTML = (height, fontSize, theme)=>{
+    const svgString = generateVRIcon(height,fontSize, theme);
 
     return `<button class="${cssPrefix}-button">
           <div class="${cssPrefix}-title"></div>
@@ -70,7 +70,7 @@ export const createView = (height, injectCSSStyles=true, theme='light')=>{
     }
 
     const el = document.createElement("div");
-    el.innerHTML = generateInnerHTML(fontSize, theme);
+    el.innerHTML = generateInnerHTML(height, fontSize, theme);
     return el.firstChild;
 };
 
@@ -81,29 +81,28 @@ export const createView = (height, injectCSSStyles=true, theme='light')=>{
  * @param {string} [fill="#000000"]
  * @returns {string}
  */
-export const generateVRIcon = (height, fill="#000000")=>{
-    let aspect = 28/18;
-    return `
-        <svg class="${cssPrefix}-svg" version="1.1" x="0px" y="0px" width="${aspect*height}px" height="${height}px" viewBox="0 0 28 18" xml:space="preserve">
-            <path fill="${fill}" d="M26.8,1.1C26.1,0.4,25.1,0,24.2,0H3.4c-1,0-1.7,0.4-2.4,1.1C0.3,1.7,0,2.7,0,3.6v10.7
-            c0,1,0.3,1.9,0.9,2.6C1.6,17.6,2.4,18,3.4,18h5c0.7,0,1.3-0.2,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.5-2.6C13.2,13.1,13,13,14,13v0h-0.2
-            h0c0.3,0,0.7,0.1,0.8,0.5l1.4,2.6c0.3,0.6,0.8,1.1,1.3,1.4c0.6,0.3,1.2,0.5,1.8,0.5h5c1,0,2-0.4,2.7-1.1c0.7-0.7,1.2-1.6,1.2-2.6
-            V3.6C28,2.7,27.5,1.7,26.8,1.1z M7.4,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8c1.6,0,2.8,1.3,2.8,2.8
-            C10.2,10.5,8.9,11.8,7.4,11.8z M20.1,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8C21.7,6.2,23,7.4,23,9
-            C23,10.5,21.7,11.8,20.1,11.8z"/>
-        </svg>
-        <svg class="${cssPrefix}-svg-error" x="0px" y="0px" width="${aspect*height}px" height="${aspect*height}px" viewBox="0 0 28 28" xml:space="preserve">
-            <path fill="${fill}" d="M17.6,13.4c0-0.2-0.1-0.4-0.1-0.6c0-1.6,1.3-2.8,2.8-2.8s2.8,1.3,2.8,2.8s-1.3,2.8-2.8,2.8
-            c-0.2,0-0.4,0-0.6-0.1l5.9,5.9c0.5-0.2,0.9-0.4,1.3-0.8c0.7-0.7,1.1-1.6,1.1-2.5V7.4c0-1-0.4-1.9-1.1-2.5c-0.7-0.7-1.6-1-2.5-1H8.1
-            L17.6,13.4z"/>
-            <path fill="${fill}" d="M10.1,14.2c-0.5,0.9-1.4,1.4-2.4,1.4c-1.6,0-2.8-1.3-2.8-2.8c0-1.1,0.6-2,1.4-2.5L0.9,5.1
-            C0.3,5.7,0,6.6,0,7.5v10.7c0,1,0.4,1.8,1.1,2.5c0.7,0.7,1.6,1,2.5,1h5c0.7,0,1.3-0.1,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.3-2.6
-            L10.1,14.2z"/>
-            <path fill="${fill}" d="M25.5,27.5l-25-25C-0.1,2-0.1,1,0.5,0.4l0,0C1-0.1,2-0.1,2.6,0.4l25,25c0.6,0.6,0.6,1.5,0,2.1l0,0
-            C27,28.1,26,28.1,25.5,27.5z"/>
+export const generateVRIcon = (height, fontSize, theme)=>{
+        return `
+        <svg class="${cssPrefix}-svg" version="1.1" x="0px" y="0px" width="${height}px" height="${height}px" viewBox="0 0 28 28" xml:space="preserve">
+            <path d="M10.1,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6
+                C11.6,13.4,10.9,12.7,10.1,12.7z"/>
+            <path d="M17.2,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6
+                C18.8,13.4,18.1,12.7,17.2,12.7z"/>
+            <path d="M14,0C6.3,0,0,6.3,0,14c0,7.7,6.3,14,14,14s14-6.3,14-14C28,6.3,21.7,0,14,0z M21.5,17.3
+                c0,0.5-0.2,1-0.6,1.4c-0.4,0.4-0.9,0.6-1.4,0.6h-2.8c-0.4,0-0.7-0.1-1-0.3c-0.3-0.2-0.6-0.5-0.8-0.8l-0.8-1.5
+                c-0.1-0.2-0.3-0.3-0.5-0.3l0,0l0,0l0,0c-0.2,0-0.4,0.1-0.5,0.3l-0.8,1.5c-0.2,0.3-0.4,0.6-0.8,0.8c-0.3,0.2-0.7,0.3-1,0.3H7.7
+                c-0.5,0-1-0.2-1.4-0.6c-0.4-0.4-0.6-0.9-0.6-1.5v-6c0-0.5,0.2-1,0.6-1.4c0.4-0.4,0.9-0.6,1.4-0.6h11.6c0.5,0,1,0.2,1.4,0.6
+                c0.4,0.4,0.6,0.9,0.6,1.4L21.5,17.3z"/>
         </svg>
 
-`;
+        <svg class="${cssPrefix}-svg-error" version="1.1" x="0px" y="0px" width="${height-4}px" height="${height-4}px" viewBox="0 0 28 28" xml:space="preserve">
+        <path d="M14,0C6.3,0,0,6.3,0,14s6.3,14,14,14s14-6.3,14-14S21.7,0,14,0z M19.4,9.5c0.5,0,1,0.1,1.4,0.5
+            c0.4,0.4,0.6,0.8,0.6,1.4v6c0,0.5-0.2,1-0.6,1.4c-0.2,0.2-0.4,0.3-0.7,0.4l-3.4-3.4c0.1,0,0.2,0,0.3,0c0.9,0,1.6-0.7,1.6-1.6
+            c0-0.9-0.7-1.6-1.6-1.6c-0.9,0-1.6,0.7-1.6,1.6c0,0.1,0,0.3,0,0.4l-5.3-5.1H19.4z M12.4,18.3c-0.2,0.3-0.4,0.5-0.8,0.7
+            s-0.7,0.2-1,0.2H7.8c-0.5,0-1-0.2-1.4-0.5c-0.4-0.4-0.6-0.8-0.6-1.4v-6c0-0.5,0.2-1,0.5-1.3l3,3c-0.5,0.3-0.8,0.8-0.8,1.4
+            c0,0.9,0.7,1.6,1.6,1.6c0.6,0,1.1-0.3,1.4-0.8l1.7,1.7L12.4,18.3z M21.3,22.5l-0.1,0.1c-0.3,0.3-0.8,0.3-1.1,0L6,8.5
+            C5.7,8.2,5.7,7.7,6,7.4l0.1-0.1C6.4,7,6.8,7,7.1,7.3l14.2,14.2C21.6,21.7,21.6,22.2,21.3,22.5z"/>
+        </svg>`
 };
 
 
@@ -116,7 +115,7 @@ export const generateVRIcon = (height, fill="#000000")=>{
  */
 export const generateCSS = (height=50, fontSize=18, theme='light')=>{
     let primaryColor = "white";
-    let disabledColor = "rgba(255,255,255,0.5)";
+    let disabledColor = "rgba(255,255,255,0.6)";
 
     if(theme == 'dark'){
         primaryColor = "black";
@@ -170,19 +169,21 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
         .${cssPrefix}-logo {
             width: ${height}px;
             height: ${height}px;
-            border-radius: ${borderRadius}px;
-            background-color: ${primaryColor};
             position: absolute;
-            top:-${borderWidth}px;
-            left:-${borderWidth}px;
+            top:0px;
+            left:0px;
+            width: ${height-4}px;
+            height: ${height-4}px;
         }
         .${cssPrefix}-svg {
-            margin-top: ${(height - fontSize) / 2}px;
+            fill: ${primaryColor};
+            margin-top: -2px;
+            margin-left: -2px;
         }
         .${cssPrefix}-svg-error {
+            fill: ${disabledColor};
             display:none;
         }
-
 
         /*
         * Title
@@ -206,21 +207,13 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
         button.${cssPrefix}-button[disabled=true] {
             border-color: ${disabledColor};
         }
-        button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-logo {
-            background-color: ${disabledColor};
-            background-color: ${disabledColor};
-            top:0;
-            left:0;
-            width: ${height-4}px;
-            height: ${height-4}px;
-        }
+        
         button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-logo > .${cssPrefix}-svg {
             display:none;
         }
+        
         button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-logo > .${cssPrefix}-svg-error {
             display:initial;
-            margin-top: ${(height - 28/18 * fontSize) / 2 - 2}px;
-            margin-left: -2px;
         }
         
         button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-title {
