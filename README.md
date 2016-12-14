@@ -4,8 +4,6 @@ A javascript library allowing easily to create the Enter VR button a WebVR site.
 
 The library also supports adding a *Enter 360* link that allows entering a mode where on desktop you can use the mouse to drag around, and on mobile rotate the camera based on the gyroscope without rendering in stereoscopic mode (also known as *Magic Window*)
 
-Note: This is not an official Google product.
-
 ### Examples
 - [Basic Usage](http://halfdanj.github.io/webvr-ui/examples/basic.html) Shows how to simply add a button with the default styling to a site using three.js ([source](/examples/basic.html))
 - [A-Frame Usage](http://halfdanj.github.io/webvr-ui/examples/aframe.html) Shows how to use the library with [A-Frame](https://aframe.io) ([source](/examples/aframe.html))
@@ -38,7 +36,7 @@ var enterVR = new webvrui.EnterVRButton(renderer.domElement, options);
 document.body.appendChild(enterVR.domElement);
 ```
 
-**Options**
+### Options
 
 - `height`: Height in pixels of the button. *Default 45* 
 - `injectCSS`: Set to false to disable CSS injection of button style. *Default `true`*
@@ -55,24 +53,22 @@ To use the button in [A-Frame](https://aframe.io/), include the library as above
 
 This will disable the default UI and add a *Enter VR* button to the document DOM.  
 
-## Run Example
+## Development
 To run the example, install dependencies 
 
 ```
 npm install
 ```
 
-and start the watcher and server
+and start the watcher and server (available on [localhost:3000/examples/basic.html](http://localhost:3000/examples/basic.html))
 
 ```
 npm start
 ```
 
-## Build
 To build the transpiled es5 version of the library, run 
 
 ```
-npm install
 npm run build
 ```
 
