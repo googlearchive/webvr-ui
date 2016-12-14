@@ -28,8 +28,8 @@ export const cssPrefix = "webvr-ui";
  * @param {Number} fontSize
  * @returns {string}
  */
-const generateInnerHTML = (fontSize)=>{
-    const svgString = generateVRIcon(fontSize);
+const generateInnerHTML = (fontSize, theme)=>{
+    const svgString = generateVRIcon(fontSize, (theme == 'dark') ? 'white' : 'black');
 
     return `<button class="${cssPrefix}-button">
           <div class="${cssPrefix}-title"></div>
@@ -61,13 +61,14 @@ export const injectCSS = (cssText)=>{
  * @param {boolean} [injectCSSStyles=true] inject the view's CSS into the DOM
  * @returns {HTMLElement}
  */
-export const createView = (height, injectCSSStyles=true)=>{
+export const createView = (height, injectCSSStyles=true, theme='light')=>{
     const fontSize = height / 2.5;
     if(injectCSSStyles){
-        injectCSS(generateCSS(height, fontSize));
+        injectCSS(generateCSS(height, fontSize, theme));
     }
+
     const el = document.createElement("div");
-    el.innerHTML = generateInnerHTML(fontSize);
+    el.innerHTML = generateInnerHTML(fontSize, theme);
     return el.firstChild;
 };
 
@@ -90,13 +91,13 @@ export const generateVRIcon = (height, fill="#000000")=>{
             C23,10.5,21.7,11.8,20.1,11.8z"/>
         </svg>
         <svg class="${cssPrefix}-svg-error" x="0px" y="0px" width="${aspect*height}px" height="${aspect*height}px" viewBox="0 0 28 28" xml:space="preserve">
-            <path d="M17.6,13.4c0-0.2-0.1-0.4-0.1-0.6c0-1.6,1.3-2.8,2.8-2.8s2.8,1.3,2.8,2.8s-1.3,2.8-2.8,2.8
+            <path fill="${fill}" d="M17.6,13.4c0-0.2-0.1-0.4-0.1-0.6c0-1.6,1.3-2.8,2.8-2.8s2.8,1.3,2.8,2.8s-1.3,2.8-2.8,2.8
             c-0.2,0-0.4,0-0.6-0.1l5.9,5.9c0.5-0.2,0.9-0.4,1.3-0.8c0.7-0.7,1.1-1.6,1.1-2.5V7.4c0-1-0.4-1.9-1.1-2.5c-0.7-0.7-1.6-1-2.5-1H8.1
             L17.6,13.4z"/>
-            <path d="M10.1,14.2c-0.5,0.9-1.4,1.4-2.4,1.4c-1.6,0-2.8-1.3-2.8-2.8c0-1.1,0.6-2,1.4-2.5L0.9,5.1
+            <path fill="${fill}" d="M10.1,14.2c-0.5,0.9-1.4,1.4-2.4,1.4c-1.6,0-2.8-1.3-2.8-2.8c0-1.1,0.6-2,1.4-2.5L0.9,5.1
             C0.3,5.7,0,6.6,0,7.5v10.7c0,1,0.4,1.8,1.1,2.5c0.7,0.7,1.6,1,2.5,1h5c0.7,0,1.3-0.1,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.3-2.6
             L10.1,14.2z"/>
-            <path d="M25.5,27.5l-25-25C-0.1,2-0.1,1,0.5,0.4l0,0C1-0.1,2-0.1,2.6,0.4l25,25c0.6,0.6,0.6,1.5,0,2.1l0,0
+            <path fill="${fill}" d="M25.5,27.5l-25-25C-0.1,2-0.1,1,0.5,0.4l0,0C1-0.1,2-0.1,2.6,0.4l25,25c0.6,0.6,0.6,1.5,0,2.1l0,0
             C27,28.1,26,28.1,25.5,27.5z"/>
         </svg>
 
@@ -111,7 +112,15 @@ export const generateVRIcon = (height, fill="#000000")=>{
  * @param {string} [disabledColor="rgba(255,255,255,0.4)"]
  * @returns {string}
  */
-export const generateCSS = (height=50, fontSize=18, disabledColor="rgba(255,255,255,0.5)")=>{
+export const generateCSS = (height=50, fontSize=18, theme='light')=>{
+    let primaryColor = "white";
+    let disabledColor = "rgba(255,255,255,0.5)";
+
+    if(theme == 'dark'){
+        primaryColor = "black";
+        disabledColor = "rgba(0,0,0,0.5)";
+    }
+
     let borderWidth = 2;
     let borderRadius = height / 2;
     // borderRadius = 0;
@@ -137,7 +146,7 @@ export const generateCSS = (height=50, fontSize=18, disabledColor="rgba(255,255,
         }
 
         button.${cssPrefix}-button {
-            border: white ${borderWidth}px solid;
+            border: ${primaryColor} ${borderWidth}px solid;
             border-radius: ${borderRadius}px;
             box-sizing: border-box;
             background: rgba(0,0,0, 0);
@@ -147,9 +156,7 @@ export const generateCSS = (height=50, fontSize=18, disabledColor="rgba(255,255,
             display: inline-block;
             position: relative;
 
-
             cursor: pointer;
-
             -webkit-transition: width 0.5s;
             transition: width 0.5s;
         }
@@ -162,7 +169,7 @@ export const generateCSS = (height=50, fontSize=18, disabledColor="rgba(255,255,
             width: ${height}px;
             height: ${height}px;
             border-radius: ${borderRadius}px;
-            background-color: white;
+            background-color: ${primaryColor};
             position: absolute;
             top:-${borderWidth}px;
             left:-${borderWidth}px;
@@ -180,7 +187,7 @@ export const generateCSS = (height=50, fontSize=18, disabledColor="rgba(255,255,
         */
 
         .${cssPrefix}-title {
-            color: white;
+            color: ${primaryColor};
             position: relative;
             font-size: ${fontSize}px;
             top: -${borderWidth}px;
@@ -188,26 +195,6 @@ export const generateCSS = (height=50, fontSize=18, disabledColor="rgba(255,255,
             text-align: left;
             padding-left: ${height * 1.05}px;
             padding-right: ${(borderRadius-10 < 5) ? 5 : borderRadius-10}px;
-        }
-
-        /*
-        * Description
-        */
-
-        .${cssPrefix}-description , .${cssPrefix}-enter360{
-            font-size: 13px;
-            margin-top: 15px;
-            margin-bottom: 10px;
-
-        }
-
-        .${cssPrefix}-description > a {
-            color: white
-        }
-        
-        .${cssPrefix}-description > span[enter360=true] {
-            text-decoration: underline;
-            cursor: pointer;
         }
 
         /*

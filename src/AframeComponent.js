@@ -21,7 +21,8 @@ if(typeof AFRAME !== 'undefined' && AFRAME){
         dependencies: ['canvas'],
 
         schema: {
-            enabled: {type: 'boolean', default:true}
+            enabled: {type: 'boolean', default:true},
+            theme: {type: 'string', default: 'light'}
         },
 
         init: function () {
@@ -35,6 +36,7 @@ if(typeof AFRAME !== 'undefined' && AFRAME){
                 if(this.enterVREl){ return }
         
                 var options = {
+                    theme: this.data.theme,
                     onRequestStateChange: function(state){
                         if(state == State.PRESENTING){
                             scene.enterVR();
