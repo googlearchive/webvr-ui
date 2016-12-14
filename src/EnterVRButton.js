@@ -48,6 +48,8 @@ export class EnterVRButton extends EventEmitter  {
      * @param {Number} [options.height=35] specify the height of the button
      * @param {HTMLElement} [options.domElement] provide your own domElement to bind to
      * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
+     * @param {Function} [options.beforeEnter] should return a promise, opportunity to intercept request to enter for custom messaging
+     * @param {Function} [options.beforeExit] should return a promise, opportunity to intercept request to exit for updating of UI
      * @param {Function} [options.onRequestStateChange] set to a function returning false to prevent default state changes
      * @param {string} [options.textEnterVRTitle] set the text for Enter VR
      * @param {string} [options.textVRNotFoundTitle] set the text for when a VR display is not found
@@ -63,6 +65,8 @@ export class EnterVRButton extends EventEmitter  {
         options.injectCSS = options.injectCSS !== false;
 
         options.onRequestStateChange = options.onRequestStateChange || (() => true);
+        options.beforeEnter = options.beforeEnter || (()=> new Promise(resolve=> resolve()));
+        options.beforeExit = options.beforeExit || (()=> new Promise(resolve=> resolve()));
 
         options.textEnterVRTitle = options.textEnterVRTitle || 'Enter VR';
         options.textVRNotFoundTitle = options.textVRNotFoundTitle || 'VR Not Found';
@@ -92,7 +96,11 @@ export class EnterVRButton extends EventEmitter  {
 
     setTitle(text, disabled = false){
         this.domElement.title = text;
-        this.domElement.setAttribute("disabled", disabled);
+        if(disabled){
+            this.domElement.setAttribute("disabled", disabled);
+        } else {
+            this.domElement.removeAttribute("disabled");
+        }
 
         ifChild(this.domElement,"title", (title)=>{
             if(!text){
@@ -134,27 +142,51 @@ export class EnterVRButton extends EventEmitter  {
 
 
     requestEnterVR(){
-        if(this.options.onRequestStateChange(State.PRESENTING)) {
-            return this.manager.enterVR(this.manager.defaultDisplay, this.sourceCanvas)
-        }
+        return new Promise((resolve, reject)=> {
+            if (this.options.onRequestStateChange(State.PRESENTING)) {
+                return this.options.beforeEnter()
+                    .then(()=> this.manager.enterVR(this.manager.defaultDisplay, this.sourceCanvas))
+                    .then(resolve);
+            } else {
+                reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
+            }
+        });
     }
 
     requestExitVR(){
-        if(this.options.onRequestStateChange(State.READY_TO_PRESENT)) {
-            this.manager.exitVR(this.manager.defaultDisplay)
-        }
+        return new Promise((resolve, reject)=> {
+            if (this.options.onRequestStateChange(State.READY_TO_PRESENT)) {
+                return this.options.beforeExit()
+                    .then(()=> this.manager.exitVR(this.manager.defaultDisplay))
+                    .then(resolve);
+            } else {
+                reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
+            }
+        });
     }
 
     requestEnter360(){
-        if(this.options.onRequestStateChange(State.PRESENTING_360)) {
-            return this.manager.enter360(this.sourceCanvas)
-        }
+        return new Promise((resolve, reject)=> {
+            if (this.options.onRequestStateChange(State.PRESENTING_360)) {
+                return this.options.beforeEnter()
+                    .then(()=>this.manager.enter360(this.sourceCanvas))
+                    .then(resolve);
+            } else {
+                reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
+            }
+        });
     }
 
     requestExit360(){
-        if(this.options.onRequestStateChange(State.READY_TO_PRESENT)) {
-            return this.manager.exit360()
-        }
+        return new Promise((resolve, reject)=> {
+            if (this.options.onRequestStateChange(State.READY_TO_PRESENT)) {
+                return this.options.beforeExit()
+                    .then(()=>this.manager.exit360())
+                    .then(resolve);
+            } else {
+                reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
+            }
+        });
     }
 
     /**
