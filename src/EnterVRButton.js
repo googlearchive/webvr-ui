@@ -136,7 +136,7 @@ export class EnterVRButton extends EventEmitter  {
         }
     }
 
-    requetsExitVR(){
+    requestExitVR(){
         if(this.options.onRequestStateChange(State.READY_TO_PRESENT)) {
             this.manager.exitVR(this.manager.defaultDisplay)
         }
