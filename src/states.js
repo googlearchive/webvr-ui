@@ -18,7 +18,7 @@ export const READY_TO_PRESENT = "ready";
 
 // In presentation mode
 export const PRESENTING = "presenting";
-export const PRESENTING_360 = "presenting_360";
+export const PRESENTING_360 = "presenting-360";
 
 // Checking device availability
 export const PREPARING = "preparing";
