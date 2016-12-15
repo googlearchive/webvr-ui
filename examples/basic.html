@@ -96,7 +96,13 @@
     //
 
     // Create WebVR UI Enter VR Button
-    var enterVR = new webvrui.EnterVRButton(renderer.domElement)
+    var options = {
+        color: 'white',
+        background: false,
+        corners: 'square'
+    };
+
+    var enterVR = new webvrui.EnterVRButton(renderer.domElement, options)
         .on("enter", function(isVR, hasOrientation){
             console.log("enter VR")
         })
@@ -104,7 +110,11 @@
             console.log("exit VR");
             camera.quaternion.set(0,0,0,1);
             camera.position.set(0,controls.userHeight,0);
-        });
+        })
+        .on("error", function(error){
+            console.error(error)
+        })
+
 
     // Add button to the #button element
     document.getElementById("button").appendChild(enterVR.domElement);
@@ -149,6 +159,7 @@
     // stageParameters, rearrange the scene.
     navigator.getVRDisplays().then(function(displays) {
         if (displays.length > 0) {
+            console.log("DISPLAYS",displays)
             vrDisplay = displays[0];
             vrDisplay.requestAnimationFrame(animate);
         }

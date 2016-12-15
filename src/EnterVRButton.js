@@ -61,23 +61,22 @@ export class EnterVRButton extends EventEmitter  {
         options = options || {};
         // Option to change pixel height of the button.
         options.height =  options.height || 45;
-        options.theme =  options.theme || 'light';
         options.injectCSS = options.injectCSS !== false;
 
         options.onRequestStateChange = options.onRequestStateChange || (() => true);
         options.beforeEnter = options.beforeEnter || (()=> new Promise(resolve=> resolve()));
         options.beforeExit = options.beforeExit || (()=> new Promise(resolve=> resolve()));
 
-        options.textEnterVRTitle = options.textEnterVRTitle || 'Enter VR';
-        options.textVRNotFoundTitle = options.textVRNotFoundTitle || 'VR Not Found';
-        options.textExitVRTitle = options.textExitVRTitle   || 'Exit VR';
+        options.textEnterVRTitle = options.textEnterVRTitle || 'ENTER VR';
+        options.textVRNotFoundTitle = options.textVRNotFoundTitle || 'VR NOT FOUND';
+        options.textExitVRTitle = options.textExitVRTitle   || 'EXIT VR';
 
         this.options = options;
 
         this.sourceCanvas = sourceCanvas;
 
         //pass in your own domElement if you really dont want to use ours
-        this.domElement = options.domElement || createDefaultView(options.height, options.injectCSS, options.theme);
+        this.domElement = options.domElement || createDefaultView(options);
 
         // Create WebVR Manager
         this.manager = new WebVRManager();

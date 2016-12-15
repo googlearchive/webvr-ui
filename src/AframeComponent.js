@@ -22,7 +22,9 @@ if(typeof AFRAME !== 'undefined' && AFRAME){
 
         schema: {
             enabled: {type: 'boolean', default:true},
-            theme: {type: 'string', default: 'light'}
+            color: {type: 'string', default: 'white'},
+            background: {type: 'string', default: 'black'},
+            corners: {type: 'string', default: 'square'}
         },
 
         init: function () {
@@ -36,7 +38,9 @@ if(typeof AFRAME !== 'undefined' && AFRAME){
                 if(this.enterVREl){ return }
         
                 var options = {
-                    theme: this.data.theme,
+                    color: this.data.color,
+                    background: this.data.background,
+                    corners: this.data.corners,
                     onRequestStateChange: function(state){
                         if(state == State.PRESENTING){
                             scene.enterVR();

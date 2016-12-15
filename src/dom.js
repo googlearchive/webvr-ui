@@ -14,6 +14,7 @@
 
 
 let _WebVRUI_css_injected = false;
+const _logo_scale = 0.8;
 
 /**
  * the css class prefix,
@@ -22,18 +23,14 @@ let _WebVRUI_css_injected = false;
  */
 export const cssPrefix = "webvr-ui";
 
-const child = (el, suffix)=>
-    el.querySelector("."+cssPrefix+"-"+suffix);
-
 /**
  * @private
  * generate the innerHTML for the button
+ * @param {Number} height
  * @param {Number} fontSize
- * @param {String} theme either 'light' or 'dark'
- * @returns {string}
  */
-const generateInnerHTML = (height, fontSize, theme)=>{
-    const svgString = generateVRIcon(height,fontSize, theme);
+const generateInnerHTML = (height, fontSize)=>{
+    const svgString = generateVRIcon(height,fontSize);
 
     return `<button class="${cssPrefix}-button">
           <div class="${cssPrefix}-title"></div>
@@ -61,117 +58,36 @@ export const injectCSS = (cssText)=>{
 
 /**
  * generate DOM element view for button
- * @param {Number} height
- * @param {boolean} [injectCSSStyles=true] inject the view's CSS into the DOM
- * @param {String} theme either 'light' or 'dark'
  * @returns {HTMLElement}
+ * @param options
  */
-export const createDefaultView = (height, injectCSSStyles=true, theme='light')=>{
-    const fontSize = height / 2.5;
-    if(injectCSSStyles){
-        injectCSS(generateCSS(height, fontSize, theme));
+export const createDefaultView = (options)=>{
+    const fontSize = options.height / 3;
+    if(options.injectCSS){
+        injectCSS(generateCSS(options, fontSize));
     }
 
     const el = document.createElement("div");
-    el.innerHTML = generateInnerHTML(height, fontSize, theme);
+    el.innerHTML = generateInnerHTML(options.height, fontSize, options.theme);
     var domElement = el.firstChild;
 
 
-    let __animating = false;
-    let __dragIcon;
-    let __dragTransition;
-
-    domElement.addEventListener('click', (e)=>{
-        if(!__animating) {
-            __animating = true;
-            e.stopPropagation();
-            domElement.classList.add("animate");
-            setTimeout(()=> {
-                domElement.click();
-            }, 800);
-
-            setTimeout(()=>{
-                domElement.classList.remove("animate");
-                __animating = false;
-            },2000)
-        }
-    }, true);
-
-    const __setTransition = (pct)=>{
-        __dragTransition = pct;
-
-        const bounding = domElement.getBoundingClientRect();
-        const left = pct * (bounding.width-height);
-        child(domElement, 'logo').style.left = left+"px";
-
-        child(domElement, 'title').style.clipPath = `inset(0 0 0 ${left + height/1.5}px)`;
-        child(domElement, 'title').style.webkitClipPath = `inset(0 0 0 ${left+ height/1.5}px)`;
-    };
-
-    const __onDrag = (e) => {
-        if(!domElement.disabled) {
-            var bounding = domElement.getBoundingClientRect();
-
-            let left;
-            if (e.pageX) left = e.pageX;
-            else left = e.touches[0].pageX;
-
-            left = left - bounding.left;
-            left = (left - height / 2);
-            if (left < 0) left = 0;
-            if (left > bounding.width - height) left = bounding.width - height;
-
-            __setTransition(left / (bounding.width - height))
-        }
-    };
-
-    const __onDragEnd = (e) => {
-        if(!domElement.disabled) {
-            if (__dragTransition > 0.8) {
-                __animating = true;
-                domElement.click()
-                domElement.classList.add("animate-out");
-
-                let __endCount = 0;
-                let animationEnd = () => {
-                    __endCount ++;
-                    if(__endCount == 2){
-                        domElement.classList.remove("animate-out");
-                        __animating = false;
-                        __setTransition(0)
-                    }
-                }
-
-                child(domElement,'logo').addEventListener("webkitAnimationEnd", animationEnd);
-                child(domElement,'logo').addEventListener("animationend", animationEnd);
-            } else {
-                __setTransition(0)
-            }
-        }
-    };
-
-    child(domElement, 'logo').addEventListener("mousedown", ( event ) => __dragIcon = true, false);
-    document.addEventListener("mouseup", ( event ) => {
-        if(__dragIcon){
-            __dragIcon = false;
-            __onDragEnd(event);
-        }
-    }, false);
-
-    document.addEventListener("mousemove", ( event ) => __dragIcon && __onDrag(event), false);
-
-    child(domElement, 'logo').addEventListener("touchstart", ( event ) => __dragIcon = true);
-    document.addEventListener("touchend", ( event ) => {
-        if(__dragIcon){
-            __dragIcon = false;
-            __onDragEnd(event)
-        }
-
-    });
-    document.addEventListener("touchmove", ( event ) => __dragIcon && __onDrag(event));
-
-
-
+    // let __animating = false;
+    // domElement.addEventListener('click', (e)=>{
+    //     if(!__animating) {
+    //         __animating = true;
+    //         e.stopPropagation();
+    //         domElement.classList.add("animate");
+    //         setTimeout(()=> {
+    //             domElement.click();
+    //         }, 800);
+    //
+    //         setTimeout(()=>{
+    //             domElement.classList.remove("animate");
+    //             __animating = false;
+    //         },2000)
+    //     }
+    // }, true);
 
     return domElement;
 };
@@ -180,54 +96,78 @@ export const createDefaultView = (height, injectCSSStyles=true, theme='light')=>
 /**
  * generate the VR Icons SVG
  * @param {Number} height
- * @param {string} [fill="#000000"]
+ * @param fontSize
+ * @param cutout
  * @returns {string}
  */
-export const generateVRIcon = (height, fontSize, theme)=>{
-        return `
-        <svg class="${cssPrefix}-svg" version="1.1" x="0px" y="0px" width="${height}px" height="${height}px" viewBox="0 0 28 28" xml:space="preserve">
-            <path d="M10.1,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6
-                C11.6,13.4,10.9,12.7,10.1,12.7z"/>
-            <path d="M17.2,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6
-                C18.8,13.4,18.1,12.7,17.2,12.7z"/>
-            <path d="M14,0C6.3,0,0,6.3,0,14c0,7.7,6.3,14,14,14s14-6.3,14-14C28,6.3,21.7,0,14,0z M21.5,17.3
-                c0,0.5-0.2,1-0.6,1.4c-0.4,0.4-0.9,0.6-1.4,0.6h-2.8c-0.4,0-0.7-0.1-1-0.3c-0.3-0.2-0.6-0.5-0.8-0.8l-0.8-1.5
-                c-0.1-0.2-0.3-0.3-0.5-0.3l0,0l0,0l0,0c-0.2,0-0.4,0.1-0.5,0.3l-0.8,1.5c-0.2,0.3-0.4,0.6-0.8,0.8c-0.3,0.2-0.7,0.3-1,0.3H7.7
-                c-0.5,0-1-0.2-1.4-0.6c-0.4-0.4-0.6-0.9-0.6-1.5v-6c0-0.5,0.2-1,0.6-1.4c0.4-0.4,0.9-0.6,1.4-0.6h11.6c0.5,0,1,0.2,1.4,0.6
-                c0.4,0.4,0.6,0.9,0.6,1.4L21.5,17.3z"/>
-        </svg>
-
-        <svg class="${cssPrefix}-svg-error" version="1.1" x="0px" y="0px" width="${height-4}px" height="${height-4}px" viewBox="0 0 28 28" xml:space="preserve">
-        <path d="M14,0C6.3,0,0,6.3,0,14s6.3,14,14,14s14-6.3,14-14S21.7,0,14,0z M19.4,9.5c0.5,0,1,0.1,1.4,0.5
-            c0.4,0.4,0.6,0.8,0.6,1.4v6c0,0.5-0.2,1-0.6,1.4c-0.2,0.2-0.4,0.3-0.7,0.4l-3.4-3.4c0.1,0,0.2,0,0.3,0c0.9,0,1.6-0.7,1.6-1.6
-            c0-0.9-0.7-1.6-1.6-1.6c-0.9,0-1.6,0.7-1.6,1.6c0,0.1,0,0.3,0,0.4l-5.3-5.1H19.4z M12.4,18.3c-0.2,0.3-0.4,0.5-0.8,0.7
-            s-0.7,0.2-1,0.2H7.8c-0.5,0-1-0.2-1.4-0.5c-0.4-0.4-0.6-0.8-0.6-1.4v-6c0-0.5,0.2-1,0.5-1.3l3,3c-0.5,0.3-0.8,0.8-0.8,1.4
-            c0,0.9,0.7,1.6,1.6,1.6c0.6,0,1.1-0.3,1.4-0.8l1.7,1.7L12.4,18.3z M21.3,22.5l-0.1,0.1c-0.3,0.3-0.8,0.3-1.1,0L6,8.5
-            C5.7,8.2,5.7,7.7,6,7.4l0.1-0.1C6.4,7,6.8,7,7.1,7.3l14.2,14.2C21.6,21.7,21.6,22.2,21.3,22.5z"/>
-        </svg>`
+export const generateVRIcon = (height, fontSize, cutout=false)=>{
+    if(!cutout){
+        fontSize *= _logo_scale;
+            let aspect = 28/18;
+            return `<svg class="${cssPrefix}-svg" version="1.1" x="0px" y="0px" width="${aspect*fontSize}px" height="${fontSize}px" viewBox="0 0 28 18" xml:space="preserve">
+                <path d="M26.8,1.1C26.1,0.4,25.1,0,24.2,0H3.4c-1,0-1.7,0.4-2.4,1.1C0.3,1.7,0,2.7,0,3.6v10.7
+                c0,1,0.3,1.9,0.9,2.6C1.6,17.6,2.4,18,3.4,18h5c0.7,0,1.3-0.2,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.5-2.6C13.2,13.1,13,13,14,13v0h-0.2
+                h0c0.3,0,0.7,0.1,0.8,0.5l1.4,2.6c0.3,0.6,0.8,1.1,1.3,1.4c0.6,0.3,1.2,0.5,1.8,0.5h5c1,0,2-0.4,2.7-1.1c0.7-0.7,1.2-1.6,1.2-2.6
+                V3.6C28,2.7,27.5,1.7,26.8,1.1z M7.4,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8c1.6,0,2.8,1.3,2.8,2.8
+                C10.2,10.5,8.9,11.8,7.4,11.8z M20.1,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8C21.7,6.2,23,7.4,23,9
+                C23,10.5,21.7,11.8,20.1,11.8z"/>
+            </svg>
+            <svg class="${cssPrefix}-svg-error" x="0px" y="0px" width="${aspect*fontSize}px" height="${aspect*fontSize}px" viewBox="0 0 28 28" xml:space="preserve">
+                <path d="M17.6,13.4c0-0.2-0.1-0.4-0.1-0.6c0-1.6,1.3-2.8,2.8-2.8s2.8,1.3,2.8,2.8s-1.3,2.8-2.8,2.8
+                c-0.2,0-0.4,0-0.6-0.1l5.9,5.9c0.5-0.2,0.9-0.4,1.3-0.8c0.7-0.7,1.1-1.6,1.1-2.5V7.4c0-1-0.4-1.9-1.1-2.5c-0.7-0.7-1.6-1-2.5-1H8.1
+                L17.6,13.4z"/>
+                <path d="M10.1,14.2c-0.5,0.9-1.4,1.4-2.4,1.4c-1.6,0-2.8-1.3-2.8-2.8c0-1.1,0.6-2,1.4-2.5L0.9,5.1
+                C0.3,5.7,0,6.6,0,7.5v10.7c0,1,0.4,1.8,1.1,2.5c0.7,0.7,1.6,1,2.5,1h5c0.7,0,1.3-0.1,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.3-2.6
+                L10.1,14.2z"/>
+                <path d="M25.5,27.5l-25-25C-0.1,2-0.1,1,0.5,0.4l0,0C1-0.1,2-0.1,2.6,0.4l25,25c0.6,0.6,0.6,1.5,0,2.1l0,0
+                C27,28.1,26,28.1,25.5,27.5z"/>
+            </svg>`
+        } else {
+            // return `
+            // <svg class="${cssPrefix}-svg" version="1.1" x="0px" y="0px" width="${height}px" height="${height}px" viewBox="0 0 28 28" xml:space="preserve">
+            //     <path d="M10.1,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6
+            //         C11.6,13.4,10.9,12.7,10.1,12.7z"/>
+            //     <path d="M17.2,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6
+            //         C18.8,13.4,18.1,12.7,17.2,12.7z"/>
+            //     <path d="M14,0C6.3,0,0,6.3,0,14c0,7.7,6.3,14,14,14s14-6.3,14-14C28,6.3,21.7,0,14,0z M21.5,17.3
+            //         c0,0.5-0.2,1-0.6,1.4c-0.4,0.4-0.9,0.6-1.4,0.6h-2.8c-0.4,0-0.7-0.1-1-0.3c-0.3-0.2-0.6-0.5-0.8-0.8l-0.8-1.5
+            //         c-0.1-0.2-0.3-0.3-0.5-0.3l0,0l0,0l0,0c-0.2,0-0.4,0.1-0.5,0.3l-0.8,1.5c-0.2,0.3-0.4,0.6-0.8,0.8c-0.3,0.2-0.7,0.3-1,0.3H7.7
+            //         c-0.5,0-1-0.2-1.4-0.6c-0.4-0.4-0.6-0.9-0.6-1.5v-6c0-0.5,0.2-1,0.6-1.4c0.4-0.4,0.9-0.6,1.4-0.6h11.6c0.5,0,1,0.2,1.4,0.6
+            //         c0.4,0.4,0.6,0.9,0.6,1.4L21.5,17.3z"/>
+            // </svg>
+            //
+            // <svg class="${cssPrefix}-svg-error" version="1.1" x="0px" y="0px" width="${height - 4}px" height="${height - 4}px" viewBox="0 0 28 28" xml:space="preserve">
+            // <path d="M14,0C6.3,0,0,6.3,0,14s6.3,14,14,14s14-6.3,14-14S21.7,0,14,0z M19.4,9.5c0.5,0,1,0.1,1.4,0.5
+            //     c0.4,0.4,0.6,0.8,0.6,1.4v6c0,0.5-0.2,1-0.6,1.4c-0.2,0.2-0.4,0.3-0.7,0.4l-3.4-3.4c0.1,0,0.2,0,0.3,0c0.9,0,1.6-0.7,1.6-1.6
+            //     c0-0.9-0.7-1.6-1.6-1.6c-0.9,0-1.6,0.7-1.6,1.6c0,0.1,0,0.3,0,0.4l-5.3-5.1H19.4z M12.4,18.3c-0.2,0.3-0.4,0.5-0.8,0.7
+            //     s-0.7,0.2-1,0.2H7.8c-0.5,0-1-0.2-1.4-0.5c-0.4-0.4-0.6-0.8-0.6-1.4v-6c0-0.5,0.2-1,0.5-1.3l3,3c-0.5,0.3-0.8,0.8-0.8,1.4
+            //     c0,0.9,0.7,1.6,1.6,1.6c0.6,0,1.1-0.3,1.4-0.8l1.7,1.7L12.4,18.3z M21.3,22.5l-0.1,0.1c-0.3,0.3-0.8,0.3-1.1,0L6,8.5
+            //     C5.7,8.2,5.7,7.7,6,7.4l0.1-0.1C6.4,7,6.8,7,7.1,7.3l14.2,14.2C21.6,21.7,21.6,22.2,21.3,22.5z"/>
+            // </svg>`
+        }
 };
 
 
 /**
  * generate the CSS string to inject
- * @param {Number} [height=50]
+ * @param options
  * @param {Number} [fontSize=18]
- * @param {string} theme either 'light' or 'dark'
  * @returns {string}
  */
-export const generateCSS = (height=50, fontSize=18, theme='light')=>{
-    let primaryColor = "white";
-    // let disabledColor = "white";
-    let disabledColor = "rgba(255,255,255,0.6)";
+export const generateCSS = (options, fontSize=18)=>{
+    if(!options.color) options.color = 'rgb(80,168,252)';
+    if(!options.background) options.background = false;
+    if(!options.disabledOpacity) options.disabledOpacity = 0.5;
 
-    if(theme == 'dark'){
-        primaryColor = "black";
-        disabledColor = "rgba(0,0,0,0.5)";
-    }
+    const height = options.height;
+    const borderWidth = 2;
+    const borderColor = options.background ? options.background : options.color;
 
-    let borderWidth = 2;
-    let borderRadius = height / 2;
-    // borderRadius = 0;
+    let borderRadius;
+    if(options.corners == 'round') borderRadius = options.height / 2;
+    else if(options.corners == 'square') borderRadius = 2;
+    else borderRadius = options.corners;
+
 
     return (`
         @font-face {
@@ -245,16 +185,13 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
             unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
         }
         
-        
-        .${cssPrefix} {
-            font-family: 'Karla', sans-serif;
-        }
-
         button.${cssPrefix}-button {
-            border: ${primaryColor} ${borderWidth}px solid;
+            font-family: 'Karla', sans-serif;
+
+            border: ${borderColor} ${borderWidth}px solid;
             border-radius: ${borderRadius}px;
             box-sizing: border-box;
-            background: rgba(0,0,0, 0);
+            background: ${options.background ? options.background : 'none'};
 
             height: ${height}px;
             min-width: ${125}px;
@@ -262,8 +199,6 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
             position: relative;
 
             cursor: pointer;
-            -webkit-transition: width 0.5s;
-            transition: width 0.5s;
         }   
 
         /*
@@ -280,94 +215,97 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
             height: ${height-4}px;
         }
         .${cssPrefix}-svg {
-            fill: ${primaryColor};
-            margin-top: -2px;
-            margin-left: -2px;
+            fill: ${options.color};
+            margin-top: ${(height - fontSize * _logo_scale) / 2 - 2}px;
+            margin-left: ${height / 3 }px;
         }
         .${cssPrefix}-svg-error {
-            fill: ${disabledColor};
-            display:none;
+            fill: ${options.color};
+            display:none;            
+            margin-top: ${(height - 28/18 * fontSize * _logo_scale) / 2 - 2}px;
+            margin-left: ${height / 3 }px;
         }
-
+        
+        
         /*
         * Title
         */
 
         .${cssPrefix}-title {
-            color: ${primaryColor};
+            color: ${options.color};
             position: relative;
             font-size: ${fontSize}px;
             top: -${borderWidth}px;
             line-height: ${height - borderWidth * 2}px;
             text-align: left;
             padding-left: ${height * 1.05}px;
-            padding-right: ${(borderRadius-10 < 5) ? 5 : borderRadius-10}px;
+            padding-right: ${(borderRadius-10 < 5) ? height/3 : borderRadius-10}px;
         }
         
         /*
         * Animation
         */
         
-        @keyframes logo-transition-hide {
-            0% {left: 0;}
-            100% { left: 110%; }
-        }
-        @keyframes logo-transition-hide-short {
-            0% {}
-            100% { left: 110%; }
-        }
+        // @keyframes logo-transition-hide {
+        //     0% {}
+        //     100% {  }
+        // }
+        // @keyframes logo-transition-hide-short {
+        //     0% {}
+        //     100% {}
+        // }
+        //
+        // @keyframes logo-transition-show {
+        //     0% {}            
+        //     100% {}
+        // }
+        //
+        // @keyframes title-transition-hide {
+        //     0% { -webkit-clip-path: inset(0px 0px 0px 20%); }
+        //     100% {  -webkit-clip-path: inset(0px 0px 0px 120%); }
+        // }
+        // @keyframes title-transition-hide-short {
+        //     0% { }
+        //     100% {  }
+        // }
+        // @keyframes title-transition-show {
+        //     0% {  -webkit-clip-path: inset(0px 100% 0px 0%); }
+        //     100% {  -webkit-clip-path: inset(0px 0% 0px 0); }
+        // }
         
-        @keyframes logo-transition-show {
-            0% {left: -${height}px;}            
-            100% {left: 0;}
-        }
         
-        @keyframes title-transition-hide {
-            0% { -webkit-clip-path: inset(0px 0px 0px 20%); }
-            100% {  -webkit-clip-path: inset(0px 0px 0px 120%); }
-        }
-        @keyframes title-transition-hide-short {
-            0% { }
-            100% {  }
-        }
-        @keyframes title-transition-show {
-            0% {  -webkit-clip-path: inset(0px 100% 0px 0%); }
-            100% {  -webkit-clip-path: inset(0px 0% 0px 0); }
-        }
-        
-        
-        button.${cssPrefix}-button.animate, button.${cssPrefix}-button.animate-out {
-            overflow:hidden;
-        }
-        
-        button.${cssPrefix}-button.animate > .${cssPrefix}-title {
-            animation: title-transition-hide ease 1s 1, title-transition-show ease 1s 1;
-            animation-delay: 0s, 1s;                
-        }     
-        
-        button.${cssPrefix}-button.animate > .${cssPrefix}-logo {
-            animation: logo-transition-hide ease 1s 1, logo-transition-show ease 1s 1;
-            animation-delay: 0s, 1s;                
-        }
-
-        
-        button.${cssPrefix}-button.animate-out > .${cssPrefix}-title {
-            animation: title-transition-hide-short ease 0.2s 1, title-transition-show ease 1s 1;
-            animation-delay: 0s, 0.2s;           
-        }     
-        
-        button.${cssPrefix}-button.animate-out > .${cssPrefix}-logo {
-            animation: logo-transition-hide-short ease 0.2s 1, logo-transition-show ease 1s 1;
-            animation-delay: 0s, 0.2s;                
-      
-        }
+        // button.${cssPrefix}-button.animate, button.${cssPrefix}-button.animate-out {
+        //     overflow:hidden;
+        // }
+        //
+        // button.${cssPrefix}-button.animate > .${cssPrefix}-title {
+        //     animation: title-transition-hide ease 1s 1, title-transition-show ease 1s 1;
+        //     animation-delay: 0s, 1s;                
+        // }     
+        //
+        // button.${cssPrefix}-button.animate > .${cssPrefix}-logo {
+        //     animation: logo-transition-hide ease 1s 1, logo-transition-show ease 1s 1;
+        //     animation-delay: 0s, 1s;                
+        // }
+        //
+        //
+        // button.${cssPrefix}-button.animate-out > .${cssPrefix}-title {
+        //     animation: title-transition-hide-short ease 0.2s 1, title-transition-show ease 1s 1;
+        //     animation-delay: 0s, 0.2s;           
+        // }     
+        //
+        // button.${cssPrefix}-button.animate-out > .${cssPrefix}-logo {
+        //     animation: logo-transition-hide-short ease 0.2s 1, logo-transition-show ease 1s 1;
+        //     animation-delay: 0s, 0.2s;                
+        //
+        // }
 
         /*
         * disabled
         */
 
         button.${cssPrefix}-button[disabled=true] {
-            border-color: ${disabledColor};
+            opacity: ${options.disabledOpacity};
         }
         
         button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-logo > .${cssPrefix}-svg {
@@ -379,7 +317,6 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
         }
         
         button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-title {
-            color: ${disabledColor};
         }
 
     `);
