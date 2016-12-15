@@ -115,7 +115,7 @@ export class EnterVRButton extends EventEmitter  {
     }
 
     setTooltip(tooltip) {
-        ifChild(this.domElement, "button", (button)=> button.title = tooltip);
+        this.domElement.title = tooltip;
         return this;
     }
 
