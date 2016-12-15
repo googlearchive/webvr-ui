@@ -710,9 +710,7 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
     }, {
         key: "setTooltip",
         value: function setTooltip(tooltip) {
-            ifChild(this.domElement, "button", function (button) {
-                return button.title = tooltip;
-            });
+            this.domElement.title = tooltip;
             return this;
         }
     }, {
@@ -1217,11 +1215,11 @@ var createDefaultView = exports.createDefaultView = function createDefaultView(h
             domElement.classList.add("animate");
             setTimeout(function () {
                 domElement.click();
-                __animating = false;
-            }, 1000);
+            }, 800);
 
             setTimeout(function () {
                 domElement.classList.remove("animate");
+                __animating = false;
             }, 2000);
         }
     }, true);
@@ -1256,9 +1254,27 @@ var createDefaultView = exports.createDefaultView = function createDefaultView(h
     var __onDragEnd = function __onDragEnd(e) {
         if (!domElement.disabled) {
             if (__dragTransition > 0.8) {
-                domElement.click();
+                (function () {
+                    __animating = true;
+                    domElement.click();
+                    domElement.classList.add("animate-out");
+
+                    var __endCount = 0;
+                    var animationEnd = function animationEnd() {
+                        __endCount++;
+                        if (__endCount == 2) {
+                            domElement.classList.remove("animate-out");
+                            __animating = false;
+                            __setTransition(0);
+                        }
+                    };
+
+                    child(domElement, 'logo').addEventListener("webkitAnimationEnd", animationEnd);
+                    child(domElement, 'logo').addEventListener("animationend", animationEnd);
+                })();
+            } else {
+                __setTransition(0);
             }
-            __setTransition(0);
         }
     };
 
@@ -1327,7 +1343,7 @@ var generateCSS = exports.generateCSS = function generateCSS() {
     var borderRadius = height / 2;
     // borderRadius = 0;
 
-    return "\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format('woff2');\n            unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n        }\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format('woff2');\n            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n        }\n        \n        \n        ." + cssPrefix + " {\n            font-family: 'Karla', sans-serif;\n        }\n\n        button." + cssPrefix + "-button {\n            border: " + primaryColor + " " + borderWidth + "px solid;\n            border-radius: " + borderRadius + "px;\n            box-sizing: border-box;\n            background: rgba(0,0,0, 0);\n\n            height: " + height + "px;\n            min-width: " + 125 + "px;\n            display: inline-block;\n            position: relative;\n\n            cursor: pointer;\n            -webkit-transition: width 0.5s;\n            transition: width 0.5s;\n            overflow:hidden;\n        }   \n\n        /*\n        * Logo\n        */\n\n        ." + cssPrefix + "-logo {\n            width: " + height + "px;\n            height: " + height + "px;\n            position: absolute;\n            top:0px;\n            left:0px;\n            width: " + (height - 4) + "px;\n            height: " + (height - 4) + "px;\n        }\n        ." + cssPrefix + "-svg {\n            fill: " + primaryColor + ";\n            margin-top: -2px;\n            margin-left: -2px;\n        }\n        ." + cssPrefix + "-svg-error {\n            fill: " + disabledColor + ";\n            display:none;\n        }\n\n        /*\n        * Title\n        */\n\n        ." + cssPrefix + "-title {\n            color: " + primaryColor + ";\n            position: relative;\n            font-size: " + fontSize + "px;\n            top: -" + borderWidth + "px;\n            line-height: " + (height - borderWidth * 2) + "px;\n            text-align: left;\n            padding-left: " + height * 1.05 + "px;\n            padding-right: " + (borderRadius - 10 < 5 ? 5 : borderRadius - 10) + "px;\n        }\n        \n        /*\n        * Animation\n        */\n        \n        @keyframes logo-transition-hide {\n            0% {left: 0;}\n            100% { left: 100%; }\n        }\n        \n        @keyframes logo-transition-show {\n            0% {left: -" + height + "px;}            \n            100% {left: 0;}\n        }\n        \n        @keyframes title-transition-hide {\n            0% { -webkit-clip-path: inset(0px 0px 0px 20%); }\n            100% {  -webkit-clip-path: inset(0px 0px 0px 120%); }\n        }\n        @keyframes title-transition-show {\n            0% {  -webkit-clip-path: inset(0px 100% 0px 0%); }\n            100% {  -webkit-clip-path: inset(0px 0% 0px 0); }\n        }\n        \n        button." + cssPrefix + "-button.animate > ." + cssPrefix + "-title {\n            animation: title-transition-hide ease 1s 1, title-transition-show ease 1s 1;\n            animation-delay: 0s, 1s;                \n        }     \n        \n        button." + cssPrefix + "-button.animate > ." + cssPrefix + "-logo {\n            animation: logo-transition-hide ease 1s 1, logo-transition-show ease 1s 1;\n            animation-delay: 0s, 1s;\n                \n        }\n\n        /*\n        * disabled\n        */\n\n        button." + cssPrefix + "-button[disabled=true] {\n            border-color: " + disabledColor + ";\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg {\n            display:none;\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg-error {\n            display:initial;\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-title {\n            color: " + disabledColor + ";\n        }\n\n    ";
+    return "\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format('woff2');\n            unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n        }\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format('woff2');\n            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n        }\n        \n        \n        ." + cssPrefix + " {\n            font-family: 'Karla', sans-serif;\n        }\n\n        button." + cssPrefix + "-button {\n            border: " + primaryColor + " " + borderWidth + "px solid;\n            border-radius: " + borderRadius + "px;\n            box-sizing: border-box;\n            background: rgba(0,0,0, 0);\n\n            height: " + height + "px;\n            min-width: " + 125 + "px;\n            display: inline-block;\n            position: relative;\n\n            cursor: pointer;\n            -webkit-transition: width 0.5s;\n            transition: width 0.5s;\n        }   \n\n        /*\n        * Logo\n        */\n\n        ." + cssPrefix + "-logo {\n            width: " + height + "px;\n            height: " + height + "px;\n            position: absolute;\n            top:0px;\n            left:0px;\n            width: " + (height - 4) + "px;\n            height: " + (height - 4) + "px;\n        }\n        ." + cssPrefix + "-svg {\n            fill: " + primaryColor + ";\n            margin-top: -2px;\n            margin-left: -2px;\n        }\n        ." + cssPrefix + "-svg-error {\n            fill: " + disabledColor + ";\n            display:none;\n        }\n\n        /*\n        * Title\n        */\n\n        ." + cssPrefix + "-title {\n            color: " + primaryColor + ";\n            position: relative;\n            font-size: " + fontSize + "px;\n            top: -" + borderWidth + "px;\n            line-height: " + (height - borderWidth * 2) + "px;\n            text-align: left;\n            padding-left: " + height * 1.05 + "px;\n            padding-right: " + (borderRadius - 10 < 5 ? 5 : borderRadius - 10) + "px;\n        }\n        \n        /*\n        * Animation\n        */\n        \n        @keyframes logo-transition-hide {\n            0% {left: 0;}\n            100% { left: 110%; }\n        }\n        @keyframes logo-transition-hide-short {\n            0% {}\n            100% { left: 110%; }\n        }\n        \n        @keyframes logo-transition-show {\n            0% {left: -" + height + "px;}            \n            100% {left: 0;}\n        }\n        \n        @keyframes title-transition-hide {\n            0% { -webkit-clip-path: inset(0px 0px 0px 20%); }\n            100% {  -webkit-clip-path: inset(0px 0px 0px 120%); }\n        }\n        @keyframes title-transition-hide-short {\n            0% { }\n            100% {  }\n        }\n        @keyframes title-transition-show {\n            0% {  -webkit-clip-path: inset(0px 100% 0px 0%); }\n            100% {  -webkit-clip-path: inset(0px 0% 0px 0); }\n        }\n        \n        \n        button." + cssPrefix + "-button.animate, button." + cssPrefix + "-button.animate-out {\n            overflow:hidden;\n        }\n        \n        button." + cssPrefix + "-button.animate > ." + cssPrefix + "-title {\n            animation: title-transition-hide ease 1s 1, title-transition-show ease 1s 1;\n            animation-delay: 0s, 1s;                \n        }     \n        \n        button." + cssPrefix + "-button.animate > ." + cssPrefix + "-logo {\n            animation: logo-transition-hide ease 1s 1, logo-transition-show ease 1s 1;\n            animation-delay: 0s, 1s;                \n        }\n\n        \n        button." + cssPrefix + "-button.animate-out > ." + cssPrefix + "-title {\n            animation: title-transition-hide-short ease 0.2s 1, title-transition-show ease 1s 1;\n            animation-delay: 0s, 0.2s;           \n        }     \n        \n        button." + cssPrefix + "-button.animate-out > ." + cssPrefix + "-logo {\n            animation: logo-transition-hide-short ease 0.2s 1, logo-transition-show ease 1s 1;\n            animation-delay: 0s, 0.2s;                \n      \n        }\n\n        /*\n        * disabled\n        */\n\n        button." + cssPrefix + "-button[disabled=true] {\n            border-color: " + disabledColor + ";\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg {\n            display:none;\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg-error {\n            display:initial;\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-title {\n            color: " + disabledColor + ";\n        }\n\n    ";
 };
 
 },{}],7:[function(_dereq_,module,exports){
