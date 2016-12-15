@@ -22,6 +22,9 @@ let _WebVRUI_css_injected = false;
  */
 export const cssPrefix = "webvr-ui";
 
+const child = (el, suffix)=>
+    el.querySelector("."+cssPrefix+"-"+suffix);
+
 /**
  * @private
  * generate the innerHTML for the button
@@ -34,7 +37,7 @@ const generateInnerHTML = (height, fontSize, theme)=>{
 
     return `<button class="${cssPrefix}-button">
           <div class="${cssPrefix}-title"></div>
-          <div class="${cssPrefix}-logo">${svgString}</div>
+          <div class="${cssPrefix}-logo" >${svgString}</div>
         </button>`;
 };
 
@@ -63,7 +66,7 @@ export const injectCSS = (cssText)=>{
  * @param {String} theme either 'light' or 'dark'
  * @returns {HTMLElement}
  */
-export const createView = (height, injectCSSStyles=true, theme='light')=>{
+export const createDefaultView = (height, injectCSSStyles=true, theme='light')=>{
     const fontSize = height / 2.5;
     if(injectCSSStyles){
         injectCSS(generateCSS(height, fontSize, theme));
@@ -71,7 +74,85 @@ export const createView = (height, injectCSSStyles=true, theme='light')=>{
 
     const el = document.createElement("div");
     el.innerHTML = generateInnerHTML(height, fontSize, theme);
-    return el.firstChild;
+    var domElement = el.firstChild;
+
+
+    let animating = false;
+    domElement.addEventListener('click', (e)=>{
+        if(!animating) {
+            animating = true;
+            e.stopPropagation();
+            domElement.classList.add("animate");
+            setTimeout(()=> {
+                domElement.click();
+                animating = false;
+            }, 1000);
+
+            setTimeout(()=>{
+                domElement.classList.remove("animate");
+            },2000)
+        }
+    }, true);
+
+    domElement.__setTransition = (pct)=>{
+        domElement.__dragTransition = pct;
+
+        var bounding = domElement.getBoundingClientRect();
+        var left = pct * (bounding.width-height);
+        child(domElement, 'logo').style.left = left+"px";
+
+        child(domElement, 'title').style.clipPath = `inset(0 0 0 ${left + height/1.5}px)`;
+        child(domElement, 'title').style.webkitClipPath = `inset(0 0 0 ${left+ height/1.5}px)`;
+    };
+
+    domElement.__onDrag = (e) => {
+        if(!domElement.disabled) {
+            var bounding = domElement.getBoundingClientRect();
+
+            if (e.pageX) var left = e.pageX;
+            else var left = e.touches[0].pageX;
+
+            left = left - bounding.left;
+            left = (left - height / 2);
+            if (left < 0) left = 0;
+            if (left > bounding.width - height) left = bounding.width - height;
+
+            domElement.__setTransition(left / (bounding.width - height))
+        }
+    };
+
+    domElement.__onDragEnd = (e) => {
+        if(!domElement.disabled) {
+            if (domElement.__dragTransition > 0.8) {
+                domElement.click()
+            }
+            domElement.__setTransition(0)
+        }
+    };
+
+    child(domElement, 'logo').addEventListener("mousedown", ( event ) => domElement.__dragIcon = true, false);
+    document.addEventListener("mouseup", ( event ) => {
+        if(domElement.__dragIcon){
+            domElement.__dragIcon = false;
+            domElement.__onDragEnd(event);
+        }
+    }, false);
+    document.addEventListener("mousemove", ( event ) => { if(domElement.__dragIcon) domElement.__onDrag(event) }, false);
+
+    child(domElement, 'logo').addEventListener("touchstart", ( event ) => domElement.__dragIcon = true);
+    document.addEventListener("touchend", ( event ) => {
+        if(domElement.__dragIcon){
+            domElement.__dragIcon = false;
+            domElement.__onDragEnd(event)
+        }
+
+    });
+    document.addEventListener("touchmove", ( event ) => { if(domElement.__dragIcon) domElement.__onDrag(event) });
+
+
+
+
+    return domElement;
 };
 
 
@@ -115,6 +196,7 @@ export const generateVRIcon = (height, fontSize, theme)=>{
  */
 export const generateCSS = (height=50, fontSize=18, theme='light')=>{
     let primaryColor = "white";
+    // let disabledColor = "white";
     let disabledColor = "rgba(255,255,255,0.6)";
 
     if(theme == 'dark'){
@@ -142,6 +224,7 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
             unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
         }
         
+        
         .${cssPrefix} {
             font-family: 'Karla', sans-serif;
         }
@@ -160,7 +243,8 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
             cursor: pointer;
             -webkit-transition: width 0.5s;
             transition: width 0.5s;
-        }
+            overflow:hidden;
+        }   
 
         /*
         * Logo
@@ -199,6 +283,40 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
             padding-left: ${height * 1.05}px;
             padding-right: ${(borderRadius-10 < 5) ? 5 : borderRadius-10}px;
         }
+        
+        /*
+        * Animation
+        */
+        
+        @keyframes logo-transition-hide {
+            0% {left: 0;}
+            100% { left: 100%; }
+        }
+        
+        @keyframes logo-transition-show {
+            0% {left: -${height}px;}            
+            100% {left: 0;}
+        }
+        
+        @keyframes title-transition-hide {
+            0% { -webkit-clip-path: inset(0px 0px 0px 20%); }
+            100% {  -webkit-clip-path: inset(0px 0px 0px 120%); }
+        }
+        @keyframes title-transition-show {
+            0% {  -webkit-clip-path: inset(0px 100% 0px 0%); }
+            100% {  -webkit-clip-path: inset(0px 0% 0px 0); }
+        }
+        
+        button.${cssPrefix}-button.animate > .${cssPrefix}-title {
+            animation: title-transition-hide ease 1s 1, title-transition-show ease 1s 1;
+            animation-delay: 0s, 1s;                
+        }     
+        
+        button.${cssPrefix}-button.animate > .${cssPrefix}-logo {
+            animation: logo-transition-hide ease 1s 1, logo-transition-show ease 1s 1;
+            animation-delay: 0s, 1s;
+                
+        }
 
         /*
         * disabled
@@ -222,3 +340,5 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
 
     `);
 };
+
+

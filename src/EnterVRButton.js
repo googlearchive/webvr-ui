@@ -14,7 +14,7 @@
 
 
 import {WebVRManager} from "./WebVRManager";
-import { cssPrefix, createView  } from "./dom";
+import { cssPrefix, createDefaultView  } from "./dom";
 import * as State from "./states";
 import EventEmitter from "eventemitter3";
 
@@ -77,7 +77,7 @@ export class EnterVRButton extends EventEmitter  {
         this.sourceCanvas = sourceCanvas;
 
         //pass in your own domElement if you really dont want to use ours
-        this.domElement = options.domElement || createView(options.height, options.injectCSS, options.theme);
+        this.domElement = options.domElement || createDefaultView(options.height, options.injectCSS, options.theme);
 
         // Create WebVR Manager
         this.manager = new WebVRManager();
