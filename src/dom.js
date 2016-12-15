@@ -130,9 +130,23 @@ export const createDefaultView = (height, injectCSSStyles=true, theme='light')=>
             if (__dragTransition > 0.8) {
                 __animating = true;
                 domElement.click()
-                setTimeout(() => __animating = false, 500);
+                domElement.classList.add("animate-out");
+
+                let __endCount = 0;
+                let animationEnd = () => {
+                    __endCount ++;
+                    if(__endCount == 2){
+                        domElement.classList.remove("animate-out");
+                        __animating = false;
+                        __setTransition(0)
+                    }
+                }
+
+                child(domElement,'logo').addEventListener("webkitAnimationEnd", animationEnd);
+                child(domElement,'logo').addEventListener("animationend", animationEnd);
+            } else {
+                __setTransition(0)
             }
-            __setTransition(0)
         }
     };
 
@@ -298,6 +312,10 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
             0% {left: 0;}
             100% { left: 110%; }
         }
+        @keyframes logo-transition-hide-short {
+            0% {}
+            100% { left: 110%; }
+        }
         
         @keyframes logo-transition-show {
             0% {left: -${height}px;}            
@@ -308,13 +326,17 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
             0% { -webkit-clip-path: inset(0px 0px 0px 20%); }
             100% {  -webkit-clip-path: inset(0px 0px 0px 120%); }
         }
+        @keyframes title-transition-hide-short {
+            0% { }
+            100% {  }
+        }
         @keyframes title-transition-show {
             0% {  -webkit-clip-path: inset(0px 100% 0px 0%); }
             100% {  -webkit-clip-path: inset(0px 0% 0px 0); }
         }
         
         
-        button.${cssPrefix}-button.animate {
+        button.${cssPrefix}-button.animate, button.${cssPrefix}-button.animate-out {
             overflow:hidden;
         }
         
@@ -325,8 +347,19 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
         
         button.${cssPrefix}-button.animate > .${cssPrefix}-logo {
             animation: logo-transition-hide ease 1s 1, logo-transition-show ease 1s 1;
-            animation-delay: 0s, 1s;
-                
+            animation-delay: 0s, 1s;                
+        }
+
+        
+        button.${cssPrefix}-button.animate-out > .${cssPrefix}-title {
+            animation: title-transition-hide-short ease 0.2s 1, title-transition-show ease 1s 1;
+            animation-delay: 0s, 0.2s;           
+        }     
+        
+        button.${cssPrefix}-button.animate-out > .${cssPrefix}-logo {
+            animation: logo-transition-hide-short ease 0.2s 1, logo-transition-show ease 1s 1;
+            animation-delay: 0s, 0.2s;                
+      
         }
 
         /*
