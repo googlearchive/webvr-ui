@@ -488,7 +488,8 @@ if (typeof AFRAME !== 'undefined' && AFRAME) {
         dependencies: ['canvas'],
 
         schema: {
-            enabled: { type: 'boolean', default: true }
+            enabled: { type: 'boolean', default: true },
+            theme: { type: 'string', default: 'light' }
         },
 
         init: function init() {},
@@ -503,6 +504,7 @@ if (typeof AFRAME !== 'undefined' && AFRAME) {
                 }
 
                 var options = {
+                    theme: this.data.theme,
                     onRequestStateChange: function onRequestStateChange(state) {
                         if (state == State.PRESENTING) {
                             scene.enterVR();
@@ -627,6 +629,7 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
      * @param {string} [options.textEnterVRTitle] set the text for Enter VR
      * @param {string} [options.textVRNotFoundTitle] set the text for when a VR display is not found
      * @param {string} [options.textExitVRTitle] set the text for exiting VR
+     * @param {string} [options.theme] set to 'light' (default) or 'dark'
      */
     function EnterVRButton(sourceCanvas, options) {
         _classCallCheck(this, EnterVRButton);
@@ -636,6 +639,7 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
         options = options || {};
         // Option to change pixel height of the button.
         options.height = options.height || 45;
+        options.theme = options.theme || 'light';
         options.injectCSS = options.injectCSS !== false;
 
         options.onRequestStateChange = options.onRequestStateChange || function () {
@@ -661,7 +665,7 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
         _this.sourceCanvas = sourceCanvas;
 
         //pass in your own domElement if you really dont want to use ours
-        _this.domElement = options.domElement || (0, _dom.createView)(options.height, options.injectCSS);
+        _this.domElement = options.domElement || (0, _dom.createDefaultView)(options.height, options.injectCSS, options.theme);
 
         // Create WebVR Manager
         _this.manager = new _WebVRManager.WebVRManager();
@@ -834,7 +838,9 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
 
                     case State.PRESENTING:
                     case State.PRESENTING_360:
-                        this.hide();
+                        if (!this.manager.defaultDisplay.capabilities.hasExternalDisplay) {
+                            this.hide();
+                        }
                         this.setTitle(this.options.textExitVRTitle);
                         this.emit("enter");
                         break;
@@ -1145,16 +1151,21 @@ var _WebVRUI_css_injected = false;
  */
 var cssPrefix = exports.cssPrefix = "webvr-ui";
 
+var child = function child(el, suffix) {
+    return el.querySelector("." + cssPrefix + "-" + suffix);
+};
+
 /**
  * @private
  * generate the innerHTML for the button
  * @param {Number} fontSize
+ * @param {String} theme either 'light' or 'dark'
  * @returns {string}
  */
-var generateInnerHTML = function generateInnerHTML(fontSize) {
-    var svgString = generateVRIcon(fontSize);
+var generateInnerHTML = function generateInnerHTML(height, fontSize, theme) {
+    var svgString = generateVRIcon(height, fontSize, theme);
 
-    return "<button class=\"" + cssPrefix + "-button\">\n          <div class=\"" + cssPrefix + "-title\"></div>\n          <div class=\"" + cssPrefix + "-logo\">" + svgString + "</div>\n        </button>";
+    return "<button class=\"" + cssPrefix + "-button\">\n          <div class=\"" + cssPrefix + "-title\"></div>\n          <div class=\"" + cssPrefix + "-logo\" >" + svgString + "</div>\n        </button>";
 };
 
 /**
@@ -1179,18 +1190,106 @@ var injectCSS = exports.injectCSS = function injectCSS(cssText) {
  * generate DOM element view for button
  * @param {Number} height
  * @param {boolean} [injectCSSStyles=true] inject the view's CSS into the DOM
+ * @param {String} theme either 'light' or 'dark'
  * @returns {HTMLElement}
  */
-var createView = exports.createView = function createView(height) {
+var createDefaultView = exports.createDefaultView = function createDefaultView(height) {
     var injectCSSStyles = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    var theme = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'light';
 
     var fontSize = height / 2.5;
     if (injectCSSStyles) {
-        injectCSS(generateCSS(height, fontSize));
+        injectCSS(generateCSS(height, fontSize, theme));
     }
+
     var el = document.createElement("div");
-    el.innerHTML = generateInnerHTML(fontSize);
-    return el.firstChild;
+    el.innerHTML = generateInnerHTML(height, fontSize, theme);
+    var domElement = el.firstChild;
+
+    var __animating = false;
+    var __dragIcon = void 0;
+    var __dragTransition = void 0;
+
+    domElement.addEventListener('click', function (e) {
+        if (!__animating) {
+            __animating = true;
+            e.stopPropagation();
+            domElement.classList.add("animate");
+            setTimeout(function () {
+                domElement.click();
+                __animating = false;
+            }, 1000);
+
+            setTimeout(function () {
+                domElement.classList.remove("animate");
+            }, 2000);
+        }
+    }, true);
+
+    var __setTransition = function __setTransition(pct) {
+        __dragTransition = pct;
+
+        var bounding = domElement.getBoundingClientRect();
+        var left = pct * (bounding.width - height);
+        child(domElement, 'logo').style.left = left + "px";
+
+        child(domElement, 'title').style.clipPath = "inset(0 0 0 " + (left + height / 1.5) + "px)";
+        child(domElement, 'title').style.webkitClipPath = "inset(0 0 0 " + (left + height / 1.5) + "px)";
+    };
+
+    var __onDrag = function __onDrag(e) {
+        if (!domElement.disabled) {
+            var bounding = domElement.getBoundingClientRect();
+
+            var left = void 0;
+            if (e.pageX) left = e.pageX;else left = e.touches[0].pageX;
+
+            left = left - bounding.left;
+            left = left - height / 2;
+            if (left < 0) left = 0;
+            if (left > bounding.width - height) left = bounding.width - height;
+
+            __setTransition(left / (bounding.width - height));
+        }
+    };
+
+    var __onDragEnd = function __onDragEnd(e) {
+        if (!domElement.disabled) {
+            if (__dragTransition > 0.8) {
+                domElement.click();
+            }
+            __setTransition(0);
+        }
+    };
+
+    child(domElement, 'logo').addEventListener("mousedown", function (event) {
+        return __dragIcon = true;
+    }, false);
+    document.addEventListener("mouseup", function (event) {
+        if (__dragIcon) {
+            __dragIcon = false;
+            __onDragEnd(event);
+        }
+    }, false);
+
+    document.addEventListener("mousemove", function (event) {
+        return __dragIcon && __onDrag(event);
+    }, false);
+
+    child(domElement, 'logo').addEventListener("touchstart", function (event) {
+        return __dragIcon = true;
+    });
+    document.addEventListener("touchend", function (event) {
+        if (__dragIcon) {
+            __dragIcon = false;
+            __onDragEnd(event);
+        }
+    });
+    document.addEventListener("touchmove", function (event) {
+        return __dragIcon && __onDrag(event);
+    });
+
+    return domElement;
 };
 
 /**
@@ -1199,30 +1298,36 @@ var createView = exports.createView = function createView(height) {
  * @param {string} [fill="#000000"]
  * @returns {string}
  */
-var generateVRIcon = exports.generateVRIcon = function generateVRIcon(height) {
-    var fill = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "#000000";
-
-    var aspect = 28 / 18;
-    return "\n        <svg class=\"" + cssPrefix + "-svg\" version=\"1.1\" x=\"0px\" y=\"0px\" width=\"" + aspect * height + "px\" height=\"" + height + "px\" viewBox=\"0 0 28 18\" xml:space=\"preserve\">\n            <path fill=\"" + fill + "\" d=\"M26.8,1.1C26.1,0.4,25.1,0,24.2,0H3.4c-1,0-1.7,0.4-2.4,1.1C0.3,1.7,0,2.7,0,3.6v10.7\n            c0,1,0.3,1.9,0.9,2.6C1.6,17.6,2.4,18,3.4,18h5c0.7,0,1.3-0.2,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.5-2.6C13.2,13.1,13,13,14,13v0h-0.2\n            h0c0.3,0,0.7,0.1,0.8,0.5l1.4,2.6c0.3,0.6,0.8,1.1,1.3,1.4c0.6,0.3,1.2,0.5,1.8,0.5h5c1,0,2-0.4,2.7-1.1c0.7-0.7,1.2-1.6,1.2-2.6\n            V3.6C28,2.7,27.5,1.7,26.8,1.1z M7.4,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8c1.6,0,2.8,1.3,2.8,2.8\n            C10.2,10.5,8.9,11.8,7.4,11.8z M20.1,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8C21.7,6.2,23,7.4,23,9\n            C23,10.5,21.7,11.8,20.1,11.8z\"/>\n        </svg>\n        <svg class=\"" + cssPrefix + "-svg-error\" x=\"0px\" y=\"0px\" width=\"" + aspect * height + "px\" height=\"" + aspect * height + "px\" viewBox=\"0 0 28 28\" xml:space=\"preserve\">\n            <path d=\"M17.6,13.4c0-0.2-0.1-0.4-0.1-0.6c0-1.6,1.3-2.8,2.8-2.8s2.8,1.3,2.8,2.8s-1.3,2.8-2.8,2.8\n            c-0.2,0-0.4,0-0.6-0.1l5.9,5.9c0.5-0.2,0.9-0.4,1.3-0.8c0.7-0.7,1.1-1.6,1.1-2.5V7.4c0-1-0.4-1.9-1.1-2.5c-0.7-0.7-1.6-1-2.5-1H8.1\n            L17.6,13.4z\"/>\n            <path d=\"M10.1,14.2c-0.5,0.9-1.4,1.4-2.4,1.4c-1.6,0-2.8-1.3-2.8-2.8c0-1.1,0.6-2,1.4-2.5L0.9,5.1\n            C0.3,5.7,0,6.6,0,7.5v10.7c0,1,0.4,1.8,1.1,2.5c0.7,0.7,1.6,1,2.5,1h5c0.7,0,1.3-0.1,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.3-2.6\n            L10.1,14.2z\"/>\n            <path d=\"M25.5,27.5l-25-25C-0.1,2-0.1,1,0.5,0.4l0,0C1-0.1,2-0.1,2.6,0.4l25,25c0.6,0.6,0.6,1.5,0,2.1l0,0\n            C27,28.1,26,28.1,25.5,27.5z\"/>\n        </svg>\n\n";
+var generateVRIcon = exports.generateVRIcon = function generateVRIcon(height, fontSize, theme) {
+    return "\n        <svg class=\"" + cssPrefix + "-svg\" version=\"1.1\" x=\"0px\" y=\"0px\" width=\"" + height + "px\" height=\"" + height + "px\" viewBox=\"0 0 28 28\" xml:space=\"preserve\">\n            <path d=\"M10.1,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6\n                C11.6,13.4,10.9,12.7,10.1,12.7z\"/>\n            <path d=\"M17.2,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6\n                C18.8,13.4,18.1,12.7,17.2,12.7z\"/>\n            <path d=\"M14,0C6.3,0,0,6.3,0,14c0,7.7,6.3,14,14,14s14-6.3,14-14C28,6.3,21.7,0,14,0z M21.5,17.3\n                c0,0.5-0.2,1-0.6,1.4c-0.4,0.4-0.9,0.6-1.4,0.6h-2.8c-0.4,0-0.7-0.1-1-0.3c-0.3-0.2-0.6-0.5-0.8-0.8l-0.8-1.5\n                c-0.1-0.2-0.3-0.3-0.5-0.3l0,0l0,0l0,0c-0.2,0-0.4,0.1-0.5,0.3l-0.8,1.5c-0.2,0.3-0.4,0.6-0.8,0.8c-0.3,0.2-0.7,0.3-1,0.3H7.7\n                c-0.5,0-1-0.2-1.4-0.6c-0.4-0.4-0.6-0.9-0.6-1.5v-6c0-0.5,0.2-1,0.6-1.4c0.4-0.4,0.9-0.6,1.4-0.6h11.6c0.5,0,1,0.2,1.4,0.6\n                c0.4,0.4,0.6,0.9,0.6,1.4L21.5,17.3z\"/>\n        </svg>\n\n        <svg class=\"" + cssPrefix + "-svg-error\" version=\"1.1\" x=\"0px\" y=\"0px\" width=\"" + (height - 4) + "px\" height=\"" + (height - 4) + "px\" viewBox=\"0 0 28 28\" xml:space=\"preserve\">\n        <path d=\"M14,0C6.3,0,0,6.3,0,14s6.3,14,14,14s14-6.3,14-14S21.7,0,14,0z M19.4,9.5c0.5,0,1,0.1,1.4,0.5\n            c0.4,0.4,0.6,0.8,0.6,1.4v6c0,0.5-0.2,1-0.6,1.4c-0.2,0.2-0.4,0.3-0.7,0.4l-3.4-3.4c0.1,0,0.2,0,0.3,0c0.9,0,1.6-0.7,1.6-1.6\n            c0-0.9-0.7-1.6-1.6-1.6c-0.9,0-1.6,0.7-1.6,1.6c0,0.1,0,0.3,0,0.4l-5.3-5.1H19.4z M12.4,18.3c-0.2,0.3-0.4,0.5-0.8,0.7\n            s-0.7,0.2-1,0.2H7.8c-0.5,0-1-0.2-1.4-0.5c-0.4-0.4-0.6-0.8-0.6-1.4v-6c0-0.5,0.2-1,0.5-1.3l3,3c-0.5,0.3-0.8,0.8-0.8,1.4\n            c0,0.9,0.7,1.6,1.6,1.6c0.6,0,1.1-0.3,1.4-0.8l1.7,1.7L12.4,18.3z M21.3,22.5l-0.1,0.1c-0.3,0.3-0.8,0.3-1.1,0L6,8.5\n            C5.7,8.2,5.7,7.7,6,7.4l0.1-0.1C6.4,7,6.8,7,7.1,7.3l14.2,14.2C21.6,21.7,21.6,22.2,21.3,22.5z\"/>\n        </svg>";
 };
 
 /**
  * generate the CSS string to inject
  * @param {Number} [height=50]
  * @param {Number} [fontSize=18]
- * @param {string} [disabledColor="rgba(255,255,255,0.4)"]
+ * @param {string} theme either 'light' or 'dark'
  * @returns {string}
  */
 var generateCSS = exports.generateCSS = function generateCSS() {
     var height = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 50;
     var fontSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 18;
-    var disabledColor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "rgba(255,255,255,0.5)";
+    var theme = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'light';
+
+    var primaryColor = "white";
+    // let disabledColor = "white";
+    var disabledColor = "rgba(255,255,255,0.6)";
+
+    if (theme == 'dark') {
+        primaryColor = "black";
+        disabledColor = "rgba(0,0,0,0.5)";
+    }
 
     var borderWidth = 2;
     var borderRadius = height / 2;
     // borderRadius = 0;
 
-    return "\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format('woff2');\n            unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n        }\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format('woff2');\n            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n        }\n        \n        ." + cssPrefix + " {\n            font-family: 'Karla', sans-serif;\n        }\n\n        button." + cssPrefix + "-button {\n            border: white " + borderWidth + "px solid;\n            border-radius: " + borderRadius + "px;\n            box-sizing: border-box;\n            background: rgba(0,0,0, 0);\n\n            height: " + height + "px;\n            min-width: " + 125 + "px;\n            display: inline-block;\n            position: relative;\n\n\n            cursor: pointer;\n\n            -webkit-transition: width 0.5s;\n            transition: width 0.5s;\n        }\n\n        /*\n        * Logo\n        */\n\n        ." + cssPrefix + "-logo {\n            width: " + height + "px;\n            height: " + height + "px;\n            border-radius: " + borderRadius + "px;\n            background-color: white;\n            position: absolute;\n            top:-" + borderWidth + "px;\n            left:-" + borderWidth + "px;\n        }\n        ." + cssPrefix + "-svg {\n            margin-top: " + (height - fontSize) / 2 + "px;\n        }\n        ." + cssPrefix + "-svg-error {\n            display:none;\n        }\n\n\n        /*\n        * Title\n        */\n\n        ." + cssPrefix + "-title {\n            color: white;\n            position: relative;\n            font-size: " + fontSize + "px;\n            top: -" + borderWidth + "px;\n            line-height: " + (height - borderWidth * 2) + "px;\n            text-align: left;\n            padding-left: " + height * 1.05 + "px;\n            padding-right: " + (borderRadius - 10 < 5 ? 5 : borderRadius - 10) + "px;\n        }\n\n        /*\n        * Description\n        */\n\n        ." + cssPrefix + "-description , ." + cssPrefix + "-enter360{\n            font-size: 13px;\n            margin-top: 15px;\n            margin-bottom: 10px;\n\n        }\n\n        ." + cssPrefix + "-description > a {\n            color: white\n        }\n        \n        ." + cssPrefix + "-description > span[enter360=true] {\n            text-decoration: underline;\n            cursor: pointer;\n        }\n\n        /*\n        * disabled\n        */\n\n        button." + cssPrefix + "-button[disabled=true] {\n            border-color: " + disabledColor + ";\n        }\n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo {\n            background-color: " + disabledColor + ";\n            background-color: " + disabledColor + ";\n            top:0;\n            left:0;\n            width: " + (height - 4) + "px;\n            height: " + (height - 4) + "px;\n        }\n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg {\n            display:none;\n        }\n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg-error {\n            display:initial;\n            margin-top: " + ((height - 28 / 18 * fontSize) / 2 - 2) + "px;\n            margin-left: -2px;\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-title {\n            color: " + disabledColor + ";\n        }\n\n    ";
+    return "\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format('woff2');\n            unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n        }\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format('woff2');\n            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n        }\n        \n        \n        ." + cssPrefix + " {\n            font-family: 'Karla', sans-serif;\n        }\n\n        button." + cssPrefix + "-button {\n            border: " + primaryColor + " " + borderWidth + "px solid;\n            border-radius: " + borderRadius + "px;\n            box-sizing: border-box;\n            background: rgba(0,0,0, 0);\n\n            height: " + height + "px;\n            min-width: " + 125 + "px;\n            display: inline-block;\n            position: relative;\n\n            cursor: pointer;\n            -webkit-transition: width 0.5s;\n            transition: width 0.5s;\n            overflow:hidden;\n        }   \n\n        /*\n        * Logo\n        */\n\n        ." + cssPrefix + "-logo {\n            width: " + height + "px;\n            height: " + height + "px;\n            position: absolute;\n            top:0px;\n            left:0px;\n            width: " + (height - 4) + "px;\n            height: " + (height - 4) + "px;\n        }\n        ." + cssPrefix + "-svg {\n            fill: " + primaryColor + ";\n            margin-top: -2px;\n            margin-left: -2px;\n        }\n        ." + cssPrefix + "-svg-error {\n            fill: " + disabledColor + ";\n            display:none;\n        }\n\n        /*\n        * Title\n        */\n\n        ." + cssPrefix + "-title {\n            color: " + primaryColor + ";\n            position: relative;\n            font-size: " + fontSize + "px;\n            top: -" + borderWidth + "px;\n            line-height: " + (height - borderWidth * 2) + "px;\n            text-align: left;\n            padding-left: " + height * 1.05 + "px;\n            padding-right: " + (borderRadius - 10 < 5 ? 5 : borderRadius - 10) + "px;\n        }\n        \n        /*\n        * Animation\n        */\n        \n        @keyframes logo-transition-hide {\n            0% {left: 0;}\n            100% { left: 100%; }\n        }\n        \n        @keyframes logo-transition-show {\n            0% {left: -" + height + "px;}            \n            100% {left: 0;}\n        }\n        \n        @keyframes title-transition-hide {\n            0% { -webkit-clip-path: inset(0px 0px 0px 20%); }\n            100% {  -webkit-clip-path: inset(0px 0px 0px 120%); }\n        }\n        @keyframes title-transition-show {\n            0% {  -webkit-clip-path: inset(0px 100% 0px 0%); }\n            100% {  -webkit-clip-path: inset(0px 0% 0px 0); }\n        }\n        \n        button." + cssPrefix + "-button.animate > ." + cssPrefix + "-title {\n            animation: title-transition-hide ease 1s 1, title-transition-show ease 1s 1;\n            animation-delay: 0s, 1s;                \n        }     \n        \n        button." + cssPrefix + "-button.animate > ." + cssPrefix + "-logo {\n            animation: logo-transition-hide ease 1s 1, logo-transition-show ease 1s 1;\n            animation-delay: 0s, 1s;\n                \n        }\n\n        /*\n        * disabled\n        */\n\n        button." + cssPrefix + "-button[disabled=true] {\n            border-color: " + disabledColor + ";\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg {\n            display:none;\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg-error {\n            display:initial;\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-title {\n            color: " + disabledColor + ";\n        }\n\n    ";
 };
 
 },{}],7:[function(_dereq_,module,exports){

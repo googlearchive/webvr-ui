@@ -77,15 +77,18 @@ export const createDefaultView = (height, injectCSSStyles=true, theme='light')=>
     var domElement = el.firstChild;
 
 
-    let animating = false;
+    let __animating = false;
+    let __dragIcon;
+    let __dragTransition;
+
     domElement.addEventListener('click', (e)=>{
-        if(!animating) {
-            animating = true;
+        if(!__animating) {
+            __animating = true;
             e.stopPropagation();
             domElement.classList.add("animate");
             setTimeout(()=> {
                 domElement.click();
-                animating = false;
+                __animating = false;
             }, 1000);
 
             setTimeout(()=>{
@@ -94,60 +97,62 @@ export const createDefaultView = (height, injectCSSStyles=true, theme='light')=>
         }
     }, true);
 
-    domElement.__setTransition = (pct)=>{
-        domElement.__dragTransition = pct;
+    const __setTransition = (pct)=>{
+        __dragTransition = pct;
 
-        var bounding = domElement.getBoundingClientRect();
-        var left = pct * (bounding.width-height);
+        const bounding = domElement.getBoundingClientRect();
+        const left = pct * (bounding.width-height);
         child(domElement, 'logo').style.left = left+"px";
 
         child(domElement, 'title').style.clipPath = `inset(0 0 0 ${left + height/1.5}px)`;
         child(domElement, 'title').style.webkitClipPath = `inset(0 0 0 ${left+ height/1.5}px)`;
     };
 
-    domElement.__onDrag = (e) => {
+    const __onDrag = (e) => {
         if(!domElement.disabled) {
             var bounding = domElement.getBoundingClientRect();
 
-            if (e.pageX) var left = e.pageX;
-            else var left = e.touches[0].pageX;
+            let left;
+            if (e.pageX) left = e.pageX;
+            else left = e.touches[0].pageX;
 
             left = left - bounding.left;
             left = (left - height / 2);
             if (left < 0) left = 0;
             if (left > bounding.width - height) left = bounding.width - height;
 
-            domElement.__setTransition(left / (bounding.width - height))
+            __setTransition(left / (bounding.width - height))
         }
     };
 
-    domElement.__onDragEnd = (e) => {
+    const __onDragEnd = (e) => {
         if(!domElement.disabled) {
-            if (domElement.__dragTransition > 0.8) {
+            if (__dragTransition > 0.8) {
                 domElement.click()
             }
-            domElement.__setTransition(0)
+            __setTransition(0)
         }
     };
 
-    child(domElement, 'logo').addEventListener("mousedown", ( event ) => domElement.__dragIcon = true, false);
+    child(domElement, 'logo').addEventListener("mousedown", ( event ) => __dragIcon = true, false);
     document.addEventListener("mouseup", ( event ) => {
-        if(domElement.__dragIcon){
-            domElement.__dragIcon = false;
-            domElement.__onDragEnd(event);
+        if(__dragIcon){
+            __dragIcon = false;
+            __onDragEnd(event);
         }
     }, false);
-    document.addEventListener("mousemove", ( event ) => { if(domElement.__dragIcon) domElement.__onDrag(event) }, false);
 
-    child(domElement, 'logo').addEventListener("touchstart", ( event ) => domElement.__dragIcon = true);
+    document.addEventListener("mousemove", ( event ) => __dragIcon && __onDrag(event), false);
+
+    child(domElement, 'logo').addEventListener("touchstart", ( event ) => __dragIcon = true);
     document.addEventListener("touchend", ( event ) => {
-        if(domElement.__dragIcon){
-            domElement.__dragIcon = false;
-            domElement.__onDragEnd(event)
+        if(__dragIcon){
+            __dragIcon = false;
+            __onDragEnd(event)
         }
 
     });
-    document.addEventListener("touchmove", ( event ) => { if(domElement.__dragIcon) domElement.__onDrag(event) });
+    document.addEventListener("touchmove", ( event ) => __dragIcon && __onDrag(event));
 
 
 
