@@ -88,11 +88,11 @@ export const createDefaultView = (height, injectCSSStyles=true, theme='light')=>
             domElement.classList.add("animate");
             setTimeout(()=> {
                 domElement.click();
-                __animating = false;
-            }, 1000);
+            }, 800);
 
             setTimeout(()=>{
                 domElement.classList.remove("animate");
+                __animating = false;
             },2000)
         }
     }, true);
@@ -128,7 +128,9 @@ export const createDefaultView = (height, injectCSSStyles=true, theme='light')=>
     const __onDragEnd = (e) => {
         if(!domElement.disabled) {
             if (__dragTransition > 0.8) {
+                __animating = true;
                 domElement.click()
+                setTimeout(() => __animating = false, 500);
             }
             __setTransition(0)
         }
@@ -294,7 +296,7 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
         
         @keyframes logo-transition-hide {
             0% {left: 0;}
-            100% { left: 100%; }
+            100% { left: 110%; }
         }
         
         @keyframes logo-transition-show {
