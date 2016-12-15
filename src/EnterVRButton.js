@@ -60,7 +60,7 @@ export class EnterVRButton extends EventEmitter  {
         super();
         options = options || {};
         // Option to change pixel height of the button.
-        options.height =  options.height || 45;
+        options.height =  options.height || 55;
         options.injectCSS = options.injectCSS !== false;
 
         options.onRequestStateChange = options.onRequestStateChange || (() => true);
