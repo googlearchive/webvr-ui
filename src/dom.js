@@ -248,7 +248,6 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
             cursor: pointer;
             -webkit-transition: width 0.5s;
             transition: width 0.5s;
-            overflow:hidden;
         }   
 
         /*
@@ -310,6 +309,11 @@ export const generateCSS = (height=50, fontSize=18, theme='light')=>{
         @keyframes title-transition-show {
             0% {  -webkit-clip-path: inset(0px 100% 0px 0%); }
             100% {  -webkit-clip-path: inset(0px 0% 0px 0); }
+        }
+        
+        
+        button.${cssPrefix}-button.animate {
+            overflow:hidden;
         }
         
         button.${cssPrefix}-button.animate > .${cssPrefix}-title {
