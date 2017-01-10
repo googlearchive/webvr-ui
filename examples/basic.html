@@ -8,7 +8,7 @@
 
     <!-- Origin Trial Token, feature = WebVR, origin = https://halfdanj.github.io, expires = 2017-01-26 -->
     <meta http-equiv="origin-trial" data-feature="WebVR" data-expires="2017-01-26" content="AhMTiILoRXA9mYhslPGbNKHyWiSz9CGzMrC3LmkshO03Qs1sQWI69OpDS3GsxV/q+snTFKY1dkxJDVq6UfxfDgYAAABReyJvcmlnaW4iOiJodHRwczovL2hhbGZkYW5qLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiV2ViVlIiLCJleHBpcnkiOjE0ODU0NDk2NDV9">
-    
+
     <style>
         html, body {
             width: 100%;
@@ -89,10 +89,9 @@
 <script>
     // Setup three.js WebGL renderer.
     var renderer = new THREE.WebGLRenderer();
-    renderer.setPixelRatio(Math.floor(window.devicePixelRatio));
 
-    // Append the canvas element created by the renderer to document body element.
-    document.body.appendChild(renderer.domElement);
+    // Create perspective camera used in VR
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
 
     //
     // BUTTON SETUP
@@ -106,7 +105,7 @@
     };
 
     var enterVR = new webvrui.EnterVRButton(renderer.domElement, options)
-        .on("enter", function(isVR, hasOrientation){
+        .on("enter", function(){
             console.log("enter VR")
         })
         .on("exit", function(){
@@ -122,16 +121,17 @@
     // Add button to the #button element
     document.getElementById("button").appendChild(enterVR.domElement);
 
-
     //
     // WEBGL SCENE SETUP
     //
+
+    // Append the canvas element created by the renderer to document body element.
+    document.body.appendChild(renderer.domElement);
 
     // Create a three.js scene.
     var scene = new THREE.Scene();
 
     // Create a three.js camera.
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
     var controls = new THREE.VRControls(camera);
     controls.standing = true;
     camera.position.y = controls.userHeight;
@@ -139,6 +139,7 @@
     // Create VR Effect rendering in stereoscopic mode
     var effect = new THREE.VREffect(renderer);
     effect.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.floor(window.devicePixelRatio));
 
     // Create 3D objects in scene.
     var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
@@ -157,33 +158,36 @@
         camera.updateProjectionMatrix();
     }
 
-    var vrDisplay;
-    // Get the HMD, and if we're dealing with something that specifies
-    // stageParameters, rearrange the scene.
-    navigator.getVRDisplays().then(function(displays) {
-        if (displays.length > 0) {
-            console.log("DISPLAYS",displays)
-            vrDisplay = displays[0];
-            vrDisplay.requestAnimationFrame(animate);
-        }
-    });
+    // Get the HMD
+    var animationDisplay;
+    enterVR.getVRDisplay()
+        .then(function(display) {
+            animationDisplay = display;
+            display.requestAnimationFrame(animate);
+        })
+        .catch(function(){
+            // If there is no display available, fallback to window
+            animationDisplay = window;
+            window.requestAnimationFrame(animate);
+        });
 
     // Request animation frame loop function
     var lastRender = 0;
     function animate(timestamp) {
         var delta = Math.min(timestamp - lastRender, 500);
         lastRender = timestamp;
+
         // Apply rotation to cube mesh
         cube.rotation.y += delta * 0.0003;
 
-        if(enterVR.state == webvrui.State.PRESENTING){
+        if(animationDisplay.isPresenting){
             controls.update();
             renderer.render(scene,camera);
             effect.render(scene, camera);
         } else {
             renderer.render(scene,camera);
         }
-        vrDisplay.requestAnimationFrame(animate);
+        animationDisplay.requestAnimationFrame(animate);
     }
 </script>
 

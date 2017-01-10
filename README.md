@@ -11,7 +11,7 @@ The library also supports adding a *Enter 360* link that allows entering a mode 
 
 ## Library Usage
 ### Include WebVR UI
-Get the library either by cloning or downloading it (will come to npm). 
+Get the library either by cloning or downloading it (will come to npm).
 
 Include the ES5 transpiled library in a script tag
 
@@ -19,7 +19,7 @@ Include the ES5 transpiled library in a script tag
 <script src="/webvr-ui/build/webvr-ui.js"></script>
 ```
 
-or include it in your ES2015 code 
+or include it in your ES2015 code
 
 ```javascript
 import webvrui from 'webvr-ui';
@@ -38,9 +38,18 @@ document.body.appendChild(enterVR.domElement);
 
 ### Options
 
-- `height`: Height in pixels of the button. *Default 45* 
-- `injectCSS`: Set to false to disable CSS injection of button style. *Default `true`*
+- `color`
+- `background`
+- `corners` - `square, round, number`
+- `disabledOpacity`
+- `textEnterVRTitle`
+- `textVRNotFoundTitle`
+- `textExitVRTitle`
+- `beforeEnter`
+- `beforeExit`
 - `onRequestStateChange`: A function called before state is changed, use to intercept entering or exiting VR for example. Return `true` to continue with default behaviour, or `false` to stop the default behaviour.    
+- `domElement` - example
+- `injectCSS`: Set to false to disable CSS injection of button style. *Default `true`*
 
 ### A-Frame
 To use the button in [A-Frame](https://aframe.io/), include the library as above, and add `webvr-ui` to the scene.
@@ -49,12 +58,12 @@ To use the button in [A-Frame](https://aframe.io/), include the library as above
 <a-scene webvr-ui>
     ...
 </a-scene>
-``` 
+```
 
 This will disable the default UI and add a *Enter VR* button to the document DOM.  
 
 ## Development
-To run the example, install dependencies 
+To run the example, install dependencies
 
 ```
 npm install
@@ -66,7 +75,7 @@ and start the watcher and server (available on [localhost:3000/examples/basic.ht
 npm start
 ```
 
-To build the transpiled es5 version of the library, run 
+To build the transpiled es5 version of the library, run
 
 ```
 npm run build

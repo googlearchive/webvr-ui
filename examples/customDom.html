@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Origin Trial Token, feature = WebVR, origin = https://halfdanj.github.io, expires = 2017-01-26 -->
     <meta http-equiv="origin-trial" data-feature="WebVR" data-expires="2017-01-26" content="AhMTiILoRXA9mYhslPGbNKHyWiSz9CGzMrC3LmkshO03Qs1sQWI69OpDS3GsxV/q+snTFKY1dkxJDVq6UfxfDgYAAABReyJvcmlnaW4iOiJodHRwczovL2hhbGZkYW5qLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiV2ViVlIiLCJleHBpcnkiOjE0ODU0NDk2NDV9">
-    
+
     <style>
         html, body {
             width: 100%;
@@ -82,10 +82,8 @@
 <script>
     // Setup three.js WebGL renderer.
     var renderer = new THREE.WebGLRenderer();
-    renderer.setPixelRatio(Math.floor(window.devicePixelRatio));
 
-    // Append the canvas element created by the renderer to document body element.
-    document.body.appendChild(renderer.domElement);
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
 
     //
     // BUTTON SETUP
@@ -96,7 +94,7 @@
         domElement: document.getElementById("button")
     };
     var enterVR = new webvrui.EnterVRButton(renderer.domElement, options)
-        .on("enter", function(isVR, hasOrientation){
+        .on("enter", function(){
             console.log("enter VR")
         })
         .on("exit", function(){
@@ -111,11 +109,15 @@
     // WEBGL SCENE SETUP
     //
 
+
+    // Append the canvas element created by the renderer to document body element.
+    document.body.appendChild(renderer.domElement);
+
+
     // Create a three.js scene.
     var scene = new THREE.Scene();
 
     // Create a three.js camera.
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
     var controls = new THREE.VRControls(camera);
     controls.standing = true;
     camera.position.y = controls.userHeight;
@@ -123,6 +125,7 @@
     // Create VR Effect rendering in stereoscopic mode
     var effect = new THREE.VREffect(renderer);
     effect.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.floor(window.devicePixelRatio));
 
     // Create 3D objects in scene.
     var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);

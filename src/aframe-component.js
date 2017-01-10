@@ -12,7 +12,7 @@
 //     See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { EnterVRButton } from "./EnterVRButton";
+import { EnterVRButton } from "./enter-vr-button";
 // import * as manager from "./WebVRManager";
 import * as State from "./states";
 
@@ -29,14 +29,14 @@ if(typeof AFRAME !== 'undefined' && AFRAME){
 
         init: function () {
         },
-        
-        update: function(){     
-            var scene = document.querySelector('a-scene') 
+
+        update: function(){
+            var scene = document.querySelector('a-scene')
             scene.setAttribute("vr-mode-ui", {enabled:!this.data.enabled})
-            
+
             if(this.data.enabled){
                 if(this.enterVREl){ return }
-        
+
                 var options = {
                     color: this.data.color,
                     background: this.data.background,
@@ -51,8 +51,6 @@ if(typeof AFRAME !== 'undefined' && AFRAME){
                     }
                 };
 
-
-
                 var enterVR = this.enterVR = new EnterVRButton(scene.canvas, options)
 
                 this.enterVREl = enterVR.domElement;
@@ -61,7 +59,6 @@ if(typeof AFRAME !== 'undefined' && AFRAME){
 
                 enterVR.domElement.style.position = "absolute";
                 enterVR.domElement.style.bottom = "10px";
-
                 enterVR.domElement.style.left = "50%";
                 enterVR.domElement.style.transform = "translate(-50%, -50%)";
                 enterVR.domElement.style.textAlign = "center";
@@ -70,15 +67,15 @@ if(typeof AFRAME !== 'undefined' && AFRAME){
                 if (this.enterVREl) {
                     this.enterVREl.parentNode.removeChild(this.enterVREl);
                     this.enterVR.remove();
-                }    
-            } 
+                }
+            }
         },
 
         remove: function(){
             if (this.enterVREl) {
                 this.enterVREl.parentNode.removeChild(this.enterVREl);
                 this.enterVR.remove();
-            }         
+            }
         }
     });
 }

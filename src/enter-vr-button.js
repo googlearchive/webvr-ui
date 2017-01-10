@@ -13,7 +13,7 @@
 // limitations under the License.
 
 
-import {WebVRManager} from "./WebVRManager";
+import {WebVRManager} from "./webvr-manager";
 import { cssPrefix, createDefaultView  } from "./dom";
 import * as State from "./states";
 import EventEmitter from "eventemitter3";
@@ -45,7 +45,6 @@ export class EnterVRButton extends EventEmitter  {
      * @constructor
      * @param {HTMLCanvasElement} sourceCanvas the canvas that you want to present in WebVR
      * @param {Object} [options] optional parameters
-     * @param {Number} [options.height=35] specify the height of the button
      * @param {HTMLElement} [options.domElement] provide your own domElement to bind to
      * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
      * @param {Function} [options.beforeEnter] should return a promise, opportunity to intercept request to enter for custom messaging
@@ -54,7 +53,10 @@ export class EnterVRButton extends EventEmitter  {
      * @param {string} [options.textEnterVRTitle] set the text for Enter VR
      * @param {string} [options.textVRNotFoundTitle] set the text for when a VR display is not found
      * @param {string} [options.textExitVRTitle] set the text for exiting VR
-     * @param {string} [options.theme] set to 'light' (default) or 'dark'
+     * @param {string} [options.color] Text and icon color
+     * @param {string} [options.background] False for no brackground or a color
+     * @param {string} [options.corners] 'round', 'square' or pixel value representing the corner radius
+     * @param {string} [options.disabledOpacity]
      */
     constructor(sourceCanvas, options){
         super();
@@ -140,6 +142,10 @@ export class EnterVRButton extends EventEmitter  {
     }
 
 
+    getVRDisplay(){
+      return WebVRManager.getVRDisplay();
+    }
+
     requestEnterVR(){
         return new Promise((resolve, reject)=> {
             if (this.options.onRequestStateChange(State.PRESENTING)) {
@@ -218,7 +224,7 @@ export class EnterVRButton extends EventEmitter  {
                     break;
 
                 case State.PRESENTING:
-                case State.PRESENTING_360:                
+                case State.PRESENTING_360:
                     if(!this.manager.defaultDisplay.capabilities.hasExternalDisplay){
                         this.hide();
                     }

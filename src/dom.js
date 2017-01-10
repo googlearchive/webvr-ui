@@ -184,7 +184,7 @@ export const generateCSS = (options, fontSize=18)=>{
             src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format('woff2');
             unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
         }
-        
+
         button.${cssPrefix}-button {
             font-family: 'Karla', sans-serif;
 
@@ -199,7 +199,7 @@ export const generateCSS = (options, fontSize=18)=>{
             position: relative;
 
             cursor: pointer;
-        }   
+        }
 
         /*
         * Logo
@@ -221,12 +221,12 @@ export const generateCSS = (options, fontSize=18)=>{
         }
         .${cssPrefix}-svg-error {
             fill: ${options.color};
-            display:none;            
+            display:none;
             margin-top: ${(height - 28/18 * fontSize * _logo_scale) / 2 - 2}px;
             margin-left: ${height / 3 }px;
         }
-        
-        
+
+
         /*
         * Title
         */
@@ -241,64 +241,6 @@ export const generateCSS = (options, fontSize=18)=>{
             padding-left: ${height * 1.05}px;
             padding-right: ${(borderRadius-10 < 5) ? height/3 : borderRadius-10}px;
         }
-        
-        /*
-        * Animation
-        */
-        
-        // @keyframes logo-transition-hide {
-        //     0% {}
-        //     100% {  }
-        // }
-        // @keyframes logo-transition-hide-short {
-        //     0% {}
-        //     100% {}
-        // }
-        //
-        // @keyframes logo-transition-show {
-        //     0% {}            
-        //     100% {}
-        // }
-        //
-        // @keyframes title-transition-hide {
-        //     0% { -webkit-clip-path: inset(0px 0px 0px 20%); }
-        //     100% {  -webkit-clip-path: inset(0px 0px 0px 120%); }
-        // }
-        // @keyframes title-transition-hide-short {
-        //     0% { }
-        //     100% {  }
-        // }
-        // @keyframes title-transition-show {
-        //     0% {  -webkit-clip-path: inset(0px 100% 0px 0%); }
-        //     100% {  -webkit-clip-path: inset(0px 0% 0px 0); }
-        // }
-        
-        
-        // button.${cssPrefix}-button.animate, button.${cssPrefix}-button.animate-out {
-        //     overflow:hidden;
-        // }
-        //
-        // button.${cssPrefix}-button.animate > .${cssPrefix}-title {
-        //     animation: title-transition-hide ease 1s 1, title-transition-show ease 1s 1;
-        //     animation-delay: 0s, 1s;                
-        // }     
-        //
-        // button.${cssPrefix}-button.animate > .${cssPrefix}-logo {
-        //     animation: logo-transition-hide ease 1s 1, logo-transition-show ease 1s 1;
-        //     animation-delay: 0s, 1s;                
-        // }
-        //
-        //
-        // button.${cssPrefix}-button.animate-out > .${cssPrefix}-title {
-        //     animation: title-transition-hide-short ease 0.2s 1, title-transition-show ease 1s 1;
-        //     animation-delay: 0s, 0.2s;           
-        // }     
-        //
-        // button.${cssPrefix}-button.animate-out > .${cssPrefix}-logo {
-        //     animation: logo-transition-hide-short ease 0.2s 1, logo-transition-show ease 1s 1;
-        //     animation-delay: 0s, 0.2s;                
-        //
-        // }
 
         /*
         * disabled
@@ -307,19 +249,13 @@ export const generateCSS = (options, fontSize=18)=>{
         button.${cssPrefix}-button[disabled=true] {
             opacity: ${options.disabledOpacity};
         }
-        
+
         button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-logo > .${cssPrefix}-svg {
             display:none;
         }
-        
+
         button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-logo > .${cssPrefix}-svg-error {
             display:initial;
         }
-        
-        button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-title {
-        }
-
-    `);
+      `);
 };
-
-
