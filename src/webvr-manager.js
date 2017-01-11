@@ -18,7 +18,7 @@ import EventEmitter from "eventemitter3";
 import screenfull from "screenfull";
 
 
-export class WebVRManager extends EventEmitter {
+export default class WebVRManager extends EventEmitter {
 
     constructor(){
         super();

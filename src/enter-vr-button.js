@@ -13,33 +13,17 @@
 // limitations under the License.
 
 
-import {WebVRManager} from "./webvr-manager";
-import { cssPrefix, createDefaultView  } from "./dom";
+import WebVRManager from "./webvr-manager";
+import { createDefaultView  } from "./dom";
 import * as State from "./states";
 import EventEmitter from "eventemitter3";
 
-
-const child = (el, suffix)=>
-    el.querySelector("."+cssPrefix+"-"+suffix);
-
-/**
- * @private
- * if ".webvr-ui-${suffix}" exists,
- * pass it to the function provided for manipulation.
- * @param el
- * @param suffix
- * @param fn
- */
-const ifChild = (el, suffix, fn)=>{
-    const c = child(el, suffix);
-    c && fn(c);
-};
 
 /**
  * A button to allow easy-entry and messaging around a WebVR experience
  * @class
  */
-export class EnterVRButton extends EventEmitter  {
+export default class EnterVRButton extends EventEmitter  {
     /**
      * Construct a new Enter VR Button
      * @constructor
@@ -57,6 +41,7 @@ export class EnterVRButton extends EventEmitter  {
      * @param {string} [options.background] set to false for no brackground or a color
      * @param {string} [options.corners] set to 'round', 'square' or pixel value representing the corner radius
      * @param {string} [options.disabledOpacity] set opacity of button dom when disabled
+     * @param {string} [options.cssprefix] set to change the css prefix from default 'webvr-ui'
      */
     constructor(sourceCanvas, options){
         super();
@@ -67,6 +52,7 @@ export class EnterVRButton extends EventEmitter  {
         options.disabledOpacity = options.disabledOpacity || 0.5;
         options.height =  options.height || 55;
         options.corners = options.corners || 'square';
+        options.cssprefix = options.cssprefix || 'webvr-ui';
 
         options.textEnterVRTitle = options.textEnterVRTitle || 'ENTER VR';
         options.textVRNotFoundTitle = options.textVRNotFoundTitle || 'VR NOT FOUND';
@@ -93,7 +79,6 @@ export class EnterVRButton extends EventEmitter  {
         if(this.domElement.nodeName !== 'BUTTON'){
             throw new Error(`No ${cssPrefix}-button <button> element found in DOM`);
         }
-        this.__onEnterVRClick = this.__onEnterVRClick.bind(this);
         this.domElement.addEventListener("click", this.__onEnterVRClick);
 
         this.setTitle(this.options.textEnterVRTitle);
@@ -108,7 +93,7 @@ export class EnterVRButton extends EventEmitter  {
             this.domElement.removeAttribute("disabled");
         }
 
-        ifChild(this.domElement,"title", (title)=>{
+        ifChild(this.domElement, this.options.cssprefix, "title", (title)=>{
             if(!text){
                 title.style.display = "none";
             } else {
@@ -270,3 +255,21 @@ export class EnterVRButton extends EventEmitter  {
         }
     }
 }
+
+
+const child = (el, cssPrefix, suffix)=>
+    el.querySelector("."+cssPrefix+"-"+suffix);
+
+/**
+ * @private
+ * if ".webvr-ui-${suffix}" exists,
+ * pass it to the function provided for manipulation.
+ * @param el
+ * @param cssprefix
+ * @param suffix
+ * @param fn
+ */
+const ifChild = (el, cssPrefix, suffix, fn)=>{
+    const c = child(el, cssPrefix, suffix);
+    c && fn(c);
+};
