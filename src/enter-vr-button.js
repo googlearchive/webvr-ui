@@ -79,7 +79,7 @@ export default class EnterVRButton extends EventEmitter  {
         if(this.domElement.nodeName !== 'BUTTON'){
             throw new Error(`No ${cssPrefix}-button <button> element found in DOM`);
         }
-        this.domElement.addEventListener("click", this.__onEnterVRClick);
+        this.domElement.addEventListener("click", ()=> this.__onEnterVRClick());
 
         this.setTitle(this.options.textEnterVRTitle);
     }

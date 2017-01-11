@@ -810,7 +810,9 @@ var EnterVRButton = function (_EventEmitter) {
         if (_this.domElement.nodeName !== 'BUTTON') {
             throw new Error("No " + cssPrefix + "-button <button> element found in DOM");
         }
-        _this.domElement.addEventListener("click", _this.__onEnterVRClick);
+        _this.domElement.addEventListener("click", function () {
+            return _this.__onEnterVRClick();
+        });
 
         _this.setTitle(_this.options.textEnterVRTitle);
         return _this;
@@ -973,7 +975,7 @@ var EnterVRButton = function (_EventEmitter) {
 
                     case State.PRESENTING:
                     case State.PRESENTING_360:
-                        if (!this.manager.defaultDisplay.capabilities.hasExternalDisplay) {
+                        if (!this.manager.defaultDisplay || !this.manager.defaultDisplay.capabilities.hasExternalDisplay) {
                             this.hide();
                         }
                         this.setTitle(this.options.textExitVRTitle);
