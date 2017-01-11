@@ -53,25 +53,30 @@ export class EnterVRButton extends EventEmitter  {
      * @param {string} [options.textEnterVRTitle] set the text for Enter VR
      * @param {string} [options.textVRNotFoundTitle] set the text for when a VR display is not found
      * @param {string} [options.textExitVRTitle] set the text for exiting VR
-     * @param {string} [options.color] Text and icon color
-     * @param {string} [options.background] False for no brackground or a color
-     * @param {string} [options.corners] 'round', 'square' or pixel value representing the corner radius
-     * @param {string} [options.disabledOpacity]
+     * @param {string} [options.color] text and icon color
+     * @param {string} [options.background] set to false for no brackground or a color
+     * @param {string} [options.corners] set to 'round', 'square' or pixel value representing the corner radius
+     * @param {string} [options.disabledOpacity] set opacity of button dom when disabled
      */
     constructor(sourceCanvas, options){
         super();
         options = options || {};
-        // Option to change pixel height of the button.
+
+        options.color = options.color || 'rgb(80,168,252)';
+        options.background = options.background || false;
+        options.disabledOpacity = options.disabledOpacity || 0.5;
         options.height =  options.height || 55;
-        options.injectCSS = options.injectCSS !== false;
+        options.corners = options.corners || 'square';
+
+        options.textEnterVRTitle = options.textEnterVRTitle || 'ENTER VR';
+        options.textVRNotFoundTitle = options.textVRNotFoundTitle || 'VR NOT FOUND';
+        options.textExitVRTitle = options.textExitVRTitle   || 'EXIT VR';
 
         options.onRequestStateChange = options.onRequestStateChange || (() => true);
         options.beforeEnter = options.beforeEnter || (()=> new Promise(resolve=> resolve()));
         options.beforeExit = options.beforeExit || (()=> new Promise(resolve=> resolve()));
 
-        options.textEnterVRTitle = options.textEnterVRTitle || 'ENTER VR';
-        options.textVRNotFoundTitle = options.textVRNotFoundTitle || 'VR NOT FOUND';
-        options.textExitVRTitle = options.textExitVRTitle   || 'EXIT VR';
+        options.injectCSS = options.injectCSS !== false;
 
         this.options = options;
 
@@ -85,10 +90,10 @@ export class EnterVRButton extends EventEmitter  {
         this.manager.addListener("change", (state)=> this.__onStateChange(state))
 
         // Bind button click events to __onClick
-        this.__onEnterVRClick = this.__onEnterVRClick.bind(this);
         if(this.domElement.nodeName !== 'BUTTON'){
             throw new Error(`No ${cssPrefix}-button <button> element found in DOM`);
         }
+        this.__onEnterVRClick = this.__onEnterVRClick.bind(this);
         this.domElement.addEventListener("click", this.__onEnterVRClick);
 
         this.setTitle(this.options.textEnterVRTitle);

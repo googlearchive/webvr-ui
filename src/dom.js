@@ -155,10 +155,6 @@ export const generateVRIcon = (height, fontSize, cutout=false)=>{
  * @returns {string}
  */
 export const generateCSS = (options, fontSize=18)=>{
-    if(!options.color) options.color = 'rgb(80,168,252)';
-    if(!options.background) options.background = false;
-    if(!options.disabledOpacity) options.disabledOpacity = 0.5;
-
     const height = options.height;
     const borderWidth = 2;
     const borderColor = options.background ? options.background : options.color;
