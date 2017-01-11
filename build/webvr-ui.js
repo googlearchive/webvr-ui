@@ -461,7 +461,7 @@ if ('undefined' !== typeof module) {
 },{}],3:[function(_dereq_,module,exports){
 "use strict";
 
-var _EnterVRButton = _dereq_("./EnterVRButton");
+var _enterVrButton = _dereq_("./enter-vr-button");
 
 var _states = _dereq_("./states");
 
@@ -519,7 +519,7 @@ if (typeof AFRAME !== 'undefined' && AFRAME) {
                     }
                 };
 
-                var enterVR = this.enterVR = new _EnterVRButton.EnterVRButton(scene.canvas, options);
+                var enterVR = this.enterVR = new _enterVrButton.EnterVRButton(scene.canvas, options);
 
                 this.enterVREl = enterVR.domElement;
 
@@ -527,7 +527,6 @@ if (typeof AFRAME !== 'undefined' && AFRAME) {
 
                 enterVR.domElement.style.position = "absolute";
                 enterVR.domElement.style.bottom = "10px";
-
                 enterVR.domElement.style.left = "50%";
                 enterVR.domElement.style.transform = "translate(-50%, -50%)";
                 enterVR.domElement.style.textAlign = "center";
@@ -549,7 +548,165 @@ if (typeof AFRAME !== 'undefined' && AFRAME) {
 }
 // import * as manager from "./WebVRManager";
 
-},{"./EnterVRButton":4,"./states":7}],4:[function(_dereq_,module,exports){
+},{"./enter-vr-button":5,"./states":7}],4:[function(_dereq_,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+// Copyright 2016 Google Inc.
+//
+//     Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+//     You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+//     Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+//     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//     See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+var _WebVRUI_css_injected = false;
+var _logo_scale = 0.8;
+
+/**
+ * the css class prefix,
+ * every element has a class pattern if "webvr-ui-${name}"
+ * @type {string}
+ */
+var cssPrefix = exports.cssPrefix = "webvr-ui";
+
+/**
+ * @private
+ * generate the innerHTML for the button
+ * @param {Number} height
+ * @param {Number} fontSize
+ */
+var generateInnerHTML = function generateInnerHTML(height, fontSize) {
+    var svgString = generateVRIcon(height, fontSize);
+
+    return "<button class=\"" + cssPrefix + "-button\">\n          <div class=\"" + cssPrefix + "-title\"></div>\n          <div class=\"" + cssPrefix + "-logo\" >" + svgString + "</div>\n        </button>";
+};
+
+/**
+ * inject the CSS string to the head of the document
+ * @param {string} cssText the css to inject
+ */
+var injectCSS = exports.injectCSS = function injectCSS(cssText) {
+    // Make sure its only injected once
+    if (!_WebVRUI_css_injected) {
+        _WebVRUI_css_injected = true;
+
+        // Create the css
+        var style = document.createElement("style");
+        style.innerHTML = cssText;
+
+        var head = document.getElementsByTagName("head")[0];
+        head.insertBefore(style, head.firstChild);
+    }
+};
+
+/**
+ * generate DOM element view for button
+ * @returns {HTMLElement}
+ * @param options
+ */
+var createDefaultView = exports.createDefaultView = function createDefaultView(options) {
+    var fontSize = options.height / 3;
+    if (options.injectCSS) {
+        injectCSS(generateCSS(options, fontSize));
+    }
+
+    var el = document.createElement("div");
+    el.innerHTML = generateInnerHTML(options.height, fontSize, options.theme);
+    var domElement = el.firstChild;
+
+    // let __animating = false;
+    // domElement.addEventListener('click', (e)=>{
+    //     if(!__animating) {
+    //         __animating = true;
+    //         e.stopPropagation();
+    //         domElement.classList.add("animate");
+    //         setTimeout(()=> {
+    //             domElement.click();
+    //         }, 800);
+    //
+    //         setTimeout(()=>{
+    //             domElement.classList.remove("animate");
+    //             __animating = false;
+    //         },2000)
+    //     }
+    // }, true);
+
+    return domElement;
+};
+
+/**
+ * generate the VR Icons SVG
+ * @param {Number} height
+ * @param fontSize
+ * @param cutout
+ * @returns {string}
+ */
+var generateVRIcon = exports.generateVRIcon = function generateVRIcon(height, fontSize) {
+    var cutout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+    if (!cutout) {
+        fontSize *= _logo_scale;
+        var aspect = 28 / 18;
+        return "<svg class=\"" + cssPrefix + "-svg\" version=\"1.1\" x=\"0px\" y=\"0px\" width=\"" + aspect * fontSize + "px\" height=\"" + fontSize + "px\" viewBox=\"0 0 28 18\" xml:space=\"preserve\">\n                <path d=\"M26.8,1.1C26.1,0.4,25.1,0,24.2,0H3.4c-1,0-1.7,0.4-2.4,1.1C0.3,1.7,0,2.7,0,3.6v10.7\n                c0,1,0.3,1.9,0.9,2.6C1.6,17.6,2.4,18,3.4,18h5c0.7,0,1.3-0.2,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.5-2.6C13.2,13.1,13,13,14,13v0h-0.2\n                h0c0.3,0,0.7,0.1,0.8,0.5l1.4,2.6c0.3,0.6,0.8,1.1,1.3,1.4c0.6,0.3,1.2,0.5,1.8,0.5h5c1,0,2-0.4,2.7-1.1c0.7-0.7,1.2-1.6,1.2-2.6\n                V3.6C28,2.7,27.5,1.7,26.8,1.1z M7.4,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8c1.6,0,2.8,1.3,2.8,2.8\n                C10.2,10.5,8.9,11.8,7.4,11.8z M20.1,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8C21.7,6.2,23,7.4,23,9\n                C23,10.5,21.7,11.8,20.1,11.8z\"/>\n            </svg>\n            <svg class=\"" + cssPrefix + "-svg-error\" x=\"0px\" y=\"0px\" width=\"" + aspect * fontSize + "px\" height=\"" + aspect * fontSize + "px\" viewBox=\"0 0 28 28\" xml:space=\"preserve\">\n                <path d=\"M17.6,13.4c0-0.2-0.1-0.4-0.1-0.6c0-1.6,1.3-2.8,2.8-2.8s2.8,1.3,2.8,2.8s-1.3,2.8-2.8,2.8\n                c-0.2,0-0.4,0-0.6-0.1l5.9,5.9c0.5-0.2,0.9-0.4,1.3-0.8c0.7-0.7,1.1-1.6,1.1-2.5V7.4c0-1-0.4-1.9-1.1-2.5c-0.7-0.7-1.6-1-2.5-1H8.1\n                L17.6,13.4z\"/>\n                <path d=\"M10.1,14.2c-0.5,0.9-1.4,1.4-2.4,1.4c-1.6,0-2.8-1.3-2.8-2.8c0-1.1,0.6-2,1.4-2.5L0.9,5.1\n                C0.3,5.7,0,6.6,0,7.5v10.7c0,1,0.4,1.8,1.1,2.5c0.7,0.7,1.6,1,2.5,1h5c0.7,0,1.3-0.1,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.3-2.6\n                L10.1,14.2z\"/>\n                <path d=\"M25.5,27.5l-25-25C-0.1,2-0.1,1,0.5,0.4l0,0C1-0.1,2-0.1,2.6,0.4l25,25c0.6,0.6,0.6,1.5,0,2.1l0,0\n                C27,28.1,26,28.1,25.5,27.5z\"/>\n            </svg>";
+    } else {
+        // return `
+        // <svg class="${cssPrefix}-svg" version="1.1" x="0px" y="0px" width="${height}px" height="${height}px" viewBox="0 0 28 28" xml:space="preserve">
+        //     <path d="M10.1,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6
+        //         C11.6,13.4,10.9,12.7,10.1,12.7z"/>
+        //     <path d="M17.2,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6
+        //         C18.8,13.4,18.1,12.7,17.2,12.7z"/>
+        //     <path d="M14,0C6.3,0,0,6.3,0,14c0,7.7,6.3,14,14,14s14-6.3,14-14C28,6.3,21.7,0,14,0z M21.5,17.3
+        //         c0,0.5-0.2,1-0.6,1.4c-0.4,0.4-0.9,0.6-1.4,0.6h-2.8c-0.4,0-0.7-0.1-1-0.3c-0.3-0.2-0.6-0.5-0.8-0.8l-0.8-1.5
+        //         c-0.1-0.2-0.3-0.3-0.5-0.3l0,0l0,0l0,0c-0.2,0-0.4,0.1-0.5,0.3l-0.8,1.5c-0.2,0.3-0.4,0.6-0.8,0.8c-0.3,0.2-0.7,0.3-1,0.3H7.7
+        //         c-0.5,0-1-0.2-1.4-0.6c-0.4-0.4-0.6-0.9-0.6-1.5v-6c0-0.5,0.2-1,0.6-1.4c0.4-0.4,0.9-0.6,1.4-0.6h11.6c0.5,0,1,0.2,1.4,0.6
+        //         c0.4,0.4,0.6,0.9,0.6,1.4L21.5,17.3z"/>
+        // </svg>
+        //
+        // <svg class="${cssPrefix}-svg-error" version="1.1" x="0px" y="0px" width="${height - 4}px" height="${height - 4}px" viewBox="0 0 28 28" xml:space="preserve">
+        // <path d="M14,0C6.3,0,0,6.3,0,14s6.3,14,14,14s14-6.3,14-14S21.7,0,14,0z M19.4,9.5c0.5,0,1,0.1,1.4,0.5
+        //     c0.4,0.4,0.6,0.8,0.6,1.4v6c0,0.5-0.2,1-0.6,1.4c-0.2,0.2-0.4,0.3-0.7,0.4l-3.4-3.4c0.1,0,0.2,0,0.3,0c0.9,0,1.6-0.7,1.6-1.6
+        //     c0-0.9-0.7-1.6-1.6-1.6c-0.9,0-1.6,0.7-1.6,1.6c0,0.1,0,0.3,0,0.4l-5.3-5.1H19.4z M12.4,18.3c-0.2,0.3-0.4,0.5-0.8,0.7
+        //     s-0.7,0.2-1,0.2H7.8c-0.5,0-1-0.2-1.4-0.5c-0.4-0.4-0.6-0.8-0.6-1.4v-6c0-0.5,0.2-1,0.5-1.3l3,3c-0.5,0.3-0.8,0.8-0.8,1.4
+        //     c0,0.9,0.7,1.6,1.6,1.6c0.6,0,1.1-0.3,1.4-0.8l1.7,1.7L12.4,18.3z M21.3,22.5l-0.1,0.1c-0.3,0.3-0.8,0.3-1.1,0L6,8.5
+        //     C5.7,8.2,5.7,7.7,6,7.4l0.1-0.1C6.4,7,6.8,7,7.1,7.3l14.2,14.2C21.6,21.7,21.6,22.2,21.3,22.5z"/>
+        // </svg>`
+    }
+};
+
+/**
+ * generate the CSS string to inject
+ * @param options
+ * @param {Number} [fontSize=18]
+ * @returns {string}
+ */
+var generateCSS = exports.generateCSS = function generateCSS(options) {
+    var fontSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 18;
+
+    if (!options.color) options.color = 'rgb(80,168,252)';
+    if (!options.background) options.background = false;
+    if (!options.disabledOpacity) options.disabledOpacity = 0.5;
+
+    var height = options.height;
+    var borderWidth = 2;
+    var borderColor = options.background ? options.background : options.color;
+
+    var borderRadius = void 0;
+    if (options.corners == 'round') borderRadius = options.height / 2;else if (options.corners == 'square') borderRadius = 2;else borderRadius = options.corners;
+
+    return "\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format('woff2');\n            unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n        }\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format('woff2');\n            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n        }\n\n        button." + cssPrefix + "-button {\n            font-family: 'Karla', sans-serif;\n\n            border: " + borderColor + " " + borderWidth + "px solid;\n            border-radius: " + borderRadius + "px;\n            box-sizing: border-box;\n            background: " + (options.background ? options.background : 'none') + ";\n\n            height: " + height + "px;\n            min-width: " + 125 + "px;\n            display: inline-block;\n            position: relative;\n\n            cursor: pointer;\n        }\n\n        /*\n        * Logo\n        */\n\n        ." + cssPrefix + "-logo {\n            width: " + height + "px;\n            height: " + height + "px;\n            position: absolute;\n            top:0px;\n            left:0px;\n            width: " + (height - 4) + "px;\n            height: " + (height - 4) + "px;\n        }\n        ." + cssPrefix + "-svg {\n            fill: " + options.color + ";\n            margin-top: " + ((height - fontSize * _logo_scale) / 2 - 2) + "px;\n            margin-left: " + height / 3 + "px;\n        }\n        ." + cssPrefix + "-svg-error {\n            fill: " + options.color + ";\n            display:none;\n            margin-top: " + ((height - 28 / 18 * fontSize * _logo_scale) / 2 - 2) + "px;\n            margin-left: " + height / 3 + "px;\n        }\n\n\n        /*\n        * Title\n        */\n\n        ." + cssPrefix + "-title {\n            color: " + options.color + ";\n            position: relative;\n            font-size: " + fontSize + "px;\n            top: -" + borderWidth + "px;\n            line-height: " + (height - borderWidth * 2) + "px;\n            text-align: left;\n            padding-left: " + height * 1.05 + "px;\n            padding-right: " + (borderRadius - 10 < 5 ? height / 3 : borderRadius - 10) + "px;\n        }\n\n        /*\n        * disabled\n        */\n\n        button." + cssPrefix + "-button[disabled=true] {\n            opacity: " + options.disabledOpacity + ";\n        }\n\n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg {\n            display:none;\n        }\n\n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg-error {\n            display:initial;\n        }\n      ";
+};
+
+},{}],5:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -559,7 +716,7 @@ exports.EnterVRButton = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _WebVRManager = _dereq_("./WebVRManager");
+var _webvrManager = _dereq_("./webvr-manager");
 
 var _dom = _dereq_("./dom");
 
@@ -624,7 +781,6 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
      * @constructor
      * @param {HTMLCanvasElement} sourceCanvas the canvas that you want to present in WebVR
      * @param {Object} [options] optional parameters
-     * @param {Number} [options.height=35] specify the height of the button
      * @param {HTMLElement} [options.domElement] provide your own domElement to bind to
      * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
      * @param {Function} [options.beforeEnter] should return a promise, opportunity to intercept request to enter for custom messaging
@@ -633,7 +789,10 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
      * @param {string} [options.textEnterVRTitle] set the text for Enter VR
      * @param {string} [options.textVRNotFoundTitle] set the text for when a VR display is not found
      * @param {string} [options.textExitVRTitle] set the text for exiting VR
-     * @param {string} [options.theme] set to 'light' (default) or 'dark'
+     * @param {string} [options.color] Text and icon color
+     * @param {string} [options.background] False for no brackground or a color
+     * @param {string} [options.corners] 'round', 'square' or pixel value representing the corner radius
+     * @param {string} [options.disabledOpacity]
      */
     function EnterVRButton(sourceCanvas, options) {
         _classCallCheck(this, EnterVRButton);
@@ -671,7 +830,7 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
         _this.domElement = options.domElement || (0, _dom.createDefaultView)(options);
 
         // Create WebVR Manager
-        _this.manager = new _WebVRManager.WebVRManager();
+        _this.manager = new _webvrManager.WebVRManager();
         _this.manager.addListener("change", function (state) {
             return _this.__onStateChange(state);
         });
@@ -741,6 +900,11 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
             if (this.domElement.parentElement) {
                 this.domElement.parentElement.removeChild(this.domElement);
             }
+        }
+    }, {
+        key: "getVRDisplay",
+        value: function getVRDisplay() {
+            return _webvrManager.WebVRManager.getVRDisplay();
         }
     }, {
         key: "requestEnterVR",
@@ -883,7 +1047,90 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
     return EnterVRButton;
 }(_eventemitter2.default);
 
-},{"./WebVRManager":5,"./dom":6,"./states":7,"eventemitter3":1}],5:[function(_dereq_,module,exports){
+},{"./dom":4,"./states":7,"./webvr-manager":8,"eventemitter3":1}],6:[function(_dereq_,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.WebVRManager = exports.State = exports.EnterVRButton = undefined;
+
+var _webvrManager = _dereq_("./webvr-manager");
+
+var _webvrManager2 = _interopRequireDefault(_webvrManager);
+
+var _states = _dereq_("./states");
+
+var State = _interopRequireWildcard(_states);
+
+var _enterVrButton = _dereq_("./enter-vr-button");
+
+_dereq_("./aframe-component");
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// Copyright 2016 Google Inc.
+//
+//     Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+//     You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+//     Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+//     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//     See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+exports.EnterVRButton = _enterVrButton.EnterVRButton;
+exports.State = State;
+exports.WebVRManager = _webvrManager2.default;
+
+},{"./aframe-component":3,"./enter-vr-button":5,"./states":7,"./webvr-manager":8}],7:[function(_dereq_,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+// Copyright 2016 Google Inc.
+//
+//     Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+//     You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+//     Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+//     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//     See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Not yet presenting, but ready to present
+var READY_TO_PRESENT = exports.READY_TO_PRESENT = "ready";
+
+// In presentation mode
+var PRESENTING = exports.PRESENTING = "presenting";
+var PRESENTING_360 = exports.PRESENTING_360 = "presenting-360";
+
+// Checking device availability
+var PREPARING = exports.PREPARING = "preparing";
+
+// Errors
+var ERROR_NO_PRESENTABLE_DISPLAYS = exports.ERROR_NO_PRESENTABLE_DISPLAYS = "error-no-presentable-displays";
+var ERROR_BROWSER_NOT_SUPPORTED = exports.ERROR_BROWSER_NOT_SUPPORTED = "error-browser-not-supported";
+var ERROR_REQUEST_TO_PRESENT_REJECTED = exports.ERROR_REQUEST_TO_PRESENT_REJECTED = "error-request-to-present-rejected";
+var ERROR_EXIT_PRESENT_REJECTED = exports.ERROR_EXIT_PRESENT_REJECTED = "error-exit-present-rejected";
+var ERROR_REQUEST_STATE_CHANGE_REJECTED = exports.ERROR_REQUEST_STATE_CHANGE_REJECTED = "error-request-state-change-rejected";
+
+var ERROR_UNKOWN = exports.ERROR_UNKOWN = "error-unkown";
+
+},{}],8:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1122,246 +1369,5 @@ var WebVRManager = exports.WebVRManager = function (_EventEmitter) {
     return WebVRManager;
 }(_eventemitter2.default);
 
-},{"./states":7,"eventemitter3":1,"screenfull":2}],6:[function(_dereq_,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-// Copyright 2016 Google Inc.
-//
-//     Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-//     You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-//     Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-//     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//     See the License for the specific language governing permissions and
-// limitations under the License.
-
-
-var _WebVRUI_css_injected = false;
-var _logo_scale = 0.8;
-
-/**
- * the css class prefix,
- * every element has a class pattern if "webvr-ui-${name}"
- * @type {string}
- */
-var cssPrefix = exports.cssPrefix = "webvr-ui";
-
-/**
- * @private
- * generate the innerHTML for the button
- * @param {Number} height
- * @param {Number} fontSize
- */
-var generateInnerHTML = function generateInnerHTML(height, fontSize) {
-    var svgString = generateVRIcon(height, fontSize);
-
-    return "<button class=\"" + cssPrefix + "-button\">\n          <div class=\"" + cssPrefix + "-title\"></div>\n          <div class=\"" + cssPrefix + "-logo\" >" + svgString + "</div>\n        </button>";
-};
-
-/**
- * inject the CSS string to the head of the document
- * @param {string} cssText the css to inject
- */
-var injectCSS = exports.injectCSS = function injectCSS(cssText) {
-    // Make sure its only injected once
-    if (!_WebVRUI_css_injected) {
-        _WebVRUI_css_injected = true;
-
-        // Create the css
-        var style = document.createElement("style");
-        style.innerHTML = cssText;
-
-        var head = document.getElementsByTagName("head")[0];
-        head.insertBefore(style, head.firstChild);
-    }
-};
-
-/**
- * generate DOM element view for button
- * @returns {HTMLElement}
- * @param options
- */
-var createDefaultView = exports.createDefaultView = function createDefaultView(options) {
-    var fontSize = options.height / 3;
-    if (options.injectCSS) {
-        injectCSS(generateCSS(options, fontSize));
-    }
-
-    var el = document.createElement("div");
-    el.innerHTML = generateInnerHTML(options.height, fontSize, options.theme);
-    var domElement = el.firstChild;
-
-    // let __animating = false;
-    // domElement.addEventListener('click', (e)=>{
-    //     if(!__animating) {
-    //         __animating = true;
-    //         e.stopPropagation();
-    //         domElement.classList.add("animate");
-    //         setTimeout(()=> {
-    //             domElement.click();
-    //         }, 800);
-    //
-    //         setTimeout(()=>{
-    //             domElement.classList.remove("animate");
-    //             __animating = false;
-    //         },2000)
-    //     }
-    // }, true);
-
-    return domElement;
-};
-
-/**
- * generate the VR Icons SVG
- * @param {Number} height
- * @param fontSize
- * @param cutout
- * @returns {string}
- */
-var generateVRIcon = exports.generateVRIcon = function generateVRIcon(height, fontSize) {
-    var cutout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-    if (!cutout) {
-        fontSize *= _logo_scale;
-        var aspect = 28 / 18;
-        return "<svg class=\"" + cssPrefix + "-svg\" version=\"1.1\" x=\"0px\" y=\"0px\" width=\"" + aspect * fontSize + "px\" height=\"" + fontSize + "px\" viewBox=\"0 0 28 18\" xml:space=\"preserve\">\n                <path d=\"M26.8,1.1C26.1,0.4,25.1,0,24.2,0H3.4c-1,0-1.7,0.4-2.4,1.1C0.3,1.7,0,2.7,0,3.6v10.7\n                c0,1,0.3,1.9,0.9,2.6C1.6,17.6,2.4,18,3.4,18h5c0.7,0,1.3-0.2,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.5-2.6C13.2,13.1,13,13,14,13v0h-0.2\n                h0c0.3,0,0.7,0.1,0.8,0.5l1.4,2.6c0.3,0.6,0.8,1.1,1.3,1.4c0.6,0.3,1.2,0.5,1.8,0.5h5c1,0,2-0.4,2.7-1.1c0.7-0.7,1.2-1.6,1.2-2.6\n                V3.6C28,2.7,27.5,1.7,26.8,1.1z M7.4,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8c1.6,0,2.8,1.3,2.8,2.8\n                C10.2,10.5,8.9,11.8,7.4,11.8z M20.1,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8C21.7,6.2,23,7.4,23,9\n                C23,10.5,21.7,11.8,20.1,11.8z\"/>\n            </svg>\n            <svg class=\"" + cssPrefix + "-svg-error\" x=\"0px\" y=\"0px\" width=\"" + aspect * fontSize + "px\" height=\"" + aspect * fontSize + "px\" viewBox=\"0 0 28 28\" xml:space=\"preserve\">\n                <path d=\"M17.6,13.4c0-0.2-0.1-0.4-0.1-0.6c0-1.6,1.3-2.8,2.8-2.8s2.8,1.3,2.8,2.8s-1.3,2.8-2.8,2.8\n                c-0.2,0-0.4,0-0.6-0.1l5.9,5.9c0.5-0.2,0.9-0.4,1.3-0.8c0.7-0.7,1.1-1.6,1.1-2.5V7.4c0-1-0.4-1.9-1.1-2.5c-0.7-0.7-1.6-1-2.5-1H8.1\n                L17.6,13.4z\"/>\n                <path d=\"M10.1,14.2c-0.5,0.9-1.4,1.4-2.4,1.4c-1.6,0-2.8-1.3-2.8-2.8c0-1.1,0.6-2,1.4-2.5L0.9,5.1\n                C0.3,5.7,0,6.6,0,7.5v10.7c0,1,0.4,1.8,1.1,2.5c0.7,0.7,1.6,1,2.5,1h5c0.7,0,1.3-0.1,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.3-2.6\n                L10.1,14.2z\"/>\n                <path d=\"M25.5,27.5l-25-25C-0.1,2-0.1,1,0.5,0.4l0,0C1-0.1,2-0.1,2.6,0.4l25,25c0.6,0.6,0.6,1.5,0,2.1l0,0\n                C27,28.1,26,28.1,25.5,27.5z\"/>\n            </svg>";
-    } else {
-        // return `
-        // <svg class="${cssPrefix}-svg" version="1.1" x="0px" y="0px" width="${height}px" height="${height}px" viewBox="0 0 28 28" xml:space="preserve">
-        //     <path d="M10.1,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6
-        //         C11.6,13.4,10.9,12.7,10.1,12.7z"/>
-        //     <path d="M17.2,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6
-        //         C18.8,13.4,18.1,12.7,17.2,12.7z"/>
-        //     <path d="M14,0C6.3,0,0,6.3,0,14c0,7.7,6.3,14,14,14s14-6.3,14-14C28,6.3,21.7,0,14,0z M21.5,17.3
-        //         c0,0.5-0.2,1-0.6,1.4c-0.4,0.4-0.9,0.6-1.4,0.6h-2.8c-0.4,0-0.7-0.1-1-0.3c-0.3-0.2-0.6-0.5-0.8-0.8l-0.8-1.5
-        //         c-0.1-0.2-0.3-0.3-0.5-0.3l0,0l0,0l0,0c-0.2,0-0.4,0.1-0.5,0.3l-0.8,1.5c-0.2,0.3-0.4,0.6-0.8,0.8c-0.3,0.2-0.7,0.3-1,0.3H7.7
-        //         c-0.5,0-1-0.2-1.4-0.6c-0.4-0.4-0.6-0.9-0.6-1.5v-6c0-0.5,0.2-1,0.6-1.4c0.4-0.4,0.9-0.6,1.4-0.6h11.6c0.5,0,1,0.2,1.4,0.6
-        //         c0.4,0.4,0.6,0.9,0.6,1.4L21.5,17.3z"/>
-        // </svg>
-        //
-        // <svg class="${cssPrefix}-svg-error" version="1.1" x="0px" y="0px" width="${height - 4}px" height="${height - 4}px" viewBox="0 0 28 28" xml:space="preserve">
-        // <path d="M14,0C6.3,0,0,6.3,0,14s6.3,14,14,14s14-6.3,14-14S21.7,0,14,0z M19.4,9.5c0.5,0,1,0.1,1.4,0.5
-        //     c0.4,0.4,0.6,0.8,0.6,1.4v6c0,0.5-0.2,1-0.6,1.4c-0.2,0.2-0.4,0.3-0.7,0.4l-3.4-3.4c0.1,0,0.2,0,0.3,0c0.9,0,1.6-0.7,1.6-1.6
-        //     c0-0.9-0.7-1.6-1.6-1.6c-0.9,0-1.6,0.7-1.6,1.6c0,0.1,0,0.3,0,0.4l-5.3-5.1H19.4z M12.4,18.3c-0.2,0.3-0.4,0.5-0.8,0.7
-        //     s-0.7,0.2-1,0.2H7.8c-0.5,0-1-0.2-1.4-0.5c-0.4-0.4-0.6-0.8-0.6-1.4v-6c0-0.5,0.2-1,0.5-1.3l3,3c-0.5,0.3-0.8,0.8-0.8,1.4
-        //     c0,0.9,0.7,1.6,1.6,1.6c0.6,0,1.1-0.3,1.4-0.8l1.7,1.7L12.4,18.3z M21.3,22.5l-0.1,0.1c-0.3,0.3-0.8,0.3-1.1,0L6,8.5
-        //     C5.7,8.2,5.7,7.7,6,7.4l0.1-0.1C6.4,7,6.8,7,7.1,7.3l14.2,14.2C21.6,21.7,21.6,22.2,21.3,22.5z"/>
-        // </svg>`
-    }
-};
-
-/**
- * generate the CSS string to inject
- * @param options
- * @param {Number} [fontSize=18]
- * @returns {string}
- */
-var generateCSS = exports.generateCSS = function generateCSS(options) {
-    var fontSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 18;
-
-    if (!options.color) options.color = 'rgb(80,168,252)';
-    if (!options.background) options.background = false;
-    if (!options.disabledOpacity) options.disabledOpacity = 0.5;
-
-    var height = options.height;
-    var borderWidth = 2;
-    var borderColor = options.background ? options.background : options.color;
-
-    var borderRadius = void 0;
-    if (options.corners == 'round') borderRadius = options.height / 2;else if (options.corners == 'square') borderRadius = 2;else borderRadius = options.corners;
-
-    return "\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format('woff2');\n            unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n        }\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format('woff2');\n            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n        }\n        \n        button." + cssPrefix + "-button {\n            font-family: 'Karla', sans-serif;\n\n            border: " + borderColor + " " + borderWidth + "px solid;\n            border-radius: " + borderRadius + "px;\n            box-sizing: border-box;\n            background: " + (options.background ? options.background : 'none') + ";\n\n            height: " + height + "px;\n            min-width: " + 125 + "px;\n            display: inline-block;\n            position: relative;\n\n            cursor: pointer;\n        }   \n\n        /*\n        * Logo\n        */\n\n        ." + cssPrefix + "-logo {\n            width: " + height + "px;\n            height: " + height + "px;\n            position: absolute;\n            top:0px;\n            left:0px;\n            width: " + (height - 4) + "px;\n            height: " + (height - 4) + "px;\n        }\n        ." + cssPrefix + "-svg {\n            fill: " + options.color + ";\n            margin-top: " + ((height - fontSize * _logo_scale) / 2 - 2) + "px;\n            margin-left: " + height / 3 + "px;\n        }\n        ." + cssPrefix + "-svg-error {\n            fill: " + options.color + ";\n            display:none;            \n            margin-top: " + ((height - 28 / 18 * fontSize * _logo_scale) / 2 - 2) + "px;\n            margin-left: " + height / 3 + "px;\n        }\n        \n        \n        /*\n        * Title\n        */\n\n        ." + cssPrefix + "-title {\n            color: " + options.color + ";\n            position: relative;\n            font-size: " + fontSize + "px;\n            top: -" + borderWidth + "px;\n            line-height: " + (height - borderWidth * 2) + "px;\n            text-align: left;\n            padding-left: " + height * 1.05 + "px;\n            padding-right: " + (borderRadius - 10 < 5 ? height / 3 : borderRadius - 10) + "px;\n        }\n        \n        /*\n        * Animation\n        */\n        \n        // @keyframes logo-transition-hide {\n        //     0% {}\n        //     100% {  }\n        // }\n        // @keyframes logo-transition-hide-short {\n        //     0% {}\n        //     100% {}\n        // }\n        //\n        // @keyframes logo-transition-show {\n        //     0% {}            \n        //     100% {}\n        // }\n        //\n        // @keyframes title-transition-hide {\n        //     0% { -webkit-clip-path: inset(0px 0px 0px 20%); }\n        //     100% {  -webkit-clip-path: inset(0px 0px 0px 120%); }\n        // }\n        // @keyframes title-transition-hide-short {\n        //     0% { }\n        //     100% {  }\n        // }\n        // @keyframes title-transition-show {\n        //     0% {  -webkit-clip-path: inset(0px 100% 0px 0%); }\n        //     100% {  -webkit-clip-path: inset(0px 0% 0px 0); }\n        // }\n        \n        \n        // button." + cssPrefix + "-button.animate, button." + cssPrefix + "-button.animate-out {\n        //     overflow:hidden;\n        // }\n        //\n        // button." + cssPrefix + "-button.animate > ." + cssPrefix + "-title {\n        //     animation: title-transition-hide ease 1s 1, title-transition-show ease 1s 1;\n        //     animation-delay: 0s, 1s;                \n        // }     \n        //\n        // button." + cssPrefix + "-button.animate > ." + cssPrefix + "-logo {\n        //     animation: logo-transition-hide ease 1s 1, logo-transition-show ease 1s 1;\n        //     animation-delay: 0s, 1s;                \n        // }\n        //\n        //\n        // button." + cssPrefix + "-button.animate-out > ." + cssPrefix + "-title {\n        //     animation: title-transition-hide-short ease 0.2s 1, title-transition-show ease 1s 1;\n        //     animation-delay: 0s, 0.2s;           \n        // }     \n        //\n        // button." + cssPrefix + "-button.animate-out > ." + cssPrefix + "-logo {\n        //     animation: logo-transition-hide-short ease 0.2s 1, logo-transition-show ease 1s 1;\n        //     animation-delay: 0s, 0.2s;                \n        //\n        // }\n\n        /*\n        * disabled\n        */\n\n        button." + cssPrefix + "-button[disabled=true] {\n            opacity: " + options.disabledOpacity + ";\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg {\n            display:none;\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg-error {\n            display:initial;\n        }\n        \n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-title {\n        }\n\n    ";
-};
-
-},{}],7:[function(_dereq_,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-// Copyright 2016 Google Inc.
-//
-//     Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-//     You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-//     Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-//     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//     See the License for the specific language governing permissions and
-// limitations under the License.
-
-
-// Not yet presenting, but ready to present
-var READY_TO_PRESENT = exports.READY_TO_PRESENT = "ready";
-
-// In presentation mode
-var PRESENTING = exports.PRESENTING = "presenting";
-var PRESENTING_360 = exports.PRESENTING_360 = "presenting-360";
-
-// Checking device availability
-var PREPARING = exports.PREPARING = "preparing";
-
-// Errors
-var ERROR_NO_PRESENTABLE_DISPLAYS = exports.ERROR_NO_PRESENTABLE_DISPLAYS = "error-no-presentable-displays";
-var ERROR_BROWSER_NOT_SUPPORTED = exports.ERROR_BROWSER_NOT_SUPPORTED = "error-browser-not-supported";
-var ERROR_REQUEST_TO_PRESENT_REJECTED = exports.ERROR_REQUEST_TO_PRESENT_REJECTED = "error-request-to-present-rejected";
-var ERROR_EXIT_PRESENT_REJECTED = exports.ERROR_EXIT_PRESENT_REJECTED = "error-exit-present-rejected";
-var ERROR_REQUEST_STATE_CHANGE_REJECTED = exports.ERROR_REQUEST_STATE_CHANGE_REJECTED = "error-request-state-change-rejected";
-
-var ERROR_UNKOWN = exports.ERROR_UNKOWN = "error-unkown";
-
-},{}],8:[function(_dereq_,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.WebVRManager = exports.State = exports.EnterVRButton = undefined;
-
-var _WebVRManager = _dereq_("./WebVRManager");
-
-var _WebVRManager2 = _interopRequireDefault(_WebVRManager);
-
-var _states = _dereq_("./states");
-
-var State = _interopRequireWildcard(_states);
-
-var _EnterVRButton = _dereq_("./EnterVRButton");
-
-_dereq_("./AframeComponent");
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// Copyright 2016 Google Inc.
-//
-//     Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-//     You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-//     Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-//     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//     See the License for the specific language governing permissions and
-// limitations under the License.
-
-
-exports.EnterVRButton = _EnterVRButton.EnterVRButton;
-exports.State = State;
-exports.WebVRManager = _WebVRManager2.default;
-
-},{"./AframeComponent":3,"./EnterVRButton":4,"./WebVRManager":5,"./states":7}]},{},[8])(8)
+},{"./states":7,"eventemitter3":1,"screenfull":2}]},{},[6])(6)
 });
