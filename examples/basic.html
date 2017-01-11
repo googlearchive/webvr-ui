@@ -180,7 +180,7 @@
         // Apply rotation to cube mesh
         cube.rotation.y += delta * 0.0003;
 
-        if(animationDisplay.isPresenting){
+        if(enterVR.state == webvrui.State.PRESENTING){
             controls.update();
             renderer.render(scene,camera);
             effect.render(scene, camera);

@@ -215,7 +215,7 @@ export default class EnterVRButton extends EventEmitter  {
 
                 case State.PRESENTING:
                 case State.PRESENTING_360:
-                    if(!this.manager.defaultDisplay.capabilities.hasExternalDisplay){
+                    if(!this.manager.defaultDisplay || !this.manager.defaultDisplay.capabilities.hasExternalDisplay){
                         this.hide();
                     }
                     this.setTitle(this.options.textExitVRTitle);
