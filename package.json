@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "browserify src/index.js --standalone webvrui | derequire > build/webvr-ui.js",
+    "buildmin": "browserify -g uglifyify src/index.js --standalone webvrui | derequire > build/webvr-ui.min.js",
     "start": "budo src/index.js:build/webvr-ui.js --live --verbose --port 3000 --host localhost -- --standalone webvrui",
     "prepublish": "npm run build"
   },
@@ -22,7 +23,8 @@
     "browserify": "^13.1.0",
     "budo": "^9.2.1",
     "derequire": "^2.0.3",
-    "tape": "^4.6.2"
+    "tape": "^4.6.2",
+    "uglifyify": "^3.0.4"
   },
   "keywords": [
     "vr",
