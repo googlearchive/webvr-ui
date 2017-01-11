@@ -12,8 +12,7 @@
 //     See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { EnterVRButton } from "./enter-vr-button";
-// import * as manager from "./WebVRManager";
+import EnterVRButton from "./enter-vr-button";
 import * as State from "./states";
 
 if(typeof AFRAME !== 'undefined' && AFRAME){
@@ -24,7 +23,12 @@ if(typeof AFRAME !== 'undefined' && AFRAME){
             enabled: {type: 'boolean', default:true},
             color: {type: 'string', default: 'white'},
             background: {type: 'string', default: 'black'},
-            corners: {type: 'string', default: 'square'}
+            corners: {type: 'string', default: 'square'},
+            disabledOpacity: {type: 'number', default: 0.5},
+
+            textEnterVRTitle: {type: 'string'},
+            textExitVRTitle: {type: 'string'},
+            textVRNotFoundTitle: {type: 'string'}
         },
 
         init: function () {
@@ -41,6 +45,10 @@ if(typeof AFRAME !== 'undefined' && AFRAME){
                     color: this.data.color,
                     background: this.data.background,
                     corners: this.data.corners,
+                    disabledOpacity: this.data.disabledOpacity,
+                    textEnterVRTitle: this.data.textEnterVRTitle,
+                    textExitVRTitle: this.data.textExitVRTitle,
+                    textVRNotFoundTitle: this.data.textVRNotFoundTitle,
                     onRequestStateChange: function(state){
                         if(state == State.PRESENTING){
                             scene.enterVR();

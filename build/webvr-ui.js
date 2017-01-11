@@ -463,11 +463,15 @@ if ('undefined' !== typeof module) {
 
 var _enterVrButton = _dereq_("./enter-vr-button");
 
+var _enterVrButton2 = _interopRequireDefault(_enterVrButton);
+
 var _states = _dereq_("./states");
 
 var State = _interopRequireWildcard(_states);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Copyright 2016 Google Inc.
 //
@@ -491,7 +495,12 @@ if (typeof AFRAME !== 'undefined' && AFRAME) {
             enabled: { type: 'boolean', default: true },
             color: { type: 'string', default: 'white' },
             background: { type: 'string', default: 'black' },
-            corners: { type: 'string', default: 'square' }
+            corners: { type: 'string', default: 'square' },
+            disabledOpacity: { type: 'number', default: 0.5 },
+
+            textEnterVRTitle: { type: 'string' },
+            textExitVRTitle: { type: 'string' },
+            textVRNotFoundTitle: { type: 'string' }
         },
 
         init: function init() {},
@@ -509,6 +518,10 @@ if (typeof AFRAME !== 'undefined' && AFRAME) {
                     color: this.data.color,
                     background: this.data.background,
                     corners: this.data.corners,
+                    disabledOpacity: this.data.disabledOpacity,
+                    textEnterVRTitle: this.data.textEnterVRTitle,
+                    textExitVRTitle: this.data.textExitVRTitle,
+                    textVRNotFoundTitle: this.data.textVRNotFoundTitle,
                     onRequestStateChange: function onRequestStateChange(state) {
                         if (state == State.PRESENTING) {
                             scene.enterVR();
@@ -519,7 +532,7 @@ if (typeof AFRAME !== 'undefined' && AFRAME) {
                     }
                 };
 
-                var enterVR = this.enterVR = new _enterVrButton.EnterVRButton(scene.canvas, options);
+                var enterVR = this.enterVR = new _enterVrButton2.default(scene.canvas, options);
 
                 this.enterVREl = enterVR.domElement;
 
@@ -546,7 +559,6 @@ if (typeof AFRAME !== 'undefined' && AFRAME) {
         }
     });
 }
-// import * as manager from "./WebVRManager";
 
 },{"./enter-vr-button":5,"./states":7}],4:[function(_dereq_,module,exports){
 "use strict";
