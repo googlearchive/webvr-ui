@@ -569,24 +569,18 @@ Object.defineProperty(exports, "__esModule", {
 // limitations under the License.
 
 
-var _WebVRUI_css_injected = false;
+var _WebVRUI_css_injected = {};
 var _logo_scale = 0.8;
-
-/**
- * the css class prefix,
- * every element has a class pattern if "webvr-ui-${name}"
- * @type {string}
- */
-var cssPrefix = exports.cssPrefix = "webvr-ui";
 
 /**
  * @private
  * generate the innerHTML for the button
+ * @param cssPrefix
  * @param {Number} height
  * @param {Number} fontSize
  */
-var generateInnerHTML = function generateInnerHTML(height, fontSize) {
-    var svgString = generateVRIcon(height, fontSize);
+var generateInnerHTML = function generateInnerHTML(cssPrefix, height, fontSize) {
+    var svgString = generateVRIcon(cssPrefix, height, fontSize);
 
     return "<button class=\"" + cssPrefix + "-button\">\n          <div class=\"" + cssPrefix + "-title\"></div>\n          <div class=\"" + cssPrefix + "-logo\" >" + svgString + "</div>\n        </button>";
 };
@@ -596,17 +590,12 @@ var generateInnerHTML = function generateInnerHTML(height, fontSize) {
  * @param {string} cssText the css to inject
  */
 var injectCSS = exports.injectCSS = function injectCSS(cssText) {
-    // Make sure its only injected once
-    if (!_WebVRUI_css_injected) {
-        _WebVRUI_css_injected = true;
+    // Create the css
+    var style = document.createElement("style");
+    style.innerHTML = cssText;
 
-        // Create the css
-        var style = document.createElement("style");
-        style.innerHTML = cssText;
-
-        var head = document.getElementsByTagName("head")[0];
-        head.insertBefore(style, head.firstChild);
-    }
+    var head = document.getElementsByTagName("head")[0];
+    head.insertBefore(style, head.firstChild);
 };
 
 /**
@@ -617,11 +606,15 @@ var injectCSS = exports.injectCSS = function injectCSS(cssText) {
 var createDefaultView = exports.createDefaultView = function createDefaultView(options) {
     var fontSize = options.height / 3;
     if (options.injectCSS) {
-        injectCSS(generateCSS(options, fontSize));
+        // Check that css isnt already injected
+        if (!_WebVRUI_css_injected[options.cssprefix]) {
+            injectCSS(generateCSS(options, fontSize));
+            _WebVRUI_css_injected[options.cssprefix] = true;
+        }
     }
 
     var el = document.createElement("div");
-    el.innerHTML = generateInnerHTML(options.height, fontSize, options.theme);
+    el.innerHTML = generateInnerHTML(options.cssprefix, options.height, fontSize);
     var domElement = el.firstChild;
 
     // let __animating = false;
@@ -646,40 +639,19 @@ var createDefaultView = exports.createDefaultView = function createDefaultView(o
 
 /**
  * generate the VR Icons SVG
+ * @param cssPrefix
  * @param {Number} height
  * @param fontSize
  * @param cutout
  * @returns {string}
  */
-var generateVRIcon = exports.generateVRIcon = function generateVRIcon(height, fontSize) {
-    var cutout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+var generateVRIcon = exports.generateVRIcon = function generateVRIcon(cssPrefix, height, fontSize) {
+    var cutout = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
     if (!cutout) {
         fontSize *= _logo_scale;
         var aspect = 28 / 18;
         return "<svg class=\"" + cssPrefix + "-svg\" version=\"1.1\" x=\"0px\" y=\"0px\" width=\"" + aspect * fontSize + "px\" height=\"" + fontSize + "px\" viewBox=\"0 0 28 18\" xml:space=\"preserve\">\n                <path d=\"M26.8,1.1C26.1,0.4,25.1,0,24.2,0H3.4c-1,0-1.7,0.4-2.4,1.1C0.3,1.7,0,2.7,0,3.6v10.7\n                c0,1,0.3,1.9,0.9,2.6C1.6,17.6,2.4,18,3.4,18h5c0.7,0,1.3-0.2,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.5-2.6C13.2,13.1,13,13,14,13v0h-0.2\n                h0c0.3,0,0.7,0.1,0.8,0.5l1.4,2.6c0.3,0.6,0.8,1.1,1.3,1.4c0.6,0.3,1.2,0.5,1.8,0.5h5c1,0,2-0.4,2.7-1.1c0.7-0.7,1.2-1.6,1.2-2.6\n                V3.6C28,2.7,27.5,1.7,26.8,1.1z M7.4,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8c1.6,0,2.8,1.3,2.8,2.8\n                C10.2,10.5,8.9,11.8,7.4,11.8z M20.1,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8C21.7,6.2,23,7.4,23,9\n                C23,10.5,21.7,11.8,20.1,11.8z\"/>\n            </svg>\n            <svg class=\"" + cssPrefix + "-svg-error\" x=\"0px\" y=\"0px\" width=\"" + aspect * fontSize + "px\" height=\"" + aspect * fontSize + "px\" viewBox=\"0 0 28 28\" xml:space=\"preserve\">\n                <path d=\"M17.6,13.4c0-0.2-0.1-0.4-0.1-0.6c0-1.6,1.3-2.8,2.8-2.8s2.8,1.3,2.8,2.8s-1.3,2.8-2.8,2.8\n                c-0.2,0-0.4,0-0.6-0.1l5.9,5.9c0.5-0.2,0.9-0.4,1.3-0.8c0.7-0.7,1.1-1.6,1.1-2.5V7.4c0-1-0.4-1.9-1.1-2.5c-0.7-0.7-1.6-1-2.5-1H8.1\n                L17.6,13.4z\"/>\n                <path d=\"M10.1,14.2c-0.5,0.9-1.4,1.4-2.4,1.4c-1.6,0-2.8-1.3-2.8-2.8c0-1.1,0.6-2,1.4-2.5L0.9,5.1\n                C0.3,5.7,0,6.6,0,7.5v10.7c0,1,0.4,1.8,1.1,2.5c0.7,0.7,1.6,1,2.5,1h5c0.7,0,1.3-0.1,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.3-2.6\n                L10.1,14.2z\"/>\n                <path d=\"M25.5,27.5l-25-25C-0.1,2-0.1,1,0.5,0.4l0,0C1-0.1,2-0.1,2.6,0.4l25,25c0.6,0.6,0.6,1.5,0,2.1l0,0\n                C27,28.1,26,28.1,25.5,27.5z\"/>\n            </svg>";
-    } else {
-        // return `
-        // <svg class="${cssPrefix}-svg" version="1.1" x="0px" y="0px" width="${height}px" height="${height}px" viewBox="0 0 28 28" xml:space="preserve">
-        //     <path d="M10.1,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6
-        //         C11.6,13.4,10.9,12.7,10.1,12.7z"/>
-        //     <path d="M17.2,12.7c-0.9,0-1.6,0.7-1.6,1.6c0,0.8,0.7,1.6,1.6,1.6c0.9,0,1.6-0.7,1.6-1.6
-        //         C18.8,13.4,18.1,12.7,17.2,12.7z"/>
-        //     <path d="M14,0C6.3,0,0,6.3,0,14c0,7.7,6.3,14,14,14s14-6.3,14-14C28,6.3,21.7,0,14,0z M21.5,17.3
-        //         c0,0.5-0.2,1-0.6,1.4c-0.4,0.4-0.9,0.6-1.4,0.6h-2.8c-0.4,0-0.7-0.1-1-0.3c-0.3-0.2-0.6-0.5-0.8-0.8l-0.8-1.5
-        //         c-0.1-0.2-0.3-0.3-0.5-0.3l0,0l0,0l0,0c-0.2,0-0.4,0.1-0.5,0.3l-0.8,1.5c-0.2,0.3-0.4,0.6-0.8,0.8c-0.3,0.2-0.7,0.3-1,0.3H7.7
-        //         c-0.5,0-1-0.2-1.4-0.6c-0.4-0.4-0.6-0.9-0.6-1.5v-6c0-0.5,0.2-1,0.6-1.4c0.4-0.4,0.9-0.6,1.4-0.6h11.6c0.5,0,1,0.2,1.4,0.6
-        //         c0.4,0.4,0.6,0.9,0.6,1.4L21.5,17.3z"/>
-        // </svg>
-        //
-        // <svg class="${cssPrefix}-svg-error" version="1.1" x="0px" y="0px" width="${height - 4}px" height="${height - 4}px" viewBox="0 0 28 28" xml:space="preserve">
-        // <path d="M14,0C6.3,0,0,6.3,0,14s6.3,14,14,14s14-6.3,14-14S21.7,0,14,0z M19.4,9.5c0.5,0,1,0.1,1.4,0.5
-        //     c0.4,0.4,0.6,0.8,0.6,1.4v6c0,0.5-0.2,1-0.6,1.4c-0.2,0.2-0.4,0.3-0.7,0.4l-3.4-3.4c0.1,0,0.2,0,0.3,0c0.9,0,1.6-0.7,1.6-1.6
-        //     c0-0.9-0.7-1.6-1.6-1.6c-0.9,0-1.6,0.7-1.6,1.6c0,0.1,0,0.3,0,0.4l-5.3-5.1H19.4z M12.4,18.3c-0.2,0.3-0.4,0.5-0.8,0.7
-        //     s-0.7,0.2-1,0.2H7.8c-0.5,0-1-0.2-1.4-0.5c-0.4-0.4-0.6-0.8-0.6-1.4v-6c0-0.5,0.2-1,0.5-1.3l3,3c-0.5,0.3-0.8,0.8-0.8,1.4
-        //     c0,0.9,0.7,1.6,1.6,1.6c0.6,0,1.1-0.3,1.4-0.8l1.7,1.7L12.4,18.3z M21.3,22.5l-0.1,0.1c-0.3,0.3-0.8,0.3-1.1,0L6,8.5
-        //     C5.7,8.2,5.7,7.7,6,7.4l0.1-0.1C6.4,7,6.8,7,7.1,7.3l14.2,14.2C21.6,21.7,21.6,22.2,21.3,22.5z"/>
-        // </svg>`
     }
 };
 
@@ -692,13 +664,10 @@ var generateVRIcon = exports.generateVRIcon = function generateVRIcon(height, fo
 var generateCSS = exports.generateCSS = function generateCSS(options) {
     var fontSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 18;
 
-    if (!options.color) options.color = 'rgb(80,168,252)';
-    if (!options.background) options.background = false;
-    if (!options.disabledOpacity) options.disabledOpacity = 0.5;
-
     var height = options.height;
     var borderWidth = 2;
     var borderColor = options.background ? options.background : options.color;
+    var cssPrefix = options.cssprefix;
 
     var borderRadius = void 0;
     if (options.corners == 'round') borderRadius = options.height / 2;else if (options.corners == 'square') borderRadius = 2;else borderRadius = options.corners;
@@ -712,11 +681,12 @@ var generateCSS = exports.generateCSS = function generateCSS(options) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.EnterVRButton = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _webvrManager = _dereq_("./webvr-manager");
+
+var _webvrManager2 = _interopRequireDefault(_webvrManager);
 
 var _dom = _dereq_("./dom");
 
@@ -728,9 +698,9 @@ var _eventemitter = _dereq_("eventemitter3");
 
 var _eventemitter2 = _interopRequireDefault(_eventemitter);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -751,29 +721,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // limitations under the License.
 
 
-var child = function child(el, suffix) {
-    return el.querySelector("." + _dom.cssPrefix + "-" + suffix);
-};
-
-/**
- * @private
- * if ".webvr-ui-${suffix}" exists,
- * pass it to the function provided for manipulation.
- * @param el
- * @param suffix
- * @param fn
- */
-var ifChild = function ifChild(el, suffix, fn) {
-    var c = child(el, suffix);
-    c && fn(c);
-};
-
 /**
  * A button to allow easy-entry and messaging around a WebVR experience
  * @class
  */
-
-var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
+var EnterVRButton = function (_EventEmitter) {
     _inherits(EnterVRButton, _EventEmitter);
 
     /**
@@ -789,10 +741,11 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
      * @param {string} [options.textEnterVRTitle] set the text for Enter VR
      * @param {string} [options.textVRNotFoundTitle] set the text for when a VR display is not found
      * @param {string} [options.textExitVRTitle] set the text for exiting VR
-     * @param {string} [options.color] Text and icon color
-     * @param {string} [options.background] False for no brackground or a color
-     * @param {string} [options.corners] 'round', 'square' or pixel value representing the corner radius
-     * @param {string} [options.disabledOpacity]
+     * @param {string} [options.color] text and icon color
+     * @param {string} [options.background] set to false for no brackground or a color
+     * @param {string} [options.corners] set to 'round', 'square' or pixel value representing the corner radius
+     * @param {string} [options.disabledOpacity] set opacity of button dom when disabled
+     * @param {string} [options.cssprefix] set to change the css prefix from default 'webvr-ui'
      */
     function EnterVRButton(sourceCanvas, options) {
         _classCallCheck(this, EnterVRButton);
@@ -800,9 +753,17 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
         var _this = _possibleConstructorReturn(this, (EnterVRButton.__proto__ || Object.getPrototypeOf(EnterVRButton)).call(this));
 
         options = options || {};
-        // Option to change pixel height of the button.
+
+        options.color = options.color || 'rgb(80,168,252)';
+        options.background = options.background || false;
+        options.disabledOpacity = options.disabledOpacity || 0.5;
         options.height = options.height || 55;
-        options.injectCSS = options.injectCSS !== false;
+        options.corners = options.corners || 'square';
+        options.cssprefix = options.cssprefix || 'webvr-ui';
+
+        options.textEnterVRTitle = options.textEnterVRTitle || 'ENTER VR';
+        options.textVRNotFoundTitle = options.textVRNotFoundTitle || 'VR NOT FOUND';
+        options.textExitVRTitle = options.textExitVRTitle || 'EXIT VR';
 
         options.onRequestStateChange = options.onRequestStateChange || function () {
             return true;
@@ -818,9 +779,7 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
             });
         };
 
-        options.textEnterVRTitle = options.textEnterVRTitle || 'ENTER VR';
-        options.textVRNotFoundTitle = options.textVRNotFoundTitle || 'VR NOT FOUND';
-        options.textExitVRTitle = options.textExitVRTitle || 'EXIT VR';
+        options.injectCSS = options.injectCSS !== false;
 
         _this.options = options;
 
@@ -830,15 +789,14 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
         _this.domElement = options.domElement || (0, _dom.createDefaultView)(options);
 
         // Create WebVR Manager
-        _this.manager = new _webvrManager.WebVRManager();
+        _this.manager = new _webvrManager2.default();
         _this.manager.addListener("change", function (state) {
             return _this.__onStateChange(state);
         });
 
         // Bind button click events to __onClick
-        _this.__onEnterVRClick = _this.__onEnterVRClick.bind(_this);
         if (_this.domElement.nodeName !== 'BUTTON') {
-            throw new Error("No " + _dom.cssPrefix + "-button <button> element found in DOM");
+            throw new Error("No " + cssPrefix + "-button <button> element found in DOM");
         }
         _this.domElement.addEventListener("click", _this.__onEnterVRClick);
 
@@ -858,7 +816,7 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
                 this.domElement.removeAttribute("disabled");
             }
 
-            ifChild(this.domElement, "title", function (title) {
+            ifChild(this.domElement, this.options.cssprefix, "title", function (title) {
                 if (!text) {
                     title.style.display = "none";
                 } else {
@@ -904,7 +862,7 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
     }, {
         key: "getVRDisplay",
         value: function getVRDisplay() {
-            return _webvrManager.WebVRManager.getVRDisplay();
+            return _webvrManager2.default.getVRDisplay();
         }
     }, {
         key: "requestEnterVR",
@@ -1047,6 +1005,27 @@ var EnterVRButton = exports.EnterVRButton = function (_EventEmitter) {
     return EnterVRButton;
 }(_eventemitter2.default);
 
+exports.default = EnterVRButton;
+
+
+var child = function child(el, cssPrefix, suffix) {
+    return el.querySelector("." + cssPrefix + "-" + suffix);
+};
+
+/**
+ * @private
+ * if ".webvr-ui-${suffix}" exists,
+ * pass it to the function provided for manipulation.
+ * @param el
+ * @param cssprefix
+ * @param suffix
+ * @param fn
+ */
+var ifChild = function ifChild(el, cssPrefix, suffix, fn) {
+    var c = child(el, cssPrefix, suffix);
+    c && fn(c);
+};
+
 },{"./dom":4,"./states":7,"./webvr-manager":8,"eventemitter3":1}],6:[function(_dereq_,module,exports){
 "use strict";
 
@@ -1064,6 +1043,8 @@ var _states = _dereq_("./states");
 var State = _interopRequireWildcard(_states);
 
 var _enterVrButton = _dereq_("./enter-vr-button");
+
+var _enterVrButton2 = _interopRequireDefault(_enterVrButton);
 
 _dereq_("./aframe-component");
 
@@ -1086,7 +1067,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // limitations under the License.
 
 
-exports.EnterVRButton = _enterVrButton.EnterVRButton;
+exports.EnterVRButton = _enterVrButton2.default;
 exports.State = State;
 exports.WebVRManager = _webvrManager2.default;
 
@@ -1136,7 +1117,6 @@ var ERROR_UNKOWN = exports.ERROR_UNKOWN = "error-unkown";
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.WebVRManager = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -1175,7 +1155,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // limitations under the License.
 
 
-var WebVRManager = exports.WebVRManager = function (_EventEmitter) {
+var WebVRManager = function (_EventEmitter) {
     _inherits(WebVRManager, _EventEmitter);
 
     function WebVRManager() {
@@ -1368,6 +1348,8 @@ var WebVRManager = exports.WebVRManager = function (_EventEmitter) {
 
     return WebVRManager;
 }(_eventemitter2.default);
+
+exports.default = WebVRManager;
 
 },{"./states":7,"eventemitter3":1,"screenfull":2}]},{},[6])(6)
 });
