@@ -18,7 +18,7 @@ Get the library either by cloning or downloading it (will come to npm).
 Include the ES5 transpiled library in a script tag
 
 ```html
-<script src="/webvr-ui/build/webvr-ui.js"></script>
+<script src="/webvr-ui/build/webvr-ui.min.js"></script>
 ```
 
 or include it in your ES2015 code
