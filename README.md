@@ -46,7 +46,7 @@ To use the button in [A-Frame](https://aframe.io/), include the library as above
 </a-scene>
 ```
 
-This will disable the default UI and add a *Enter VR* button to the document DOM. All the options are also   
+This will disable the default UI and add a *Enter VR* button to the document DOM. All the styling and text options bellow are also available.    
 
 
 ### Options
