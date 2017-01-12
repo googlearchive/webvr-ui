@@ -112,13 +112,13 @@ export default class EnterVRButton extends EventEmitter  {
 
     show(){
         this.domElement.style.display = "initial";
-        this.emit("show_ui");
+        this.emit("show");
         return this;
     }
 
     hide(){
         this.domElement.style.display = "none";
-        this.emit("hide_ui");
+        this.emit("hide");
         return this;
     }
 

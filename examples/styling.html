@@ -157,16 +157,16 @@
 
         // Create button
         var enterVR = new webvrui.EnterVRButton(renderer.domElement, option)
-                .on("hide_ui", function(){
+                .on("hide", function(){
                     document.getElementById("ui").style.display = "none";
                     // On iOS there is no button to close 360 mode, so we need to provide one
                     if(enterVR.state == webvrui.State.PRESENTING_360) document.getElementById("exit360").style.display = "initial";
                 })
-                .on("show_ui", function(){
+                .on("show", function(){
                     document.getElementById("ui").style.display = "inherit";
                     document.getElementById("exit360").style.display = "none";
                 });
-        
+
         container.appendChild(enterVR.domElement);
 
         container.appendChild(description)
