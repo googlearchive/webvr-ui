@@ -684,7 +684,7 @@ var generateCSS = exports.generateCSS = function generateCSS(options) {
     var borderRadius = void 0;
     if (options.corners == 'round') borderRadius = options.height / 2;else if (options.corners == 'square') borderRadius = 2;else borderRadius = options.corners;
 
-    return "\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format('woff2');\n            unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n        }\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format('woff2');\n            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n        }\n\n        button." + cssPrefix + "-button {\n            font-family: 'Karla', sans-serif;\n\n            border: " + borderColor + " " + borderWidth + "px solid;\n            border-radius: " + borderRadius + "px;\n            box-sizing: border-box;\n            background: " + (options.background ? options.background : 'none') + ";\n\n            height: " + height + "px;\n            min-width: " + 125 + "px;\n            display: inline-block;\n            position: relative;\n\n            cursor: pointer;\n        }\n\n        /*\n        * Logo\n        */\n\n        ." + cssPrefix + "-logo {\n            width: " + height + "px;\n            height: " + height + "px;\n            position: absolute;\n            top:0px;\n            left:0px;\n            width: " + (height - 4) + "px;\n            height: " + (height - 4) + "px;\n        }\n        ." + cssPrefix + "-svg {\n            fill: " + options.color + ";\n            margin-top: " + ((height - fontSize * _logo_scale) / 2 - 2) + "px;\n            margin-left: " + height / 3 + "px;\n        }\n        ." + cssPrefix + "-svg-error {\n            fill: " + options.color + ";\n            display:none;\n            margin-top: " + ((height - 28 / 18 * fontSize * _logo_scale) / 2 - 2) + "px;\n            margin-left: " + height / 3 + "px;\n        }\n\n\n        /*\n        * Title\n        */\n\n        ." + cssPrefix + "-title {\n            color: " + options.color + ";\n            position: relative;\n            font-size: " + fontSize + "px;\n            top: -" + borderWidth + "px;\n            line-height: " + (height - borderWidth * 2) + "px;\n            text-align: left;\n            padding-left: " + height * 1.05 + "px;\n            padding-right: " + (borderRadius - 10 < 5 ? height / 3 : borderRadius - 10) + "px;\n        }\n\n        /*\n        * disabled\n        */\n\n        button." + cssPrefix + "-button[disabled=true] {\n            opacity: " + options.disabledOpacity + ";\n        }\n\n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg {\n            display:none;\n        }\n\n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg-error {\n            display:initial;\n        }\n      ";
+    return "\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format('woff2');\n            unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n        }\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format('woff2');\n            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n        }\n\n        button." + cssPrefix + "-button {\n            font-family: 'Karla', sans-serif;\n\n            border: " + borderColor + " " + borderWidth + "px solid;\n            border-radius: " + borderRadius + "px;\n            box-sizing: border-box;\n            background: " + (options.background ? options.background : 'none') + ";\n\n            height: " + height + "px;\n            min-width: " + 125 + "px;\n            display: inline-block;\n            position: relative;\n\n            cursor: pointer;\n        }\n\n        /*\n        * Logo\n        */\n\n        ." + cssPrefix + "-logo {\n            width: " + height + "px;\n            height: " + height + "px;\n            position: absolute;\n            top:0px;\n            left:0px;\n            width: " + (height - 4) + "px;\n            height: " + (height - 4) + "px;\n        }\n        ." + cssPrefix + "-svg {\n            fill: " + options.color + ";\n            margin-top: " + ((height - fontSize * _logo_scale) / 2 - 2) + "px;\n            margin-left: " + height / 3 + "px;\n        }\n        ." + cssPrefix + "-svg-error {\n            fill: " + options.color + ";\n            display:none;\n            margin-top: " + ((height - 28 / 18 * fontSize * _logo_scale) / 2 - 2) + "px;\n            margin-left: " + height / 3 + "px;\n        }\n\n\n        /*\n        * Title\n        */\n\n        ." + cssPrefix + "-title {\n            color: " + options.color + ";\n            position: relative;\n            font-size: " + fontSize + "px;\n            padding-left: " + height * 1.05 + "px;\n            padding-right: " + (borderRadius - 10 < 5 ? height / 3 : borderRadius - 10) + "px;\n        }\n\n        /*\n        * disabled\n        */\n\n        button." + cssPrefix + "-button[disabled=true] {\n            opacity: " + options.disabledOpacity + ";\n        }\n\n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg {\n            display:none;\n        }\n\n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg-error {\n            display:initial;\n        }\n      ";
 };
 
 },{}],5:[function(_dereq_,module,exports){
@@ -851,12 +851,14 @@ var EnterVRButton = function (_EventEmitter) {
         key: "show",
         value: function show() {
             this.domElement.style.display = "initial";
+            this.emit("show");
             return this;
         }
     }, {
         key: "hide",
         value: function hide() {
             this.domElement.style.display = "none";
+            this.emit("hide");
             return this;
         }
 
@@ -962,9 +964,10 @@ var EnterVRButton = function (_EventEmitter) {
         key: "__onStateChange",
         value: function __onStateChange(state) {
             if (state != this.state) {
-                if (this.state === State.PRESENTING) {
+                if (this.state === State.PRESENTING || this.state === State.PRESENTING_360) {
                     this.emit("exit");
                 }
+                this.state = state;
 
                 switch (state) {
                     case State.READY_TO_PRESENT:
@@ -975,7 +978,7 @@ var EnterVRButton = function (_EventEmitter) {
 
                     case State.PRESENTING:
                     case State.PRESENTING_360:
-                        if (!this.manager.defaultDisplay || !this.manager.defaultDisplay.capabilities.hasExternalDisplay) {
+                        if (!this.manager.defaultDisplay || !this.manager.defaultDisplay.capabilities.hasExternalDisplay || state == State.PRESENTING_360) {
                             this.hide();
                         }
                         this.setTitle(this.options.textExitVRTitle);
@@ -1011,7 +1014,6 @@ var EnterVRButton = function (_EventEmitter) {
                         this.setTooltip("Unknown error.");
                         this.emit("error", new Error(state));
                 }
-                this.state = state;
             }
         }
     }]);
@@ -1283,6 +1285,9 @@ var WebVRManager = function (_EventEmitter) {
         value: function enter360(canvas) {
             if (_screenfull2.default.enabled) {
                 _screenfull2.default.request(canvas);
+            } else {
+                // iOS
+                this.__setState(State.PRESENTING_360);
             }
             return true;
         }
@@ -1291,6 +1296,8 @@ var WebVRManager = function (_EventEmitter) {
         value: function exit360() {
             if (_screenfull2.default.enabled && _screenfull2.default.isFullscreen) {
                 _screenfull2.default.exit();
+            } else if (this.state == State.PRESENTING_360) {
+                this.checkDisplays();
             }
             return true;
         }
@@ -1311,7 +1318,7 @@ var WebVRManager = function (_EventEmitter) {
         key: "__onChangeFullscreen",
         value: function __onChangeFullscreen(e) {
             if (_screenfull2.default.isFullscreen) {
-                this.__setState(State.PRESENTING);
+                this.__setState(State.PRESENTING_360);
             } else {
                 this.checkDisplays();
             }
