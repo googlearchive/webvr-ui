@@ -144,6 +144,9 @@ export default class WebVRManager extends EventEmitter {
     enter360(canvas) {
         if(screenfull.enabled){
             screenfull.request(canvas);
+        } else {
+            // iOS
+            this.__setState(State.PRESENTING_360)
         }
         return true;
     };
@@ -151,6 +154,8 @@ export default class WebVRManager extends EventEmitter {
     exit360() {
         if(screenfull.enabled && screenfull.isFullscreen){
             screenfull.exit();
+        } else if(this.state == State.PRESENTING_360){
+            this.checkDisplays();
         }
         return true;
     };
@@ -169,7 +174,7 @@ export default class WebVRManager extends EventEmitter {
 
     __onChangeFullscreen(e){
         if(screenfull.isFullscreen){
-            this.__setState(State.PRESENTING);
+            this.__setState(State.PRESENTING_360);
         } else {
             this.checkDisplays();
         }

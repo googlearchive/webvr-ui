@@ -207,9 +207,6 @@ export const generateCSS = (options, fontSize=18)=>{
             color: ${options.color};
             position: relative;
             font-size: ${fontSize}px;
-            top: -${borderWidth}px;
-            line-height: ${height - borderWidth * 2}px;
-            text-align: left;
             padding-left: ${height * 1.05}px;
             padding-right: ${(borderRadius-10 < 5) ? height/3 : borderRadius-10}px;
         }

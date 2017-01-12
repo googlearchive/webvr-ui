@@ -112,11 +112,13 @@ export default class EnterVRButton extends EventEmitter  {
 
     show(){
         this.domElement.style.display = "initial";
+        this.emit("show_ui");
         return this;
     }
 
     hide(){
         this.domElement.style.display = "none";
+        this.emit("hide_ui");
         return this;
     }
 
@@ -201,9 +203,10 @@ export default class EnterVRButton extends EventEmitter  {
      */
     __onStateChange(state){
         if(state != this.state) {
-            if(this.state === State.PRESENTING){
+            if(this.state === State.PRESENTING || this.state === State.PRESENTING_360){
                 this.emit("exit");
             }
+            this.state = state;
 
             switch (state) {
                 case State.READY_TO_PRESENT:
@@ -215,7 +218,9 @@ export default class EnterVRButton extends EventEmitter  {
 
                 case State.PRESENTING:
                 case State.PRESENTING_360:
-                    if(!this.manager.defaultDisplay || !this.manager.defaultDisplay.capabilities.hasExternalDisplay){
+                    if(!this.manager.defaultDisplay
+                        || !this.manager.defaultDisplay.capabilities.hasExternalDisplay
+                        || state == State.PRESENTING_360){
                         this.hide();
                     }
                     this.setTitle(this.options.textExitVRTitle);
@@ -251,7 +256,6 @@ export default class EnterVRButton extends EventEmitter  {
                     this.setTooltip("Unknown error.");
                     this.emit("error", new Error(state));
             }
-            this.state = state;
         }
     }
 }

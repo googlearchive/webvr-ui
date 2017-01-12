@@ -36,6 +36,7 @@
             top: 40%;
             left: 50%;
             transform: translate(-50%, -50%);
+            min-width: 300px;
         }
 
         #button {
@@ -166,7 +167,7 @@
         // Apply rotation to cube mesh
         cube.rotation.y += delta * 0.0003;
 
-        if(enterVR.state == webvrui.State.PRESENTING){
+        if(enterVR.state == webvrui.State.PRESENTING || enterVR.state == webvrui.State.PRESENTING_360){
             controls.update();
             renderer.render(scene,camera);
             effect.render(scene, camera);
