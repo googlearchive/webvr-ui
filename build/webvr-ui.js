@@ -459,13 +459,13 @@ if ('undefined' !== typeof module) {
 })();
 
 },{}],3:[function(_dereq_,module,exports){
-"use strict";
+'use strict';
 
-var _enterVrButton = _dereq_("./enter-vr-button");
+var _enterVrButton = _dereq_('./enter-vr-button');
 
 var _enterVrButton2 = _interopRequireDefault(_enterVrButton);
 
-var _states = _dereq_("./states");
+var _states = _dereq_('./states');
 
 var State = _interopRequireWildcard(_states);
 
@@ -488,80 +488,80 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // limitations under the License.
 
 if (typeof AFRAME !== 'undefined' && AFRAME) {
-    AFRAME.registerComponent('webvr-ui', {
-        dependencies: ['canvas'],
+  AFRAME.registerComponent('webvr-ui', {
+    dependencies: ['canvas'],
 
-        schema: {
-            enabled: { type: 'boolean', default: true },
-            color: { type: 'string', default: 'white' },
-            background: { type: 'string', default: 'black' },
-            corners: { type: 'string', default: 'square' },
-            disabledOpacity: { type: 'number', default: 0.5 },
+    schema: {
+      enabled: { type: 'boolean', default: true },
+      color: { type: 'string', default: 'white' },
+      background: { type: 'string', default: 'black' },
+      corners: { type: 'string', default: 'square' },
+      disabledOpacity: { type: 'number', default: 0.5 },
 
-            textEnterVRTitle: { type: 'string' },
-            textExitVRTitle: { type: 'string' },
-            textVRNotFoundTitle: { type: 'string' }
-        },
+      textEnterVRTitle: { type: 'string' },
+      textExitVRTitle: { type: 'string' },
+      textVRNotFoundTitle: { type: 'string' }
+    },
 
-        init: function init() {},
+    init: function init() {},
 
-        update: function update() {
-            var scene = document.querySelector('a-scene');
-            scene.setAttribute("vr-mode-ui", { enabled: !this.data.enabled });
+    update: function update() {
+      var scene = document.querySelector('a-scene');
+      scene.setAttribute('vr-mode-ui', { enabled: !this.data.enabled });
 
-            if (this.data.enabled) {
-                if (this.enterVREl) {
-                    return;
-                }
-
-                var options = {
-                    color: this.data.color,
-                    background: this.data.background,
-                    corners: this.data.corners,
-                    disabledOpacity: this.data.disabledOpacity,
-                    textEnterVRTitle: this.data.textEnterVRTitle,
-                    textExitVRTitle: this.data.textExitVRTitle,
-                    textVRNotFoundTitle: this.data.textVRNotFoundTitle,
-                    onRequestStateChange: function onRequestStateChange(state) {
-                        if (state == State.PRESENTING) {
-                            scene.enterVR();
-                        } else {
-                            scene.exitVR();
-                        }
-                        return false;
-                    }
-                };
-
-                var enterVR = this.enterVR = new _enterVrButton2.default(scene.canvas, options);
-
-                this.enterVREl = enterVR.domElement;
-
-                document.body.appendChild(enterVR.domElement);
-
-                enterVR.domElement.style.position = "absolute";
-                enterVR.domElement.style.bottom = "10px";
-                enterVR.domElement.style.left = "50%";
-                enterVR.domElement.style.transform = "translate(-50%, -50%)";
-                enterVR.domElement.style.textAlign = "center";
-            } else {
-                if (this.enterVREl) {
-                    this.enterVREl.parentNode.removeChild(this.enterVREl);
-                    this.enterVR.remove();
-                }
-            }
-        },
-
-        remove: function remove() {
-            if (this.enterVREl) {
-                this.enterVREl.parentNode.removeChild(this.enterVREl);
-                this.enterVR.remove();
-            }
+      if (this.data.enabled) {
+        if (this.enterVREl) {
+          return;
         }
-    });
+
+        var options = {
+          color: this.data.color,
+          background: this.data.background,
+          corners: this.data.corners,
+          disabledOpacity: this.data.disabledOpacity,
+          textEnterVRTitle: this.data.textEnterVRTitle,
+          textExitVRTitle: this.data.textExitVRTitle,
+          textVRNotFoundTitle: this.data.textVRNotFoundTitle,
+          onRequestStateChange: function onRequestStateChange(state) {
+            if (state == State.PRESENTING) {
+              scene.enterVR();
+            } else {
+              scene.exitVR();
+            }
+            return false;
+          }
+        };
+
+        var enterVR = this.enterVR = new _enterVrButton2.default(scene.canvas, options);
+
+        this.enterVREl = enterVR.domElement;
+
+        document.body.appendChild(enterVR.domElement);
+
+        enterVR.domElement.style.position = 'absolute';
+        enterVR.domElement.style.bottom = '10px';
+        enterVR.domElement.style.left = '50%';
+        enterVR.domElement.style.transform = 'translate(-50%, -50%)';
+        enterVR.domElement.style.textAlign = 'center';
+      } else {
+        if (this.enterVREl) {
+          this.enterVREl.parentNode.removeChild(this.enterVREl);
+          this.enterVR.remove();
+        }
+      }
+    },
+
+    remove: function remove() {
+      if (this.enterVREl) {
+        this.enterVREl.parentNode.removeChild(this.enterVREl);
+        this.enterVR.remove();
+      }
+    }
+  });
 }
 
 },{"./enter-vr-button":5,"./states":7}],4:[function(_dereq_,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -580,96 +580,76 @@ Object.defineProperty(exports, "__esModule", {
 //     See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-var _WebVRUI_css_injected = {};
-var _logo_scale = 0.8;
+var _LOGO_SCALE = 0.8;
+var _WEBVR_UI_CSS_INJECTED = {};
 
 /**
- * @private
- * generate the innerHTML for the button
- * @param cssPrefix
+ * Generate the innerHTML for the button
+ *
+ * @param {string} cssPrefix
  * @param {Number} height
  * @param {Number} fontSize
+ * @private
  */
 var generateInnerHTML = function generateInnerHTML(cssPrefix, height, fontSize) {
     var svgString = generateVRIcon(cssPrefix, height, fontSize);
 
-    return "<button class=\"" + cssPrefix + "-button\">\n          <div class=\"" + cssPrefix + "-title\"></div>\n          <div class=\"" + cssPrefix + "-logo\" >" + svgString + "</div>\n        </button>";
+    return '<button class="' + cssPrefix + '-button">\n          <div class="' + cssPrefix + '-title"></div>\n          <div class="' + cssPrefix + '-logo" >' + svgString + '</div>\n        </button>';
 };
 
 /**
- * inject the CSS string to the head of the document
+ * Inject the CSS string to the head of the document
+ *
  * @param {string} cssText the css to inject
  */
 var injectCSS = exports.injectCSS = function injectCSS(cssText) {
     // Create the css
-    var style = document.createElement("style");
+    var style = document.createElement('style');
     style.innerHTML = cssText;
 
-    var head = document.getElementsByTagName("head")[0];
+    var head = document.getElementsByTagName('head')[0];
     head.insertBefore(style, head.firstChild);
 };
 
 /**
- * generate DOM element view for button
+ * Generate DOM element view for button
+ *
  * @returns {HTMLElement}
- * @param options
+ * @param {Object} options
  */
 var createDefaultView = exports.createDefaultView = function createDefaultView(options) {
     var fontSize = options.height / 3;
     if (options.injectCSS) {
         // Check that css isnt already injected
-        if (!_WebVRUI_css_injected[options.cssprefix]) {
+        if (!_WEBVR_UI_CSS_INJECTED[options.cssprefix]) {
             injectCSS(generateCSS(options, fontSize));
-            _WebVRUI_css_injected[options.cssprefix] = true;
+            _WEBVR_UI_CSS_INJECTED[options.cssprefix] = true;
         }
     }
 
-    var el = document.createElement("div");
+    var el = document.createElement('div');
     el.innerHTML = generateInnerHTML(options.cssprefix, options.height, fontSize);
-    var domElement = el.firstChild;
-
-    // let __animating = false;
-    // domElement.addEventListener('click', (e)=>{
-    //     if(!__animating) {
-    //         __animating = true;
-    //         e.stopPropagation();
-    //         domElement.classList.add("animate");
-    //         setTimeout(()=> {
-    //             domElement.click();
-    //         }, 800);
-    //
-    //         setTimeout(()=>{
-    //             domElement.classList.remove("animate");
-    //             __animating = false;
-    //         },2000)
-    //     }
-    // }, true);
-
-    return domElement;
+    return el.firstChild;
 };
 
 /**
- * generate the VR Icons SVG
- * @param cssPrefix
+ * Generate the VR Icons SVG
+ *
+ * @param {string} cssPrefix
  * @param {Number} height
- * @param fontSize
- * @param cutout
+ * @param {Number} fontSize
  * @returns {string}
  */
 var generateVRIcon = exports.generateVRIcon = function generateVRIcon(cssPrefix, height, fontSize) {
-    var cutout = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-    if (!cutout) {
-        fontSize *= _logo_scale;
-        var aspect = 28 / 18;
-        return "<svg class=\"" + cssPrefix + "-svg\" version=\"1.1\" x=\"0px\" y=\"0px\" width=\"" + aspect * fontSize + "px\" height=\"" + fontSize + "px\" viewBox=\"0 0 28 18\" xml:space=\"preserve\">\n                <path d=\"M26.8,1.1C26.1,0.4,25.1,0,24.2,0H3.4c-1,0-1.7,0.4-2.4,1.1C0.3,1.7,0,2.7,0,3.6v10.7\n                c0,1,0.3,1.9,0.9,2.6C1.6,17.6,2.4,18,3.4,18h5c0.7,0,1.3-0.2,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.5-2.6C13.2,13.1,13,13,14,13v0h-0.2\n                h0c0.3,0,0.7,0.1,0.8,0.5l1.4,2.6c0.3,0.6,0.8,1.1,1.3,1.4c0.6,0.3,1.2,0.5,1.8,0.5h5c1,0,2-0.4,2.7-1.1c0.7-0.7,1.2-1.6,1.2-2.6\n                V3.6C28,2.7,27.5,1.7,26.8,1.1z M7.4,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8c1.6,0,2.8,1.3,2.8,2.8\n                C10.2,10.5,8.9,11.8,7.4,11.8z M20.1,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8C21.7,6.2,23,7.4,23,9\n                C23,10.5,21.7,11.8,20.1,11.8z\"/>\n            </svg>\n            <svg class=\"" + cssPrefix + "-svg-error\" x=\"0px\" y=\"0px\" width=\"" + aspect * fontSize + "px\" height=\"" + aspect * fontSize + "px\" viewBox=\"0 0 28 28\" xml:space=\"preserve\">\n                <path d=\"M17.6,13.4c0-0.2-0.1-0.4-0.1-0.6c0-1.6,1.3-2.8,2.8-2.8s2.8,1.3,2.8,2.8s-1.3,2.8-2.8,2.8\n                c-0.2,0-0.4,0-0.6-0.1l5.9,5.9c0.5-0.2,0.9-0.4,1.3-0.8c0.7-0.7,1.1-1.6,1.1-2.5V7.4c0-1-0.4-1.9-1.1-2.5c-0.7-0.7-1.6-1-2.5-1H8.1\n                L17.6,13.4z\"/>\n                <path d=\"M10.1,14.2c-0.5,0.9-1.4,1.4-2.4,1.4c-1.6,0-2.8-1.3-2.8-2.8c0-1.1,0.6-2,1.4-2.5L0.9,5.1\n                C0.3,5.7,0,6.6,0,7.5v10.7c0,1,0.4,1.8,1.1,2.5c0.7,0.7,1.6,1,2.5,1h5c0.7,0,1.3-0.1,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.3-2.6\n                L10.1,14.2z\"/>\n                <path d=\"M25.5,27.5l-25-25C-0.1,2-0.1,1,0.5,0.4l0,0C1-0.1,2-0.1,2.6,0.4l25,25c0.6,0.6,0.6,1.5,0,2.1l0,0\n                C27,28.1,26,28.1,25.5,27.5z\"/>\n            </svg>";
-    }
+    fontSize *= _LOGO_SCALE;
+    var aspect = 28 / 18;
+    return '<svg class="' + cssPrefix + '-svg" version="1.1" x="0px" y="0px" \n        width="' + aspect * fontSize + 'px" height="' + fontSize + 'px" viewBox="0 0 28 18" xml:space="preserve">\n        <path d="M26.8,1.1C26.1,0.4,25.1,0,24.2,0H3.4c-1,0-1.7,0.4-2.4,1.1C0.3,1.7,0,2.7,0,3.6v10.7\n        c0,1,0.3,1.9,0.9,2.6C1.6,17.6,2.4,18,3.4,18h5c0.7,0,1.3-0.2,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l\n        1.5-2.6C13.2,13.1,13,13,14,13v0h-0.2 h0c0.3,0,0.7,0.1,0.8,0.5l1.4,2.6c0.3,0.6,0.8,1.1,1.3,\n        1.4c0.6,0.3,1.2,0.5,1.8,0.5h5c1,0,2-0.4,2.7-1.1c0.7-0.7,1.2-1.6,1.2-2.6 V3.6C28,2.7,27.5,\n        1.7,26.8,1.1z M7.4,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8c1.6,0,2.8,1.3,2.8,2.8\n        C10.2,10.5,8.9,11.8,7.4,11.8z M20.1,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8C21.7\n        ,6.2,23,7.4,23,9 C23,10.5,21.7,11.8,20.1,11.8z"/>\n    </svg>\n    <svg class="' + cssPrefix + '-svg-error" x="0px" y="0px" \n        width="' + aspect * fontSize + 'px" height="' + aspect * fontSize + 'px" viewBox="0 0 28 28" xml:space="preserve">\n        <path d="M17.6,13.4c0-0.2-0.1-0.4-0.1-0.6c0-1.6,1.3-2.8,2.8-2.8s2.8,1.3,2.8,2.8s-1.3,2.8-2.8,2.8\n        c-0.2,0-0.4,0-0.6-0.1l5.9,5.9c0.5-0.2,0.9-0.4,1.3-0.8\n        c0.7-0.7,1.1-1.6,1.1-2.5V7.4c0-1-0.4-1.9-1.1-2.5c-0.7-0.7-1.6-1-2.5-1\n        H8.1 L17.6,13.4z"/>\n        <path d="M10.1,14.2c-0.5,0.9-1.4,1.4-2.4,1.4c-1.6,0-2.8-1.3-2.8-2.8c0-1.1,0.6-2,1.4-2.5\n        L0.9,5.1 C0.3,5.7,0,6.6,0,7.5v10.7c0,1,0.4,1.8,1.1,2.5c0.7,0.7,1.6,1,2.5,1\n        h5c0.7,0,1.3-0.1,1.8-0.5c0.6-0.3,1-0.8,1.3-1.4l1.3-2.6 L10.1,14.2z"/>\n        <path d="M25.5,27.5l-25-25C-0.1,2-0.1,1,0.5,0.4l0,0C1-0.1,2-0.1,2.6,0.4l25,25c0.6,0.6,0.6,1.5\n        ,0,2.1l0,0 C27,28.1,26,28.1,25.5,27.5z"/>\n    </svg>';
 };
 
 /**
- * generate the CSS string to inject
- * @param options
+ * Generate the CSS string to inject
+ *
+ * @param {Object} options
  * @param {Number} [fontSize=18]
  * @returns {string}
  */
@@ -682,35 +662,39 @@ var generateCSS = exports.generateCSS = function generateCSS(options) {
     var cssPrefix = options.cssprefix;
 
     var borderRadius = void 0;
-    if (options.corners == 'round') borderRadius = options.height / 2;else if (options.corners == 'square') borderRadius = 2;else borderRadius = options.corners;
+    if (options.corners == 'round') {
+        borderRadius = options.height / 2;
+    } else if (options.corners == 'square') {
+        borderRadius = 2;
+    } else {
+        borderRadius = options.corners;
+    }
 
-    return "\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format('woff2');\n            unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n        }\n        @font-face {\n            font-family: 'Karla';\n            font-style: normal;\n            font-weight: 400;\n            src: local('Karla'), local('Karla-Regular'), url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format('woff2');\n            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n        }\n\n        button." + cssPrefix + "-button {\n            font-family: 'Karla', sans-serif;\n\n            border: " + borderColor + " " + borderWidth + "px solid;\n            border-radius: " + borderRadius + "px;\n            box-sizing: border-box;\n            background: " + (options.background ? options.background : 'none') + ";\n\n            height: " + height + "px;\n            min-width: " + 125 + "px;\n            display: inline-block;\n            position: relative;\n\n            cursor: pointer;\n        }\n\n        /*\n        * Logo\n        */\n\n        ." + cssPrefix + "-logo {\n            width: " + height + "px;\n            height: " + height + "px;\n            position: absolute;\n            top:0px;\n            left:0px;\n            width: " + (height - 4) + "px;\n            height: " + (height - 4) + "px;\n        }\n        ." + cssPrefix + "-svg {\n            fill: " + options.color + ";\n            margin-top: " + ((height - fontSize * _logo_scale) / 2 - 2) + "px;\n            margin-left: " + height / 3 + "px;\n        }\n        ." + cssPrefix + "-svg-error {\n            fill: " + options.color + ";\n            display:none;\n            margin-top: " + ((height - 28 / 18 * fontSize * _logo_scale) / 2 - 2) + "px;\n            margin-left: " + height / 3 + "px;\n        }\n\n\n        /*\n        * Title\n        */\n\n        ." + cssPrefix + "-title {\n            color: " + options.color + ";\n            position: relative;\n            font-size: " + fontSize + "px;\n            padding-left: " + height * 1.05 + "px;\n            padding-right: " + (borderRadius - 10 < 5 ? height / 3 : borderRadius - 10) + "px;\n        }\n\n        /*\n        * disabled\n        */\n\n        button." + cssPrefix + "-button[disabled=true] {\n            opacity: " + options.disabledOpacity + ";\n        }\n\n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg {\n            display:none;\n        }\n\n        button." + cssPrefix + "-button[disabled=true] > ." + cssPrefix + "-logo > ." + cssPrefix + "-svg-error {\n            display:initial;\n        }\n      ";
+    return '\n    @font-face {\n        font-family: \'Karla\';\n        font-style: normal;\n        font-weight: 400;\n        src: local(\'Karla\'), local(\'Karla-Regular\'), \n             url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format(\'woff2\');\n        unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n    }\n    @font-face {\n        font-family: \'Karla\';\n        font-style: normal;\n        font-weight: 400;\n        src: local(\'Karla\'), local(\'Karla-Regular\'), \n             url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format(\'woff2\');\n        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, \n                       U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n    }\n\n    button.' + cssPrefix + '-button {\n        font-family: \'Karla\', sans-serif;\n\n        border: ' + borderColor + ' ' + borderWidth + 'px solid;\n        border-radius: ' + borderRadius + 'px;\n        box-sizing: border-box;\n        background: ' + (options.background ? options.background : 'none') + ';\n\n        height: ' + height + 'px;\n        min-width: ' + 125 + 'px;\n        display: inline-block;\n        position: relative;\n\n        cursor: pointer;\n    }\n\n    /*\n    * Logo\n    */\n\n    .' + cssPrefix + '-logo {\n        width: ' + height + 'px;\n        height: ' + height + 'px;\n        position: absolute;\n        top:0px;\n        left:0px;\n        width: ' + (height - 4) + 'px;\n        height: ' + (height - 4) + 'px;\n    }\n    .' + cssPrefix + '-svg {\n        fill: ' + options.color + ';\n        margin-top: ' + ((height - fontSize * _LOGO_SCALE) / 2 - 2) + 'px;\n        margin-left: ' + height / 3 + 'px;\n    }\n    .' + cssPrefix + '-svg-error {\n        fill: ' + options.color + ';\n        display:none;\n        margin-top: ' + ((height - 28 / 18 * fontSize * _LOGO_SCALE) / 2 - 2) + 'px;\n        margin-left: ' + height / 3 + 'px;\n    }\n\n\n    /*\n    * Title\n    */\n\n    .' + cssPrefix + '-title {\n        color: ' + options.color + ';\n        position: relative;\n        font-size: ' + fontSize + 'px;\n        padding-left: ' + height * 1.05 + 'px;\n        padding-right: ' + (borderRadius - 10 < 5 ? height / 3 : borderRadius - 10) + 'px;\n    }\n\n    /*\n    * disabled\n    */\n\n    button.' + cssPrefix + '-button[disabled=true] {\n        opacity: ' + options.disabledOpacity + ';\n    }\n\n    button.' + cssPrefix + '-button[disabled=true] > .' + cssPrefix + '-logo > .' + cssPrefix + '-svg {\n        display:none;\n    }\n\n    button.' + cssPrefix + '-button[disabled=true] > .' + cssPrefix + '-logo > .' + cssPrefix + '-svg-error {\n        display:initial;\n    }\n  ';
 };
 
 },{}],5:[function(_dereq_,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _webvrManager = _dereq_("./webvr-manager");
+var _webvrManager = _dereq_('./webvr-manager');
 
 var _webvrManager2 = _interopRequireDefault(_webvrManager);
 
-var _dom = _dereq_("./dom");
+var _dom = _dereq_('./dom');
 
-var _states = _dereq_("./states");
+var _states = _dereq_('./states');
 
-var State = _interopRequireWildcard(_states);
+var _states2 = _interopRequireDefault(_states);
 
-var _eventemitter = _dereq_("eventemitter3");
+var _eventemitter = _dereq_('eventemitter3');
 
 var _eventemitter2 = _interopRequireDefault(_eventemitter);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -731,338 +715,335 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 //     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //     See the License for the specific language governing permissions and
 // limitations under the License.
-
 
 /**
  * A button to allow easy-entry and messaging around a WebVR experience
  * @class
  */
 var EnterVRButton = function (_EventEmitter) {
-    _inherits(EnterVRButton, _EventEmitter);
+  _inherits(EnterVRButton, _EventEmitter);
 
-    /**
-     * Construct a new Enter VR Button
-     * @constructor
-     * @param {HTMLCanvasElement} sourceCanvas the canvas that you want to present in WebVR
-     * @param {Object} [options] optional parameters
-     * @param {HTMLElement} [options.domElement] provide your own domElement to bind to
-     * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
-     * @param {Function} [options.beforeEnter] should return a promise, opportunity to intercept request to enter for custom messaging
-     * @param {Function} [options.beforeExit] should return a promise, opportunity to intercept request to exit for updating of UI
-     * @param {Function} [options.onRequestStateChange] set to a function returning false to prevent default state changes
-     * @param {string} [options.textEnterVRTitle] set the text for Enter VR
-     * @param {string} [options.textVRNotFoundTitle] set the text for when a VR display is not found
-     * @param {string} [options.textExitVRTitle] set the text for exiting VR
-     * @param {string} [options.color] text and icon color
-     * @param {string} [options.background] set to false for no brackground or a color
-     * @param {string} [options.corners] set to 'round', 'square' or pixel value representing the corner radius
-     * @param {string} [options.disabledOpacity] set opacity of button dom when disabled
-     * @param {string} [options.cssprefix] set to change the css prefix from default 'webvr-ui'
-     */
-    function EnterVRButton(sourceCanvas, options) {
-        _classCallCheck(this, EnterVRButton);
+  /**
+   * Construct a new Enter VR Button
+   * @constructor
+   * @param {HTMLCanvasElement} sourceCanvas the canvas that you want to present in WebVR
+   * @param {Object} [options] optional parameters
+   * @param {HTMLElement} [options.domElement] provide your own domElement to bind to
+   * @param {Boolean} [options.injectCSS=true] set to false if you want to write your own styles
+   * @param {Function} [options.beforeEnter] should return a promise, opportunity to intercept request to enter
+   * @param {Function} [options.beforeExit] should return a promise, opportunity to intercept request to exit
+   * @param {Function} [options.onRequestStateChange] set to a function returning false to prevent default state changes
+   * @param {string} [options.textEnterVRTitle] set the text for Enter VR
+   * @param {string} [options.textVRNotFoundTitle] set the text for when a VR display is not found
+   * @param {string} [options.textExitVRTitle] set the text for exiting VR
+   * @param {string} [options.color] text and icon color
+   * @param {string} [options.background] set to false for no brackground or a color
+   * @param {string} [options.corners] set to 'round', 'square' or pixel value representing the corner radius
+   * @param {string} [options.disabledOpacity] set opacity of button dom when disabled
+   * @param {string} [options.cssprefix] set to change the css prefix from default 'webvr-ui'
+   */
+  function EnterVRButton(sourceCanvas, options) {
+    _classCallCheck(this, EnterVRButton);
 
-        var _this = _possibleConstructorReturn(this, (EnterVRButton.__proto__ || Object.getPrototypeOf(EnterVRButton)).call(this));
+    var _this = _possibleConstructorReturn(this, (EnterVRButton.__proto__ || Object.getPrototypeOf(EnterVRButton)).call(this));
 
-        options = options || {};
+    options = options || {};
 
-        options.color = options.color || 'rgb(80,168,252)';
-        options.background = options.background || false;
-        options.disabledOpacity = options.disabledOpacity || 0.5;
-        options.height = options.height || 55;
-        options.corners = options.corners || 'square';
-        options.cssprefix = options.cssprefix || 'webvr-ui';
+    options.color = options.color || 'rgb(80,168,252)';
+    options.background = options.background || false;
+    options.disabledOpacity = options.disabledOpacity || 0.5;
+    options.height = options.height || 55;
+    options.corners = options.corners || 'square';
+    options.cssprefix = options.cssprefix || 'webvr-ui';
 
-        options.textEnterVRTitle = options.textEnterVRTitle || 'ENTER VR';
-        options.textVRNotFoundTitle = options.textVRNotFoundTitle || 'VR NOT FOUND';
-        options.textExitVRTitle = options.textExitVRTitle || 'EXIT VR';
+    options.textEnterVRTitle = options.textEnterVRTitle || 'ENTER VR';
+    options.textVRNotFoundTitle = options.textVRNotFoundTitle || 'VR NOT FOUND';
+    options.textExitVRTitle = options.textExitVRTitle || 'EXIT VR';
 
-        options.onRequestStateChange = options.onRequestStateChange || function () {
-            return true;
-        };
-        options.beforeEnter = options.beforeEnter || function () {
-            return new Promise(function (resolve) {
-                return resolve();
-            });
-        };
-        options.beforeExit = options.beforeExit || function () {
-            return new Promise(function (resolve) {
-                return resolve();
-            });
-        };
+    options.onRequestStateChange = options.onRequestStateChange || function () {
+      return true;
+    };
+    options.beforeEnter = options.beforeEnter || function () {
+      return new Promise(function (resolve) {
+        return resolve();
+      });
+    };
+    options.beforeExit = options.beforeExit || function () {
+      return new Promise(function (resolve) {
+        return resolve();
+      });
+    };
 
-        options.injectCSS = options.injectCSS !== false;
+    options.injectCSS = options.injectCSS !== false;
 
-        _this.options = options;
+    _this.options = options;
 
-        _this.sourceCanvas = sourceCanvas;
+    _this.sourceCanvas = sourceCanvas;
 
-        //pass in your own domElement if you really dont want to use ours
-        _this.domElement = options.domElement || (0, _dom.createDefaultView)(options);
+    //pass in your own domElement if you really dont want to use ours
+    _this.domElement = options.domElement || (0, _dom.createDefaultView)(options);
 
-        // Create WebVR Manager
-        _this.manager = new _webvrManager2.default();
-        _this.manager.addListener("change", function (state) {
-            return _this.__onStateChange(state);
-        });
+    // Create WebVR Manager
+    _this.manager = new _webvrManager2.default();
+    _this.manager.addListener('change', function (state) {
+      return _this.__onStateChange(state);
+    });
 
-        // Bind button click events to __onClick
-        if (_this.domElement.nodeName !== 'BUTTON') {
-            throw new Error("No " + cssPrefix + "-button <button> element found in DOM");
+    // Bind button click events to __onClick
+    if (_this.domElement.nodeName !== 'BUTTON') {
+      throw new Error('No ' + cssPrefix + '-button <button> element found in DOM');
+    }
+    _this.domElement.addEventListener('click', function () {
+      return _this.__onEnterVRClick();
+    });
+
+    _this.setTitle(_this.options.textEnterVRTitle);
+    return _this;
+  }
+
+  _createClass(EnterVRButton, [{
+    key: 'setTitle',
+    value: function setTitle(text) {
+      var disabled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+      this.domElement.title = text;
+      if (disabled) {
+        this.domElement.setAttribute('disabled', disabled);
+      } else {
+        this.domElement.removeAttribute('disabled');
+      }
+
+      ifChild(this.domElement, this.options.cssprefix, 'title', function (title) {
+        if (!text) {
+          title.style.display = 'none';
+        } else {
+          title.innerText = text;
+          title.style.display = 'initial';
         }
-        _this.domElement.addEventListener("click", function () {
-            return _this.__onEnterVRClick();
-        });
+      });
 
-        _this.setTitle(_this.options.textEnterVRTitle);
-        return _this;
+      return this;
+    }
+  }, {
+    key: 'setTooltip',
+    value: function setTooltip(tooltip) {
+      this.domElement.title = tooltip;
+      return this;
+    }
+  }, {
+    key: 'show',
+    value: function show() {
+      this.domElement.style.display = 'initial';
+      this.emit('show');
+      return this;
+    }
+  }, {
+    key: 'hide',
+    value: function hide() {
+      this.domElement.style.display = 'none';
+      this.emit('hide');
+      return this;
     }
 
-    _createClass(EnterVRButton, [{
-        key: "setTitle",
-        value: function setTitle(text) {
-            var disabled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    /**
+     * clean up object for garbage collection
+     */
 
-            this.domElement.title = text;
-            if (disabled) {
-                this.domElement.setAttribute("disabled", disabled);
-            } else {
-                this.domElement.removeAttribute("disabled");
+  }, {
+    key: 'remove',
+    value: function remove() {
+      this.manager.remove();
+
+      if (this.domElement.parentElement) {
+        this.domElement.parentElement.removeChild(this.domElement);
+      }
+    }
+  }, {
+    key: 'getVRDisplay',
+    value: function getVRDisplay() {
+      return _webvrManager2.default.getVRDisplay();
+    }
+  }, {
+    key: 'requestEnterVR',
+    value: function requestEnterVR() {
+      var _this2 = this;
+
+      return new Promise(function (resolve, reject) {
+        if (_this2.options.onRequestStateChange(_states2.default.PRESENTING)) {
+          return _this2.options.beforeEnter().then(function () {
+            return _this2.manager.enterVR(_this2.manager.defaultDisplay, _this2.sourceCanvas);
+          }).then(resolve);
+        } else {
+          reject(new Error(_states2.default.ERROR_REQUEST_STATE_CHANGE_REJECTED));
+        }
+      });
+    }
+  }, {
+    key: 'requestExitVR',
+    value: function requestExitVR() {
+      var _this3 = this;
+
+      return new Promise(function (resolve, reject) {
+        if (_this3.options.onRequestStateChange(_states2.default.READY_TO_PRESENT)) {
+          return _this3.options.beforeExit().then(function () {
+            return _this3.manager.exitVR(_this3.manager.defaultDisplay);
+          }).then(resolve);
+        } else {
+          reject(new Error(_states2.default.ERROR_REQUEST_STATE_CHANGE_REJECTED));
+        }
+      });
+    }
+  }, {
+    key: 'requestEnter360',
+    value: function requestEnter360() {
+      var _this4 = this;
+
+      return new Promise(function (resolve, reject) {
+        if (_this4.options.onRequestStateChange(_states2.default.PRESENTING_360)) {
+          return _this4.options.beforeEnter().then(function () {
+            return _this4.manager.enter360(_this4.sourceCanvas);
+          }).then(resolve);
+        } else {
+          reject(new Error(_states2.default.ERROR_REQUEST_STATE_CHANGE_REJECTED));
+        }
+      });
+    }
+  }, {
+    key: 'requestExit360',
+    value: function requestExit360() {
+      var _this5 = this;
+
+      return new Promise(function (resolve, reject) {
+        if (_this5.options.onRequestStateChange(_states2.default.READY_TO_PRESENT)) {
+          return _this5.options.beforeExit().then(function () {
+            return _this5.manager.exit360();
+          }).then(resolve);
+        } else {
+          reject(new Error(_states2.default.ERROR_REQUEST_STATE_CHANGE_REJECTED));
+        }
+      });
+    }
+
+    /**
+     * Handling click event from button
+     * @private
+     */
+
+  }, {
+    key: '__onEnterVRClick',
+    value: function __onEnterVRClick() {
+      if (this.state == _states2.default.READY_TO_PRESENT) {
+        this.requestEnterVR();
+      } else if (this.state == _states2.default.PRESENTING) {
+        this.requestExitVR();
+      }
+    }
+
+    /**
+     * @private
+     */
+
+  }, {
+    key: '__onStateChange',
+    value: function __onStateChange(state) {
+      if (state != this.state) {
+        if (this.state === _states2.default.PRESENTING || this.state === _states2.default.PRESENTING_360) {
+          this.emit('exit');
+        }
+        this.state = state;
+
+        switch (state) {
+          case _states2.default.READY_TO_PRESENT:
+            this.show();
+            this.setTitle(this.options.textEnterVRTitle);
+            if (this.manager.defaultDisplay) {
+              this.setTooltip('Enter VR using ' + this.manager.defaultDisplay.displayName);
             }
+            break;
 
-            ifChild(this.domElement, this.options.cssprefix, "title", function (title) {
-                if (!text) {
-                    title.style.display = "none";
-                } else {
-                    title.innerText = text;
-                    title.style.display = "initial";
-                }
-            });
-
-            return this;
-        }
-    }, {
-        key: "setTooltip",
-        value: function setTooltip(tooltip) {
-            this.domElement.title = tooltip;
-            return this;
-        }
-    }, {
-        key: "show",
-        value: function show() {
-            this.domElement.style.display = "initial";
-            this.emit("show");
-            return this;
-        }
-    }, {
-        key: "hide",
-        value: function hide() {
-            this.domElement.style.display = "none";
-            this.emit("hide");
-            return this;
-        }
-
-        /**
-         * clean up object for garbage collection
-         */
-
-    }, {
-        key: "remove",
-        value: function remove() {
-            this.manager.remove();
-
-            if (this.domElement.parentElement) {
-                this.domElement.parentElement.removeChild(this.domElement);
+          case _states2.default.PRESENTING:
+          case _states2.default.PRESENTING_360:
+            if (!this.manager.defaultDisplay || !this.manager.defaultDisplay.capabilities.hasExternalDisplay || state == _states2.default.PRESENTING_360) {
+              this.hide();
             }
+            this.setTitle(this.options.textExitVRTitle);
+            this.emit('enter');
+            break;
+
+          // Error states
+          case _states2.default.ERROR_BROWSER_NOT_SUPPORTED:
+            this.show();
+            this.setTitle(this.options.textVRNotFoundTitle, true);
+            this.setTooltip('Browser not supported', true);
+            this.emit('error', new Error(state));
+            break;
+
+          case _states2.default.ERROR_NO_PRESENTABLE_DISPLAYS:
+            this.show();
+            this.setTitle(this.options.textVRNotFoundTitle, true);
+            this.setTooltip('No VR headset found.');
+            this.emit('error', new Error(state));
+            break;
+
+          case _states2.default.ERROR_REQUEST_TO_PRESENT_REJECTED:
+            this.show();
+            this.setTitle(this.options.textVRNotFoundTitle, true);
+            this.setTooltip('Something went wrong trying to start presenting to your headset.');
+            this.emit('error', new Error(state));
+            break;
+
+          case _states2.default.ERROR_EXIT_PRESENT_REJECTED:
+          default:
+            this.show();
+            this.setTitle(this.options.textVRNotFoundTitle, true);
+            this.setTooltip('Unknown error.');
+            this.emit('error', new Error(state));
         }
-    }, {
-        key: "getVRDisplay",
-        value: function getVRDisplay() {
-            return _webvrManager2.default.getVRDisplay();
-        }
-    }, {
-        key: "requestEnterVR",
-        value: function requestEnterVR() {
-            var _this2 = this;
+      }
+    }
+  }]);
 
-            return new Promise(function (resolve, reject) {
-                if (_this2.options.onRequestStateChange(State.PRESENTING)) {
-                    return _this2.options.beforeEnter().then(function () {
-                        return _this2.manager.enterVR(_this2.manager.defaultDisplay, _this2.sourceCanvas);
-                    }).then(resolve);
-                } else {
-                    reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
-                }
-            });
-        }
-    }, {
-        key: "requestExitVR",
-        value: function requestExitVR() {
-            var _this3 = this;
-
-            return new Promise(function (resolve, reject) {
-                if (_this3.options.onRequestStateChange(State.READY_TO_PRESENT)) {
-                    return _this3.options.beforeExit().then(function () {
-                        return _this3.manager.exitVR(_this3.manager.defaultDisplay);
-                    }).then(resolve);
-                } else {
-                    reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
-                }
-            });
-        }
-    }, {
-        key: "requestEnter360",
-        value: function requestEnter360() {
-            var _this4 = this;
-
-            return new Promise(function (resolve, reject) {
-                if (_this4.options.onRequestStateChange(State.PRESENTING_360)) {
-                    return _this4.options.beforeEnter().then(function () {
-                        return _this4.manager.enter360(_this4.sourceCanvas);
-                    }).then(resolve);
-                } else {
-                    reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
-                }
-            });
-        }
-    }, {
-        key: "requestExit360",
-        value: function requestExit360() {
-            var _this5 = this;
-
-            return new Promise(function (resolve, reject) {
-                if (_this5.options.onRequestStateChange(State.READY_TO_PRESENT)) {
-                    return _this5.options.beforeExit().then(function () {
-                        return _this5.manager.exit360();
-                    }).then(resolve);
-                } else {
-                    reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
-                }
-            });
-        }
-
-        /**
-         * @private
-         * Handling click event from button
-         */
-
-    }, {
-        key: "__onEnterVRClick",
-        value: function __onEnterVRClick() {
-            if (this.state == State.READY_TO_PRESENT) {
-                this.requestEnterVR();
-            } else if (this.state == State.PRESENTING) {
-                this.requestExitVR();
-            }
-        }
-
-        /**
-         * @private
-         */
-
-    }, {
-        key: "__onStateChange",
-        value: function __onStateChange(state) {
-            if (state != this.state) {
-                if (this.state === State.PRESENTING || this.state === State.PRESENTING_360) {
-                    this.emit("exit");
-                }
-                this.state = state;
-
-                switch (state) {
-                    case State.READY_TO_PRESENT:
-                        this.show();
-                        this.setTitle(this.options.textEnterVRTitle);
-                        if (this.manager.defaultDisplay) this.setTooltip("Enter VR using " + this.manager.defaultDisplay.displayName);
-                        break;
-
-                    case State.PRESENTING:
-                    case State.PRESENTING_360:
-                        if (!this.manager.defaultDisplay || !this.manager.defaultDisplay.capabilities.hasExternalDisplay || state == State.PRESENTING_360) {
-                            this.hide();
-                        }
-                        this.setTitle(this.options.textExitVRTitle);
-                        this.emit("enter");
-                        break;
-
-                    // Error states
-                    case State.ERROR_BROWSER_NOT_SUPPORTED:
-                        this.show();
-                        this.setTitle(this.options.textVRNotFoundTitle, true);
-                        this.setTooltip("Browser not supported", true);
-                        this.emit("error", new Error(state));
-                        break;
-
-                    case State.ERROR_NO_PRESENTABLE_DISPLAYS:
-                        this.show();
-                        this.setTitle(this.options.textVRNotFoundTitle, true);
-                        this.setTooltip("No VR headset found.");
-                        this.emit("error", new Error(state));
-                        break;
-
-                    case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
-                        this.show();
-                        this.setTitle(this.options.textVRNotFoundTitle, true);
-                        this.setTooltip("Something went wrong trying to start presenting to your headset.");
-                        this.emit("error", new Error(state));
-                        break;
-
-                    case State.ERROR_EXIT_PRESENT_REJECTED:
-                    default:
-                        this.show();
-                        this.setTitle(this.options.textVRNotFoundTitle, true);
-                        this.setTooltip("Unknown error.");
-                        this.emit("error", new Error(state));
-                }
-            }
-        }
-    }]);
-
-    return EnterVRButton;
+  return EnterVRButton;
 }(_eventemitter2.default);
 
-exports.default = EnterVRButton;
-
-
-var child = function child(el, cssPrefix, suffix) {
-    return el.querySelector("." + cssPrefix + "-" + suffix);
-};
-
 /**
+ * Function checking if a specific css class exists as child of element.
+ *
+ * @param {HTMLElement} el element to find child in
+ * @param {string} cssPrefix css prefix of button
+ * @param {string} suffix class name
+ * @param {function} fn function to call if child is found
  * @private
- * if ".webvr-ui-${suffix}" exists,
- * pass it to the function provided for manipulation.
- * @param el
- * @param cssprefix
- * @param suffix
- * @param fn
  */
+
+
+exports.default = EnterVRButton;
 var ifChild = function ifChild(el, cssPrefix, suffix, fn) {
-    var c = child(el, cssPrefix, suffix);
-    c && fn(c);
+  var c = el.querySelector('.' + cssPrefix + '-' + suffix);
+  c && fn(c);
 };
 
 },{"./dom":4,"./states":7,"./webvr-manager":8,"eventemitter3":1}],6:[function(_dereq_,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 exports.WebVRManager = exports.State = exports.EnterVRButton = undefined;
 
-var _webvrManager = _dereq_("./webvr-manager");
+var _webvrManager = _dereq_('./webvr-manager');
 
 var _webvrManager2 = _interopRequireDefault(_webvrManager);
 
-var _states = _dereq_("./states");
+var _states = _dereq_('./states');
 
 var State = _interopRequireWildcard(_states);
 
-var _enterVrButton = _dereq_("./enter-vr-button");
+var _enterVrButton = _dereq_('./enter-vr-button');
 
 var _enterVrButton2 = _interopRequireDefault(_enterVrButton);
 
-_dereq_("./aframe-component");
+_dereq_('./aframe-component');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1081,17 +1062,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //     See the License for the specific language governing permissions and
 // limitations under the License.
-
 
 exports.EnterVRButton = _enterVrButton2.default;
 exports.State = State;
 exports.WebVRManager = _webvrManager2.default;
 
 },{"./aframe-component":3,"./enter-vr-button":5,"./states":7,"./webvr-manager":8}],7:[function(_dereq_,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 // Copyright 2016 Google Inc.
 //
@@ -1107,50 +1087,59 @@ Object.defineProperty(exports, "__esModule", {
 //     See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 // Not yet presenting, but ready to present
-var READY_TO_PRESENT = exports.READY_TO_PRESENT = "ready";
+var READY_TO_PRESENT = 'ready';
 
 // In presentation mode
-var PRESENTING = exports.PRESENTING = "presenting";
-var PRESENTING_360 = exports.PRESENTING_360 = "presenting-360";
+var PRESENTING = 'presenting';
+var PRESENTING_360 = 'presenting-360';
 
 // Checking device availability
-var PREPARING = exports.PREPARING = "preparing";
+var PREPARING = 'preparing';
 
 // Errors
-var ERROR_NO_PRESENTABLE_DISPLAYS = exports.ERROR_NO_PRESENTABLE_DISPLAYS = "error-no-presentable-displays";
-var ERROR_BROWSER_NOT_SUPPORTED = exports.ERROR_BROWSER_NOT_SUPPORTED = "error-browser-not-supported";
-var ERROR_REQUEST_TO_PRESENT_REJECTED = exports.ERROR_REQUEST_TO_PRESENT_REJECTED = "error-request-to-present-rejected";
-var ERROR_EXIT_PRESENT_REJECTED = exports.ERROR_EXIT_PRESENT_REJECTED = "error-exit-present-rejected";
-var ERROR_REQUEST_STATE_CHANGE_REJECTED = exports.ERROR_REQUEST_STATE_CHANGE_REJECTED = "error-request-state-change-rejected";
+var ERROR_NO_PRESENTABLE_DISPLAYS = 'error-no-presentable-displays';
+var ERROR_BROWSER_NOT_SUPPORTED = 'error-browser-not-supported';
+var ERROR_REQUEST_TO_PRESENT_REJECTED = 'error-request-to-present-rejected';
+var ERROR_EXIT_PRESENT_REJECTED = 'error-exit-present-rejected';
+var ERROR_REQUEST_STATE_CHANGE_REJECTED = 'error-request-state-change-rejected';
+var ERROR_UNKOWN = 'error-unkown';
 
-var ERROR_UNKOWN = exports.ERROR_UNKOWN = "error-unkown";
+exports.default = {
+    READY_TO_PRESENT: READY_TO_PRESENT,
+    PRESENTING: PRESENTING,
+    PRESENTING_360: PRESENTING_360,
+    PREPARING: PREPARING,
+    ERROR_NO_PRESENTABLE_DISPLAYS: ERROR_NO_PRESENTABLE_DISPLAYS,
+    ERROR_BROWSER_NOT_SUPPORTED: ERROR_BROWSER_NOT_SUPPORTED,
+    ERROR_REQUEST_TO_PRESENT_REJECTED: ERROR_REQUEST_TO_PRESENT_REJECTED,
+    ERROR_EXIT_PRESENT_REJECTED: ERROR_EXIT_PRESENT_REJECTED,
+    ERROR_REQUEST_STATE_CHANGE_REJECTED: ERROR_REQUEST_STATE_CHANGE_REJECTED,
+    ERROR_UNKOWN: ERROR_UNKOWN
+};
 
 },{}],8:[function(_dereq_,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _states = _dereq_("./states");
+var _states = _dereq_('./states');
 
-var State = _interopRequireWildcard(_states);
+var _states2 = _interopRequireDefault(_states);
 
-var _eventemitter = _dereq_("eventemitter3");
+var _eventemitter = _dereq_('eventemitter3');
 
 var _eventemitter2 = _interopRequireDefault(_eventemitter);
 
-var _screenfull = _dereq_("screenfull");
+var _screenfull = _dereq_('screenfull');
 
 var _screenfull2 = _interopRequireDefault(_screenfull);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1170,204 +1159,203 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 //     See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 var WebVRManager = function (_EventEmitter) {
-    _inherits(WebVRManager, _EventEmitter);
+  _inherits(WebVRManager, _EventEmitter);
 
-    function WebVRManager() {
-        _classCallCheck(this, WebVRManager);
+  function WebVRManager() {
+    _classCallCheck(this, WebVRManager);
 
-        var _this = _possibleConstructorReturn(this, (WebVRManager.__proto__ || Object.getPrototypeOf(WebVRManager)).call(this));
+    var _this = _possibleConstructorReturn(this, (WebVRManager.__proto__ || Object.getPrototypeOf(WebVRManager)).call(this));
 
-        _this.state = State.PREPARING;
+    _this.state = _states2.default.PREPARING;
 
-        _this.checkDisplays();
+    _this.checkDisplays();
 
-        // Bind vr display present change event to __onVRDisplayPresentChange
-        _this.__onVRDisplayPresentChange = _this.__onVRDisplayPresentChange.bind(_this);
-        window.addEventListener("vrdisplaypresentchange", _this.__onVRDisplayPresentChange);
+    // Bind vr display present change event to __onVRDisplayPresentChange
+    _this.__onVRDisplayPresentChange = _this.__onVRDisplayPresentChange.bind(_this);
+    window.addEventListener('vrdisplaypresentchange', _this.__onVRDisplayPresentChange);
 
-        _this.__onChangeFullscreen = _this.__onChangeFullscreen.bind(_this);
-        if (_screenfull2.default.enabled) {
-            document.addEventListener(_screenfull2.default.raw.fullscreenchange, _this.__onChangeFullscreen);
+    _this.__onChangeFullscreen = _this.__onChangeFullscreen.bind(_this);
+    if (_screenfull2.default.enabled) {
+      document.addEventListener(_screenfull2.default.raw.fullscreenchange, _this.__onChangeFullscreen);
+    }
+
+    return _this;
+  }
+
+  /**
+   * Check if the browser is compatible with WebVR and has headsets.
+   * @returns {Promise<VRDisplay>}
+   */
+
+
+  _createClass(WebVRManager, [{
+    key: 'checkDisplays',
+    value: function checkDisplays() {
+      var _this2 = this;
+
+      return WebVRManager.getVRDisplay().then(function (display) {
+        _this2.defaultDisplay = display;
+        _this2.__setState(_states2.default.READY_TO_PRESENT);
+        return display;
+      }).catch(function (e) {
+        delete _this2.defaultDisplay;
+        if (e.name == 'NO_DISPLAYS') {
+          _this2.__setState(_states2.default.ERROR_NO_PRESENTABLE_DISPLAYS);
+        } else if (e.name == 'WEBVR_UNSUPPORTED') {
+          _this2.__setState(_states2.default.ERROR_BROWSER_NOT_SUPPORTED);
+        } else {
+          _this2.__setState(_states2.default.ERROR_UNKOWN);
         }
-
-        return _this;
+      });
     }
 
     /**
-     * Check if the browser is compatible with WebVR and has headsets.
-     * @returns {Promise<VRDisplay>}
+     * clean up object for garbage collection
      */
 
+  }, {
+    key: 'remove',
+    value: function remove() {
+      window.removeEventListener('vrdisplaypresentchange', this.__onVRDisplayPresentChange);
+      if (_screenfull2.default.enabled) {
+        document.removeEventListener(_screenfull2.default.raw.fullscreenchanged, this.__onChangeFullscreen);
+      }
 
-    _createClass(WebVRManager, [{
-        key: "checkDisplays",
-        value: function checkDisplays() {
-            var _this2 = this;
+      this.removeAllListeners();
+    }
 
-            return WebVRManager.getVRDisplay().then(function (display) {
-                _this2.defaultDisplay = display;
-                _this2.__setState(State.READY_TO_PRESENT);
-                return display;
-            }).catch(function (e) {
-                delete _this2.defaultDisplay;
-                if (e.name == "NO_DISPLAYS") {
-                    _this2.__setState(State.ERROR_NO_PRESENTABLE_DISPLAYS);
-                } else if (e.name == "WEBVR_UNSUPPORTED") {
-                    _this2.__setState(State.ERROR_BROWSER_NOT_SUPPORTED);
-                } else {
-                    _this2.__setState(State.ERROR_UNKOWN);
-                }
-            });
+    /**
+     * returns promise returning list of available VR displays.
+     * @returns Promise<VRDisplay>
+     */
+
+  }, {
+    key: 'enterVR',
+
+
+    /**
+     * Enter presentation mode with your set VR display
+     */
+    value: function enterVR(display, canvas) {
+      var _this3 = this;
+
+      return display.requestPresent([{
+        source: canvas
+      }]).then(function () {},
+      //this could fail if:
+      //1. Display `canPresent` is false
+      //2. Canvas is invalid
+      //3. not executed via user interaction
+      function () {
+        return _this3.__setState(_states2.default.ERROR_REQUEST_TO_PRESENT_REJECTED);
+      });
+    }
+  }, {
+    key: 'exitVR',
+    value: function exitVR(display) {
+      var _this4 = this;
+
+      return display.exitPresent().then(function () {},
+      //this could fail if:
+      //1. exit requested while not currently presenting
+      function () {
+        return _this4.__setState(_states2.default.ERROR_EXIT_PRESENT_REJECTED);
+      });
+    }
+
+    /**
+     * Enter 360 mode
+     */
+
+  }, {
+    key: 'enter360',
+    value: function enter360(canvas) {
+      if (_screenfull2.default.enabled) {
+        _screenfull2.default.request(canvas);
+      } else {
+        // iOS
+        this.__setState(_states2.default.PRESENTING_360);
+      }
+      return true;
+    }
+  }, {
+    key: 'exit360',
+    value: function exit360() {
+      if (_screenfull2.default.enabled && _screenfull2.default.isFullscreen) {
+        _screenfull2.default.exit();
+      } else if (this.state == _states2.default.PRESENTING_360) {
+        this.checkDisplays();
+      }
+      return true;
+    }
+  }, {
+    key: '__setState',
+
+
+    /**
+     * @private
+     */
+    value: function __setState(state) {
+      if (state != this.state) {
+        this.emit('change', state, this.state);
+        this.state = state;
+      }
+    }
+  }, {
+    key: '__onChangeFullscreen',
+    value: function __onChangeFullscreen(e) {
+      if (_screenfull2.default.isFullscreen) {
+        this.__setState(_states2.default.PRESENTING_360);
+      } else {
+        this.checkDisplays();
+      }
+    }
+
+    /**
+     * @private
+     */
+
+  }, {
+    key: '__onVRDisplayPresentChange',
+    value: function __onVRDisplayPresentChange() {
+      var isPresenting = this.defaultDisplay && this.defaultDisplay.isPresenting;
+      this.__setState(isPresenting ? _states2.default.PRESENTING : _states2.default.READY_TO_PRESENT);
+    }
+  }], [{
+    key: 'getVRDisplay',
+    value: function getVRDisplay() {
+      return new Promise(function (resolve, reject) {
+        if (!navigator || !navigator.getVRDisplays) {
+          var e = new Error('Browser not supporting WebVR');
+          e.name = 'WEBVR_UNSUPPORTED';
+          reject(e);
+          return;
         }
 
-        /**
-         * clean up object for garbage collection
-         */
+        var rejectNoDisplay = function rejectNoDisplay() {
+          // No displays are found.
+          var e = new Error('No displays found');
+          e.name = 'NO_DISPLAYS';
+          reject(e);
+        };
 
-    }, {
-        key: "remove",
-        value: function remove() {
-            window.removeEventListener("vrdisplaypresentchange", this.__onVRDisplayPresentChange);
-            if (_screenfull2.default.enabled) {
-                document.removeEventListener(_screenfull2.default.raw.fullscreenchanged, this.__onChangeFullscreen);
+        navigator.getVRDisplays().then(function (displays) {
+          // Promise succeeds, but check if there are any displays actually.
+          for (var i = 0; i < displays.length; i++) {
+            if (displays[i].capabilities.canPresent) {
+              resolve(displays[i]);
+              break;
             }
+          }
 
-            this.removeAllListeners();
-        }
+          rejectNoDisplay();
+        }, rejectNoDisplay);
+      });
+    }
+  }]);
 
-        /**
-         * returns promise returning list of available VR displays.
-         * @returns Promise<VRDisplay>
-         */
-
-    }, {
-        key: "enterVR",
-
-
-        /**
-         * Enter presentation mode with your set VR display
-         */
-        value: function enterVR(display, canvas) {
-            var _this3 = this;
-
-            return display.requestPresent([{
-                source: canvas
-            }]).then(function () {},
-            //this could fail if:
-            //1. Display `canPresent` is false
-            //2. Canvas is invalid
-            //3. not executed via user interaction
-            function () {
-                return _this3.__setState(State.ERROR_REQUEST_TO_PRESENT_REJECTED);
-            });
-        }
-    }, {
-        key: "exitVR",
-        value: function exitVR(display) {
-            var _this4 = this;
-
-            return display.exitPresent().then(function () {},
-            //this could fail if:
-            //1. exit requested while not currently presenting
-            function () {
-                return _this4.__setState(State.ERROR_EXIT_PRESENT_REJECTED);
-            });
-        }
-
-        /**
-         * Enter 360 mode
-         */
-
-    }, {
-        key: "enter360",
-        value: function enter360(canvas) {
-            if (_screenfull2.default.enabled) {
-                _screenfull2.default.request(canvas);
-            } else {
-                // iOS
-                this.__setState(State.PRESENTING_360);
-            }
-            return true;
-        }
-    }, {
-        key: "exit360",
-        value: function exit360() {
-            if (_screenfull2.default.enabled && _screenfull2.default.isFullscreen) {
-                _screenfull2.default.exit();
-            } else if (this.state == State.PRESENTING_360) {
-                this.checkDisplays();
-            }
-            return true;
-        }
-    }, {
-        key: "__setState",
-
-
-        /**
-         * @private
-         */
-        value: function __setState(state) {
-            if (state != this.state) {
-                this.emit("change", state, this.state);
-                this.state = state;
-            }
-        }
-    }, {
-        key: "__onChangeFullscreen",
-        value: function __onChangeFullscreen(e) {
-            if (_screenfull2.default.isFullscreen) {
-                this.__setState(State.PRESENTING_360);
-            } else {
-                this.checkDisplays();
-            }
-        }
-
-        /**
-         * @private
-         */
-
-    }, {
-        key: "__onVRDisplayPresentChange",
-        value: function __onVRDisplayPresentChange() {
-            var isPresenting = this.defaultDisplay && this.defaultDisplay.isPresenting;
-            this.__setState(isPresenting ? State.PRESENTING : State.READY_TO_PRESENT);
-        }
-    }], [{
-        key: "getVRDisplay",
-        value: function getVRDisplay() {
-            return new Promise(function (resolve, reject) {
-                if (!navigator || !navigator.getVRDisplays) {
-                    var e = new Error("Browser not supporting WebVR");
-                    e.name = "WEBVR_UNSUPPORTED";
-                    reject(e);
-                    return;
-                }
-
-                var rejectNoDisplay = function rejectNoDisplay() {
-                    // No displays are found.
-                    var e = new Error("No displays found");
-                    e.name = "NO_DISPLAYS";
-                    reject(e);
-                };
-
-                navigator.getVRDisplays().then(function (displays) {
-                    // Promise succeeds, but check if there are any displays actually.
-                    for (var i = 0; i < displays.length; i++) {
-                        if (displays[i].capabilities.canPresent) {
-                            resolve(displays[i]);
-                            break;
-                        }
-                    }
-
-                    rejectNoDisplay();
-                }, rejectNoDisplay);
-            });
-        }
-    }]);
-
-    return WebVRManager;
+  return WebVRManager;
 }(_eventemitter2.default);
 
 exports.default = WebVRManager;

@@ -12,14 +12,13 @@
 //     See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-import WebVRManager from "./webvr-manager";
-import * as State from "./states";
-import EnterVRButton from "./enter-vr-button";
-import  "./aframe-component";
+import WebVRManager from './webvr-manager';
+import * as State from './states';
+import EnterVRButton from './enter-vr-button';
+import  './aframe-component';
 
 export {
-    EnterVRButton,
-    State,
-    WebVRManager
+  EnterVRButton,
+  State,
+  WebVRManager
 };

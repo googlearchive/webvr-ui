@@ -8,9 +8,10 @@
     "Jonas Jongejan <jongejan@google.com>"
   ],
   "scripts": {
-    "build": "browserify src/index.js --standalone webvrui | derequire > build/webvr-ui.js",
-    "buildmin": "browserify -g uglifyify src/index.js --standalone webvrui | derequire > build/webvr-ui.min.js",
-    "start": "budo src/index.js:build/webvr-ui.js --live --verbose --port 3000 --host localhost -- --standalone webvrui",
+    "build": "npm run browserify & npm run browserifymin",
+    "browserify": "browserify src/index.js --standalone webvrui | derequire > build/webvr-ui.js",
+    "browserifymin": "browserify -g uglifyify src/index.js --standalone webvrui | derequire > build/webvr-ui.min.js",
+    "start": "budo src/index.js:build/webvr-ui.js --live --verbose --port 3000 -- --standalone webvrui",
     "prepublish": "npm run build"
   },
   "dependencies": {

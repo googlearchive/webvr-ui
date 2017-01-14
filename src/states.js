@@ -12,22 +12,33 @@
 //     See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 // Not yet presenting, but ready to present
-export const READY_TO_PRESENT = "ready";
+const READY_TO_PRESENT = 'ready';
 
 // In presentation mode
-export const PRESENTING = "presenting";
-export const PRESENTING_360 = "presenting-360";
+const PRESENTING = 'presenting';
+const PRESENTING_360 = 'presenting-360';
 
 // Checking device availability
-export const PREPARING = "preparing";
+const PREPARING = 'preparing';
 
 // Errors
-export const ERROR_NO_PRESENTABLE_DISPLAYS = "error-no-presentable-displays";
-export const ERROR_BROWSER_NOT_SUPPORTED = "error-browser-not-supported";
-export const ERROR_REQUEST_TO_PRESENT_REJECTED = "error-request-to-present-rejected";
-export const ERROR_EXIT_PRESENT_REJECTED = "error-exit-present-rejected";
-export const ERROR_REQUEST_STATE_CHANGE_REJECTED = "error-request-state-change-rejected";
+const ERROR_NO_PRESENTABLE_DISPLAYS = 'error-no-presentable-displays';
+const ERROR_BROWSER_NOT_SUPPORTED = 'error-browser-not-supported';
+const ERROR_REQUEST_TO_PRESENT_REJECTED = 'error-request-to-present-rejected';
+const ERROR_EXIT_PRESENT_REJECTED = 'error-exit-present-rejected';
+const ERROR_REQUEST_STATE_CHANGE_REJECTED = 'error-request-state-change-rejected';
+const ERROR_UNKOWN = 'error-unkown';
 
-export const ERROR_UNKOWN = "error-unkown";
+export default {
+    READY_TO_PRESENT,
+    PRESENTING,
+    PRESENTING_360,
+    PREPARING,
+    ERROR_NO_PRESENTABLE_DISPLAYS,
+    ERROR_BROWSER_NOT_SUPPORTED,
+    ERROR_REQUEST_TO_PRESENT_REJECTED,
+    ERROR_EXIT_PRESENT_REJECTED,
+    ERROR_REQUEST_STATE_CHANGE_REJECTED,
+    ERROR_UNKOWN
+  };
