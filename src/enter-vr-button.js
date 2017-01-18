@@ -64,19 +64,18 @@ export default class EnterVRButton extends EventEmitter {
 
     this.options = options;
 
+
     this.sourceCanvas = sourceCanvas;
 
     //pass in your own domElement if you really dont want to use ours
     this.domElement = options.domElement || createDefaultView(options);
+    this.__defaultDisplayStyle = this.domElement.style.display || "initial";
 
     // Create WebVR Manager
     this.manager = new WebVRManager();
     this.manager.addListener('change', (state)=> this.__onStateChange(state));
 
     // Bind button click events to __onClick
-    if (this.domElement.nodeName !== 'BUTTON') {
-      throw new Error(`No ${cssPrefix}-button <button> element found in DOM`);
-    }
     this.domElement.addEventListener('click', ()=> this.__onEnterVRClick());
 
     this.setTitle(this.options.textEnterVRTitle);
@@ -108,7 +107,7 @@ export default class EnterVRButton extends EventEmitter {
   }
 
   show() {
-    this.domElement.style.display = 'initial';
+    this.domElement.style.display = this.__defaultDisplayStyle;
     this.emit('show');
     return this;
   }
@@ -211,6 +210,7 @@ export default class EnterVRButton extends EventEmitter {
           if (this.manager.defaultDisplay) {
             this.setTooltip('Enter VR using ' + this.manager.defaultDisplay.displayName);
           }
+          this.emit('ready');
           break;
 
         case State.PRESENTING:
