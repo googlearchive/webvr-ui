@@ -1037,15 +1037,13 @@ var _webvrManager2 = _interopRequireDefault(_webvrManager);
 
 var _states = _dereq_('./states');
 
-var State = _interopRequireWildcard(_states);
+var _states2 = _interopRequireDefault(_states);
 
 var _enterVrButton = _dereq_('./enter-vr-button');
 
 var _enterVrButton2 = _interopRequireDefault(_enterVrButton);
 
 _dereq_('./aframe-component');
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1064,7 +1062,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // limitations under the License.
 
 exports.EnterVRButton = _enterVrButton2.default;
-exports.State = State;
+exports.State = _states2.default;
 exports.WebVRManager = _webvrManager2.default;
 
 },{"./aframe-component":3,"./enter-vr-button":5,"./states":7,"./webvr-manager":8}],7:[function(_dereq_,module,exports){
