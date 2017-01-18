@@ -91,10 +91,9 @@
     //
 
     // Create WebVR UI Enter VR Button
-    var options = {
-        domElement: document.getElementById("button")
-    };
-    var enterVR = new webvrui.EnterVRButton(renderer.domElement, options)
+    var enterVR = new webvrui.EnterVRButton(renderer.domElement, {
+      domElement: document.getElementById("button")
+    })
             .on("enter", function(){
                 console.log("enter VR")
             })
@@ -105,6 +104,60 @@
             });
 
 
+
+    //create an empty custom element and apply the styles we want for it
+    var customButton = document.createElement("button");
+
+    //apply all of these styles
+    var styles = {
+      cursor: "pointer",
+      margin: "10px auto",
+      display: "block",
+      color: "white",
+      width: "64px",
+      height: "64px",
+      borderRadius: "50%",
+      backgroundColor: "rgba(255, 255, 255, 0.2)",
+      outline: "none",
+      border: "none"
+    };
+
+    for (var prop in styles) {
+      customButton.style[prop] = styles[prop];
+    }
+
+    //we'll inject the right VR SVG Icon based on whether they have VR or not
+    var vrIcon;
+
+    var enterVRCustom = new webvrui.EnterVRButton(renderer.domElement, {
+      domElement: customButton
+    });
+
+    enterVRCustom.on("ready", function(){
+      vrIcon = webvrui.dom.createVRIcon("", 24);
+      vrIcon.setAttribute("fill", "white");
+      enterVRCustom.domElement.innerHTML = "";
+      enterVRCustom.domElement.appendChild(vrIcon);
+    });
+
+    enterVRCustom.on("enter", function(){
+      enterVRCustom.domElement.removeChild(vrIcon);
+      enterVRCustom.domElement.innerHTML = "EXIT";
+    });
+
+    enterVRCustom.on('error', function(e){
+      if(vrIcon && enterVRCustom.domElement.contains(vrIcon)) {
+        enterVRCustom.domElement.removeChild(vrIcon);
+      }
+      vrIcon = webvrui.dom.createNoVRIcon('', 24);
+      vrIcon.setAttribute("fill", "rgba(255, 255, 255, 0.5)");
+      vrIcon.style.paddingTop = "4px";
+      enterVRCustom.domElement.style.cursor = "inherit";
+      enterVRCustom.domElement.appendChild(vrIcon);
+    });
+
+
+    document.getElementById("ui").appendChild(enterVRCustom.domElement);
 
     //
     // WEBGL SCENE SETUP
