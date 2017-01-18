@@ -13,12 +13,14 @@
 // limitations under the License.
 
 import WebVRManager from './webvr-manager';
+import * as dom from './dom';
 import * as State from './states';
 import EnterVRButton from './enter-vr-button';
 import  './aframe-component';
 
 export {
   EnterVRButton,
+  dom,
   State,
   WebVRManager
 };

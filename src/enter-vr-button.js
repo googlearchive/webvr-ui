@@ -211,6 +211,7 @@ export default class EnterVRButton extends EventEmitter {
           if (this.manager.defaultDisplay) {
             this.setTooltip('Enter VR using ' + this.manager.defaultDisplay.displayName);
           }
+          this.emit('ready');
           break;
 
         case State.PRESENTING:
