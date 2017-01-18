@@ -24,7 +24,7 @@ let _WEBVR_UI_CSS_INJECTED = {};
  * @private
  */
 const generateInnerHTML = (cssPrefix, height)=> {
-  const svgString = generateVRIconString(cssPrefix, height) + generateNoVRIconString(cssPrefix, height);
+  const svgString = generateVRIconString(cssPrefix, height*_LOGO_SCALE) + generateNoVRIconString(cssPrefix, height*_LOGO_SCALE);
 
   return `<button class="${cssPrefix}-button">
           <div class="${cssPrefix}-title"></div>
@@ -53,7 +53,7 @@ export const injectCSS = (cssText)=> {
  * @param {Object} options
  */
 export const createDefaultView = (options)=> {
-  const fontSize = options.height / 3 * _LOGO_SCALE;
+  const fontSize = options.height / 3;
   if (options.injectCSS) {
     // Check that css isnt already injected
     if (!_WEBVR_UI_CSS_INJECTED[options.cssprefix]) {
