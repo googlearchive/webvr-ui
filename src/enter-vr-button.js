@@ -134,6 +134,10 @@ export default class EnterVRButton extends EventEmitter {
     return WebVRManager.getVRDisplay();
   }
 
+  isPresenting(){
+    return this.state === State.PRESENTING || this.state == State.PRESENTING_360;
+  }
+
   requestEnterVR() {
     return new Promise((resolve, reject)=> {
       if (this.options.onRequestStateChange(State.PRESENTING)) {

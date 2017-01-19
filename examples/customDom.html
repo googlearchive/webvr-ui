@@ -90,18 +90,23 @@
     // BUTTON SETUP
     //
 
+    //these will be used on each button in this example
+    var onEnter = function(){ console.log("enter VR") };
+    var onExit = function() {
+      console.log("exit VR");
+      camera.quaternion.set(0, 0, 0, 1);
+      camera.position.set(0, controls.userHeight, 0);
+    };
+
+
     // Create WebVR UI Enter VR Button
     var enterVR = new webvrui.EnterVRButton(renderer.domElement, {
       domElement: document.getElementById("button")
-    })
-            .on("enter", function(){
-                console.log("enter VR")
-            })
-            .on("exit", function(){
-                console.log("exit VR");
-                camera.quaternion.set(0,0,0,1);
-                camera.position.set(0,controls.userHeight,0);
-            });
+    });
+
+    enterVR
+      .on("enter", onEnter)
+      .on("exit", onExit);
 
 
 
@@ -156,6 +161,9 @@
       enterVRCustom.domElement.appendChild(vrIcon);
     });
 
+    enterVRCustom
+      .on('enter', onEnter)
+      .on('exit', onExit);
 
     document.getElementById("ui").appendChild(enterVRCustom.domElement);
 
@@ -220,7 +228,7 @@
         // Apply rotation to cube mesh
         cube.rotation.y += delta * 0.0003;
 
-        if(enterVR.state == webvrui.State.PRESENTING || enterVR.state == webvrui.State.PRESENTING_360){
+        if(enterVR.isPresenting() || enterVRCustom.isPresenting()){
             controls.update();
             renderer.render(scene,camera);
             effect.render(scene, camera);
