@@ -794,6 +794,7 @@ var EnterVRButton = function (_EventEmitter) {
 
     // Create WebVR Manager
     _this.manager = new _webvrManager2.default();
+    _this.manager.checkDisplays();
     _this.manager.addListener('change', function (state) {
       return _this.__onStateChange(state);
     });
@@ -814,7 +815,7 @@ var EnterVRButton = function (_EventEmitter) {
 
       this.domElement.title = text;
       if (disabled) {
-        this.domElement.setAttribute('disabled', disabled);
+        this.domElement.setAttribute('disabled', 'true');
       } else {
         this.domElement.removeAttribute('disabled');
       }
@@ -870,6 +871,11 @@ var EnterVRButton = function (_EventEmitter) {
       return _webvrManager2.default.getVRDisplay();
     }
   }, {
+    key: 'isPresenting',
+    value: function isPresenting() {
+      return this.state === _states2.default.PRESENTING || this.state == _states2.default.PRESENTING_360;
+    }
+  }, {
     key: 'requestEnterVR',
     value: function requestEnterVR() {
       var _this2 = this;
@@ -885,14 +891,20 @@ var EnterVRButton = function (_EventEmitter) {
       });
     }
   }, {
-    key: 'requestExitVR',
-    value: function requestExitVR() {
+    key: 'requestExit',
+    value: function requestExit() {
       var _this3 = this;
+
+      var initialState = this.state;
 
       return new Promise(function (resolve, reject) {
         if (_this3.options.onRequestStateChange(_states2.default.READY_TO_PRESENT)) {
           return _this3.options.beforeExit().then(function () {
-            return _this3.manager.exitVR(_this3.manager.defaultDisplay);
+            return (
+              // if we were presenting VR, exit VR, if we are
+              // exiting 360, exit 360
+              initialState === _states2.default.PRESENTING ? _this3.manager.exitVR(_this3.manager.defaultDisplay) : _this3.manager.exit360()
+            );
           }).then(resolve);
         } else {
           reject(new Error(_states2.default.ERROR_REQUEST_STATE_CHANGE_REJECTED));
@@ -914,21 +926,6 @@ var EnterVRButton = function (_EventEmitter) {
         }
       });
     }
-  }, {
-    key: 'requestExit360',
-    value: function requestExit360() {
-      var _this5 = this;
-
-      return new Promise(function (resolve, reject) {
-        if (_this5.options.onRequestStateChange(_states2.default.READY_TO_PRESENT)) {
-          return _this5.options.beforeExit().then(function () {
-            return _this5.manager.exit360();
-          }).then(resolve);
-        } else {
-          reject(new Error(_states2.default.ERROR_REQUEST_STATE_CHANGE_REJECTED));
-        }
-      });
-    }
 
     /**
      * Handling click event from button
@@ -940,8 +937,8 @@ var EnterVRButton = function (_EventEmitter) {
     value: function __onEnterVRClick() {
       if (this.state == _states2.default.READY_TO_PRESENT) {
         this.requestEnterVR();
-      } else if (this.state == _states2.default.PRESENTING) {
-        this.requestExitVR();
+      } else if (this.isPresenting()) {
+        this.requestExit();
       }
     }
 
@@ -1179,8 +1176,6 @@ var WebVRManager = function (_EventEmitter) {
 
     _this.state = _states2.default.PREPARING;
 
-    _this.checkDisplays();
-
     // Bind vr display present change event to __onVRDisplayPresentChange
     _this.__onVRDisplayPresentChange = _this.__onVRDisplayPresentChange.bind(_this);
     window.addEventListener('vrdisplaypresentchange', _this.__onVRDisplayPresentChange);
@@ -1250,6 +1245,7 @@ var WebVRManager = function (_EventEmitter) {
     value: function enterVR(display, canvas) {
       var _this3 = this;
 
+      this.presentedSource = canvas;
       return display.requestPresent([{
         source: canvas
       }]).then(function () {},
@@ -1266,7 +1262,9 @@ var WebVRManager = function (_EventEmitter) {
     value: function exitVR(display) {
       var _this4 = this;
 
-      return display.exitPresent().then(function () {},
+      return display.exitPresent().then(function () {
+        _this4.presentedSource = undefined;
+      },
       //this could fail if:
       //1. exit requested while not currently presenting
       function () {
@@ -1328,9 +1326,17 @@ var WebVRManager = function (_EventEmitter) {
 
   }, {
     key: '__onVRDisplayPresentChange',
-    value: function __onVRDisplayPresentChange() {
-      var isPresenting = this.defaultDisplay && this.defaultDisplay.isPresenting;
-      this.__setState(isPresenting ? _states2.default.PRESENTING : _states2.default.READY_TO_PRESENT);
+    value: function __onVRDisplayPresentChange(event) {
+      try {
+
+        if (event.display.isPresenting && event.display.layers[0].source !== this.presentedSource) {
+          //this means a different instance of WebVRManager has requested to present
+          return;
+        }
+
+        var isPresenting = this.defaultDisplay && this.defaultDisplay.isPresenting;
+        this.__setState(isPresenting ? _states2.default.PRESENTING : _states2.default.READY_TO_PRESENT);
+      } catch (err) {}
     }
   }], [{
     key: 'getVRDisplay',
