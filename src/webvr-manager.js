@@ -177,38 +177,16 @@ export default class WebVRManager extends EventEmitter {
    * @private
    */
   __onVRDisplayPresentChange(event) {
-    //is event.display.layers[0].source ==== this.presentedSource?
-    if(walkEquals(event, ['display', 'isPresenting'], true) && !walkEquals(event, ['display','layers',0,'source'], this.presentedSource)){
-      return;
-    }
-    const isPresenting = this.defaultDisplay && this.defaultDisplay.isPresenting;
-    this.__setState(isPresenting ? State.PRESENTING : State.READY_TO_PRESENT);
+    try {
+
+      if(event.display.isPresenting && event.display.layers[0].source !== this.presentedSource){
+        //this means a different instance of WebVRManager has requested to present
+        return;
+      }
+
+      const isPresenting = this.defaultDisplay && this.defaultDisplay.isPresenting;
+      this.__setState(isPresenting ? State.PRESENTING : State.READY_TO_PRESENT);
+    } catch(err){}
   }
 
-}
-
-
-/**
- * a utility method that will walk the object for the provided properties
- * safely asserting if the final property is equal to `other`
- * @param {Object} obj
- * @param {Array} steps
- * @param {Object} other
- * @returns {boolean} true only if properties exist for object to
- * be walked and final prop is equal to `other`
- */
-function walkEquals(obj, steps, other){
-  if(!obj){
-    return false;
-  }
-
-  for(let i=0; i<steps.length; i++){
-    const next = obj[steps[i]];
-    if(!next){
-      return false;
-    }
-    obj = next;
-  }
-
-  return obj === other;
 }
