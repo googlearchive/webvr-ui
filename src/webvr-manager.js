@@ -108,7 +108,7 @@ export default class WebVRManager extends EventEmitter {
    * Enter presentation mode with your set VR display
    */
   enterVR(display, canvas) {
-    this.source = canvas;
+    this.presentedSource = canvas;
     return display.requestPresent([{
       source: canvas
     }])
@@ -125,7 +125,7 @@ export default class WebVRManager extends EventEmitter {
   exitVR(display) {
     return display.exitPresent()
       .then(
-        ()=> {},
+        ()=> { this.presentedSource = undefined; },
         //this could fail if:
         //1. exit requested while not currently presenting
         ()=> this.__setState(State.ERROR_EXIT_PRESENT_REJECTED)
@@ -177,8 +177,8 @@ export default class WebVRManager extends EventEmitter {
    * @private
    */
   __onVRDisplayPresentChange(event) {
-    //is event.display.layers[0].source ==== this.presentedCanvas?
-    if(walkEquals(event, ['display', 'isPresenting'], true) && !walkEquals(event, ['display','layers',0,'source'], this.source)){
+    //is event.display.layers[0].source ==== this.presentedSource?
+    if(walkEquals(event, ['display', 'isPresenting'], true) && !walkEquals(event, ['display','layers',0,'source'], this.presentedSource)){
       return;
     }
     const isPresenting = this.defaultDisplay && this.defaultDisplay.isPresenting;
