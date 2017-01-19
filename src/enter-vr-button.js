@@ -150,16 +150,24 @@ export default class EnterVRButton extends EventEmitter {
     });
   }
 
-  requestExitVR() {
+  requestExit() {
+    const initialState = this.state;
+
     return new Promise((resolve, reject)=> {
       if (this.options.onRequestStateChange(State.READY_TO_PRESENT)) {
         return this.options.beforeExit()
-          .then(()=> this.manager.exitVR(this.manager.defaultDisplay))
+          .then(()=>
+            // if we were presenting VR, exit VR, if we are
+            // exiting 360, exit 360
+            initialState === State.PRESENTING ?
+              this.manager.exitVR(this.manager.defaultDisplay) :
+              this.manager.exit360())
           .then(resolve);
       } else {
         reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
       }
     });
+
   }
 
   requestEnter360() {
@@ -174,18 +182,6 @@ export default class EnterVRButton extends EventEmitter {
     });
   }
 
-  requestExit360() {
-    return new Promise((resolve, reject)=> {
-      if (this.options.onRequestStateChange(State.READY_TO_PRESENT)) {
-        return this.options.beforeExit()
-          .then(()=>this.manager.exit360())
-          .then(resolve);
-      } else {
-        reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
-      }
-    });
-  }
-
   /**
    * Handling click event from button
    * @private
@@ -193,8 +189,8 @@ export default class EnterVRButton extends EventEmitter {
   __onEnterVRClick() {
     if (this.state == State.READY_TO_PRESENT) {
       this.requestEnterVR();
-    } else if (this.state == State.PRESENTING) {
-      this.requestExitVR();
+    } else if (this.isPresenting()){
+      this.requestExit();
     }
   }
 
