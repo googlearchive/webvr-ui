@@ -16,11 +16,11 @@ import WebVRManager from './webvr-manager';
 import State from './states';
 import * as dom from './dom';
 import EnterVRButton from './enter-vr-button';
-import  './aframe-component';
+import './aframe-component';
 
 export {
   EnterVRButton,
   dom,
   State,
-  WebVRManager
+  WebVRManager,
 };

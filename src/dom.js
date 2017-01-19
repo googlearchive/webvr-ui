@@ -18,13 +18,14 @@ let _WEBVR_UI_CSS_INJECTED = {};
 /**
  * Generate the innerHTML for the button
  *
+ * @return {string} html of the button as string
  * @param {string} cssPrefix
  * @param {Number} height
- * @param {Number} fontSize
  * @private
  */
 const generateInnerHTML = (cssPrefix, height)=> {
-  const svgString = generateVRIconString(cssPrefix, height*_LOGO_SCALE) + generateNoVRIconString(cssPrefix, height*_LOGO_SCALE);
+  const logoHeight = height*_LOGO_SCALE;
+  const svgString = generateVRIconString(cssPrefix, logoHeight) + generateNoVRIconString(cssPrefix, logoHeight);
 
   return `<button class="${cssPrefix}-button">
           <div class="${cssPrefix}-title"></div>
@@ -49,7 +50,7 @@ export const injectCSS = (cssText)=> {
 /**
  * Generate DOM element view for button
  *
- * @returns {HTMLElement}
+ * @return {HTMLElement}
  * @param {Object} options
  */
 export const createDefaultView = (options)=> {
@@ -60,7 +61,6 @@ export const createDefaultView = (options)=> {
       injectCSS(generateCSS(options, fontSize));
       _WEBVR_UI_CSS_INJECTED[options.cssprefix] = true;
     }
-
   }
 
   const el = document.createElement('div');
@@ -93,7 +93,7 @@ const generateVRIconString = (cssPrefix, height)=> {
         1.7,26.8,1.1z M7.4,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8c1.6,0,2.8,1.3,2.8,2.8
         C10.2,10.5,8.9,11.8,7.4,11.8z M20.1,11.8c-1.6,0-2.8-1.3-2.8-2.8c0-1.6,1.3-2.8,2.8-2.8C21.7
         ,6.2,23,7.4,23,9 C23,10.5,21.7,11.8,20.1,11.8z"/>
-    </svg>`
+    </svg>`;
 };
 
 const generateNoVRIconString = (cssPrefix, height)=>{
@@ -117,7 +117,7 @@ const generateNoVRIconString = (cssPrefix, height)=>{
  *
  * @param {Object} options
  * @param {Number} [fontSize=18]
- * @returns {string}
+ * @return {string}
  */
 export const generateCSS = (options, fontSize=18)=> {
   const height = options.height;

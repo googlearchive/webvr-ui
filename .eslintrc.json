@@ -2,5 +2,13 @@
   "extends": ["eslint:recommended", "google"],
   "parserOptions": {
     "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "rules": {
+    "max-len": [2,120]
   }
+
 }

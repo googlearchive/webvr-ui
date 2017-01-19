@@ -467,9 +467,7 @@ var _enterVrButton2 = _interopRequireDefault(_enterVrButton);
 
 var _states = _dereq_('./states');
 
-var State = _interopRequireWildcard(_states);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _states2 = _interopRequireDefault(_states);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -486,6 +484,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //     See the License for the specific language governing permissions and
 // limitations under the License.
+
+/* global AFRAME */
 
 if (typeof AFRAME !== 'undefined' && AFRAME) {
   AFRAME.registerComponent('webvr-ui', {
@@ -523,7 +523,7 @@ if (typeof AFRAME !== 'undefined' && AFRAME) {
           textExitVRTitle: this.data.textExitVRTitle,
           textVRNotFoundTitle: this.data.textVRNotFoundTitle,
           onRequestStateChange: function onRequestStateChange(state) {
-            if (state == State.PRESENTING) {
+            if (state == _states2.default.PRESENTING) {
               scene.enterVR();
             } else {
               scene.exitVR();
@@ -586,13 +586,14 @@ var _WEBVR_UI_CSS_INJECTED = {};
 /**
  * Generate the innerHTML for the button
  *
+ * @return {string} html of the button as string
  * @param {string} cssPrefix
  * @param {Number} height
- * @param {Number} fontSize
  * @private
  */
 var generateInnerHTML = function generateInnerHTML(cssPrefix, height) {
-    var svgString = generateVRIconString(cssPrefix, height * _LOGO_SCALE) + generateNoVRIconString(cssPrefix, height * _LOGO_SCALE);
+    var logoHeight = height * _LOGO_SCALE;
+    var svgString = generateVRIconString(cssPrefix, logoHeight) + generateNoVRIconString(cssPrefix, logoHeight);
 
     return '<button class="' + cssPrefix + '-button">\n          <div class="' + cssPrefix + '-title"></div>\n          <div class="' + cssPrefix + '-logo" >' + svgString + '</div>\n        </button>';
 };
@@ -614,7 +615,7 @@ var injectCSS = exports.injectCSS = function injectCSS(cssText) {
 /**
  * Generate DOM element view for button
  *
- * @returns {HTMLElement}
+ * @return {HTMLElement}
  * @param {Object} options
  */
 var createDefaultView = exports.createDefaultView = function createDefaultView(options) {
@@ -659,7 +660,7 @@ var generateNoVRIconString = function generateNoVRIconString(cssPrefix, height) 
  *
  * @param {Object} options
  * @param {Number} [fontSize=18]
- * @returns {string}
+ * @return {string}
  */
 var generateCSS = exports.generateCSS = function generateCSS(options) {
     var fontSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 18;
@@ -788,9 +789,9 @@ var EnterVRButton = function (_EventEmitter) {
 
     _this.sourceCanvas = sourceCanvas;
 
-    //pass in your own domElement if you really dont want to use ours
+    // Pass in your own domElement if you really dont want to use ours
     _this.domElement = options.domElement || (0, _dom.createDefaultView)(options);
-    _this.__defaultDisplayStyle = _this.domElement.style.display || "initial";
+    _this.__defaultDisplayStyle = _this.domElement.style.display || 'initial';
 
     // Create WebVR Manager
     _this.manager = new _webvrManager2.default();
@@ -807,6 +808,14 @@ var EnterVRButton = function (_EventEmitter) {
     _this.setTitle(_this.options.textEnterVRTitle);
     return _this;
   }
+
+  /**
+   * Set the title of the button
+   * @param {string} text
+   * @param {boolean} disabled set to true to disable the button
+   * @return {EnterVRButton}
+   */
+
 
   _createClass(EnterVRButton, [{
     key: 'setTitle',
@@ -831,12 +840,25 @@ var EnterVRButton = function (_EventEmitter) {
 
       return this;
     }
+
+    /**
+     * Set the tooltip of the button
+     * @param {string} tooltip
+     * @return {EnterVRButton}
+     */
+
   }, {
     key: 'setTooltip',
     value: function setTooltip(tooltip) {
       this.domElement.title = tooltip;
       return this;
     }
+
+    /**
+     * Show the button
+     * @return {EnterVRButton}
+     */
+
   }, {
     key: 'show',
     value: function show() {
@@ -844,6 +866,12 @@ var EnterVRButton = function (_EventEmitter) {
       this.emit('show');
       return this;
     }
+
+    /**
+     * Hide the button
+     * @return {EnterVRButton}
+     */
+
   }, {
     key: 'hide',
     value: function hide() {
@@ -865,16 +893,34 @@ var EnterVRButton = function (_EventEmitter) {
         this.domElement.parentElement.removeChild(this.domElement);
       }
     }
+
+    /**
+     * Returns a promise getting the VRDisplay used
+     * @return {Promise.<VRDisplay>}
+     */
+
   }, {
     key: 'getVRDisplay',
     value: function getVRDisplay() {
       return _webvrManager2.default.getVRDisplay();
     }
+
+    /**
+     * Check if the canvas the button is connected to is currently presenting
+     * @return {boolean}
+     */
+
   }, {
     key: 'isPresenting',
     value: function isPresenting() {
       return this.state === _states2.default.PRESENTING || this.state == _states2.default.PRESENTING_360;
     }
+
+    /**
+     * Request entering VR
+     * @return {Promise}
+     */
+
   }, {
     key: 'requestEnterVR',
     value: function requestEnterVR() {
@@ -890,6 +936,12 @@ var EnterVRButton = function (_EventEmitter) {
         }
       });
     }
+
+    /**
+     * Request exiting presentation mode
+     * @return {Promise}
+     */
+
   }, {
     key: 'requestExit',
     value: function requestExit() {
@@ -911,6 +963,12 @@ var EnterVRButton = function (_EventEmitter) {
         }
       });
     }
+
+    /**
+     * Request entering the site in fullscreen, but not VR
+     * @return {Promise}
+     */
+
   }, {
     key: 'requestEnter360',
     value: function requestEnter360() {
@@ -943,6 +1001,7 @@ var EnterVRButton = function (_EventEmitter) {
     }
 
     /**
+     * @param {State} state the state that its transitioning to
      * @private
      */
 
@@ -1166,9 +1225,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 //     See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * WebVR Manager is a utility to handle VR displays
+ */
 var WebVRManager = function (_EventEmitter) {
   _inherits(WebVRManager, _EventEmitter);
 
+  /**
+   * Construct a new WebVRManager
+   */
   function WebVRManager() {
     _classCallCheck(this, WebVRManager);
 
@@ -1184,13 +1249,12 @@ var WebVRManager = function (_EventEmitter) {
     if (_screenfull2.default.enabled) {
       document.addEventListener(_screenfull2.default.raw.fullscreenchange, _this.__onChangeFullscreen);
     }
-
     return _this;
   }
 
   /**
    * Check if the browser is compatible with WebVR and has headsets.
-   * @returns {Promise<VRDisplay>}
+   * @return {Promise<VRDisplay>}
    */
 
 
@@ -1232,7 +1296,7 @@ var WebVRManager = function (_EventEmitter) {
 
     /**
      * returns promise returning list of available VR displays.
-     * @returns Promise<VRDisplay>
+     * @return {Promise<VRDisplay>}
      */
 
   }, {
@@ -1241,6 +1305,9 @@ var WebVRManager = function (_EventEmitter) {
 
     /**
      * Enter presentation mode with your set VR display
+     * @param {VRDisplay} display the display to request present on
+     * @param {HTMLCanvasElement} canvas
+     * @return {Promise.<TResult>}
      */
     value: function enterVR(display, canvas) {
       var _this3 = this;
@@ -1249,14 +1316,21 @@ var WebVRManager = function (_EventEmitter) {
       return display.requestPresent([{
         source: canvas
       }]).then(function () {},
-      //this could fail if:
-      //1. Display `canPresent` is false
-      //2. Canvas is invalid
-      //3. not executed via user interaction
+      // this could fail if:
+      // 1. Display `canPresent` is false
+      // 2. Canvas is invalid
+      // 3. not executed via user interaction
       function () {
         return _this3.__setState(_states2.default.ERROR_REQUEST_TO_PRESENT_REJECTED);
       });
     }
+
+    /**
+     * Exit presentation mode on display
+     * @param {VRDisplay} display
+     * @return {Promise.<TResult>}
+     */
+
   }, {
     key: 'exitVR',
     value: function exitVR(display) {
@@ -1265,8 +1339,8 @@ var WebVRManager = function (_EventEmitter) {
       return display.exitPresent().then(function () {
         _this4.presentedSource = undefined;
       },
-      //this could fail if:
-      //1. exit requested while not currently presenting
+      // this could fail if:
+      // 1. exit requested while not currently presenting
       function () {
         return _this4.__setState(_states2.default.ERROR_EXIT_PRESENT_REJECTED);
       });
@@ -1274,6 +1348,8 @@ var WebVRManager = function (_EventEmitter) {
 
     /**
      * Enter 360 mode
+     * @param {HTMLCanvasElement} canvas
+     * @return {boolean}
      */
 
   }, {
@@ -1287,6 +1363,12 @@ var WebVRManager = function (_EventEmitter) {
       }
       return true;
     }
+
+    /**
+     * Exit fullscreen mode
+     * @return {boolean}
+     */
+
   }, {
     key: 'exit360',
     value: function exit360() {
@@ -1297,19 +1379,28 @@ var WebVRManager = function (_EventEmitter) {
       }
       return true;
     }
-  }, {
-    key: '__setState',
-
 
     /**
+     * Change the state of the manager
+     * @param {State} state
      * @private
      */
+
+  }, {
+    key: '__setState',
     value: function __setState(state) {
       if (state != this.state) {
         this.emit('change', state, this.state);
         this.state = state;
       }
     }
+
+    /**
+     * Triggered on fullscreen change event
+     * @param {Event} e
+     * @private
+     */
+
   }, {
     key: '__onChangeFullscreen',
     value: function __onChangeFullscreen(e) {
@@ -1321,6 +1412,8 @@ var WebVRManager = function (_EventEmitter) {
     }
 
     /**
+     * Triggered on vr present change
+     * @param {Event} event
      * @private
      */
 
@@ -1328,15 +1421,16 @@ var WebVRManager = function (_EventEmitter) {
     key: '__onVRDisplayPresentChange',
     value: function __onVRDisplayPresentChange(event) {
       try {
-
         if (event.display.isPresenting && event.display.layers[0].source !== this.presentedSource) {
-          //this means a different instance of WebVRManager has requested to present
+          // this means a different instance of WebVRManager has requested to present
           return;
         }
 
         var isPresenting = this.defaultDisplay && this.defaultDisplay.isPresenting;
         this.__setState(isPresenting ? _states2.default.PRESENTING : _states2.default.READY_TO_PRESENT);
-      } catch (err) {}
+      } catch (err) {
+        // continue regardless of error
+      }
     }
   }], [{
     key: 'getVRDisplay',

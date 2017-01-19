@@ -143,6 +143,7 @@
     }];
 
     var uiDom = document.getElementById("ui");
+    var vrButtons = [];
     options.forEach(function(option,idx){
         var container = document.createElement("div");
         container.classList.add("button");
@@ -167,6 +168,7 @@
                     document.getElementById("exit360").style.display = "none";
                 });
 
+        vrButtons.push(enterVR);
         container.appendChild(enterVR.domElement);
 
         container.appendChild(description)
@@ -231,7 +233,7 @@
         // Apply rotation to cube mesh
         cube.rotation.y += delta * 0.0003;
 
-        if(enterVR.state == webvrui.State.PRESENTING || enterVR.state == webvrui.State.PRESENTING_360){
+        if(vrButtons[0].isPresenting()){
             controls.update();
             renderer.render(scene,camera);
             effect.render(scene, camera);

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import WebVRManager from './webvr-manager';
-import { createDefaultView  } from './dom';
+import {createDefaultView} from './dom';
 import State from './states';
 import EventEmitter from 'eventemitter3';
 
@@ -48,17 +48,17 @@ export default class EnterVRButton extends EventEmitter {
     options.color = options.color || 'rgb(80,168,252)';
     options.background = options.background || false;
     options.disabledOpacity = options.disabledOpacity || 0.5;
-    options.height =  options.height || 55;
+    options.height = options.height || 55;
     options.corners = options.corners || 'square';
     options.cssprefix = options.cssprefix || 'webvr-ui';
 
     options.textEnterVRTitle = options.textEnterVRTitle || 'ENTER VR';
     options.textVRNotFoundTitle = options.textVRNotFoundTitle || 'VR NOT FOUND';
-    options.textExitVRTitle = options.textExitVRTitle   || 'EXIT VR';
+    options.textExitVRTitle = options.textExitVRTitle || 'EXIT VR';
 
     options.onRequestStateChange = options.onRequestStateChange || (() => true);
-    options.beforeEnter = options.beforeEnter || (()=> new Promise(resolve=> resolve()));
-    options.beforeExit = options.beforeExit || (()=> new Promise(resolve=> resolve()));
+    options.beforeEnter = options.beforeEnter || (()=> new Promise((resolve)=> resolve()));
+    options.beforeExit = options.beforeExit || (()=> new Promise((resolve)=> resolve()));
 
     options.injectCSS = options.injectCSS !== false;
 
@@ -67,9 +67,9 @@ export default class EnterVRButton extends EventEmitter {
 
     this.sourceCanvas = sourceCanvas;
 
-    //pass in your own domElement if you really dont want to use ours
+    // Pass in your own domElement if you really dont want to use ours
     this.domElement = options.domElement || createDefaultView(options);
-    this.__defaultDisplayStyle = this.domElement.style.display || "initial";
+    this.__defaultDisplayStyle = this.domElement.style.display || 'initial';
 
     // Create WebVR Manager
     this.manager = new WebVRManager();
@@ -82,6 +82,12 @@ export default class EnterVRButton extends EventEmitter {
     this.setTitle(this.options.textEnterVRTitle);
   }
 
+  /**
+   * Set the title of the button
+   * @param {string} text
+   * @param {boolean} disabled set to true to disable the button
+   * @return {EnterVRButton}
+   */
   setTitle(text, disabled = false) {
     this.domElement.title = text;
     if (disabled) {
@@ -102,17 +108,30 @@ export default class EnterVRButton extends EventEmitter {
     return this;
   }
 
+  /**
+   * Set the tooltip of the button
+   * @param {string} tooltip
+   * @return {EnterVRButton}
+   */
   setTooltip(tooltip) {
     this.domElement.title = tooltip;
     return this;
   }
 
+  /**
+   * Show the button
+   * @return {EnterVRButton}
+   */
   show() {
     this.domElement.style.display = this.__defaultDisplayStyle;
     this.emit('show');
     return this;
   }
 
+  /**
+   * Hide the button
+   * @return {EnterVRButton}
+   */
   hide() {
     this.domElement.style.display = 'none';
     this.emit('hide');
@@ -130,14 +149,26 @@ export default class EnterVRButton extends EventEmitter {
     }
   }
 
+  /**
+   * Returns a promise getting the VRDisplay used
+   * @return {Promise.<VRDisplay>}
+   */
   getVRDisplay() {
     return WebVRManager.getVRDisplay();
   }
 
-  isPresenting(){
+  /**
+   * Check if the canvas the button is connected to is currently presenting
+   * @return {boolean}
+   */
+  isPresenting() {
     return this.state === State.PRESENTING || this.state == State.PRESENTING_360;
   }
 
+  /**
+   * Request entering VR
+   * @return {Promise}
+   */
   requestEnterVR() {
     return new Promise((resolve, reject)=> {
       if (this.options.onRequestStateChange(State.PRESENTING)) {
@@ -150,6 +181,10 @@ export default class EnterVRButton extends EventEmitter {
     });
   }
 
+  /**
+   * Request exiting presentation mode
+   * @return {Promise}
+   */
   requestExit() {
     const initialState = this.state;
 
@@ -167,9 +202,12 @@ export default class EnterVRButton extends EventEmitter {
         reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
       }
     });
-
   }
 
+  /**
+   * Request entering the site in fullscreen, but not VR
+   * @return {Promise}
+   */
   requestEnter360() {
     return new Promise((resolve, reject)=> {
       if (this.options.onRequestStateChange(State.PRESENTING_360)) {
@@ -189,12 +227,13 @@ export default class EnterVRButton extends EventEmitter {
   __onEnterVRClick() {
     if (this.state == State.READY_TO_PRESENT) {
       this.requestEnterVR();
-    } else if (this.isPresenting()){
+    } else if (this.isPresenting()) {
       this.requestExit();
     }
   }
 
   /**
+   * @param {State} state the state that its transitioning to
    * @private
    */
   __onStateChange(state) {

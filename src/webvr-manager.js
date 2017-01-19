@@ -16,8 +16,14 @@ import State from './states';
 import EventEmitter from 'eventemitter3';
 import screenfull from 'screenfull';
 
+/**
+ * WebVR Manager is a utility to handle VR displays
+ */
 export default class WebVRManager extends EventEmitter {
 
+  /**
+   * Construct a new WebVRManager
+   */
   constructor() {
     super();
     this.state = State.PREPARING;
@@ -30,12 +36,11 @@ export default class WebVRManager extends EventEmitter {
     if (screenfull.enabled) {
       document.addEventListener(screenfull.raw.fullscreenchange, this.__onChangeFullscreen);
     }
-
   }
 
   /**
    * Check if the browser is compatible with WebVR and has headsets.
-   * @returns {Promise<VRDisplay>}
+   * @return {Promise<VRDisplay>}
    */
   checkDisplays() {
     return WebVRManager.getVRDisplay()
@@ -70,7 +75,7 @@ export default class WebVRManager extends EventEmitter {
 
   /**
    * returns promise returning list of available VR displays.
-   * @returns Promise<VRDisplay>
+   * @return {Promise<VRDisplay>}
    */
   static getVRDisplay() {
     return new Promise((resolve, reject) => {
@@ -91,7 +96,7 @@ export default class WebVRManager extends EventEmitter {
       navigator.getVRDisplays().then(
         function(displays) {
           // Promise succeeds, but check if there are any displays actually.
-          for (var i = 0; i < displays.length; i++) {
+          for (let i = 0; i < displays.length; i++) {
             if (displays[i].capabilities.canPresent) {
               resolve(displays[i]);
               break;
@@ -106,36 +111,47 @@ export default class WebVRManager extends EventEmitter {
 
   /**
    * Enter presentation mode with your set VR display
+   * @param {VRDisplay} display the display to request present on
+   * @param {HTMLCanvasElement} canvas
+   * @return {Promise.<TResult>}
    */
   enterVR(display, canvas) {
     this.presentedSource = canvas;
     return display.requestPresent([{
-      source: canvas
+      source: canvas,
     }])
       .then(
         ()=> {},
-        //this could fail if:
-        //1. Display `canPresent` is false
-        //2. Canvas is invalid
-        //3. not executed via user interaction
+        // this could fail if:
+        // 1. Display `canPresent` is false
+        // 2. Canvas is invalid
+        // 3. not executed via user interaction
         ()=> this.__setState(State.ERROR_REQUEST_TO_PRESENT_REJECTED)
       );
   }
 
+  /**
+   * Exit presentation mode on display
+   * @param {VRDisplay} display
+   * @return {Promise.<TResult>}
+   */
   exitVR(display) {
     return display.exitPresent()
       .then(
-        ()=> { this.presentedSource = undefined; },
-        //this could fail if:
-        //1. exit requested while not currently presenting
+        ()=> {
+          this.presentedSource = undefined;
+        },
+        // this could fail if:
+        // 1. exit requested while not currently presenting
         ()=> this.__setState(State.ERROR_EXIT_PRESENT_REJECTED)
       );
   }
 
   /**
    * Enter 360 mode
+   * @param {HTMLCanvasElement} canvas
+   * @return {boolean}
    */
-
   enter360(canvas) {
     if (screenfull.enabled) {
       screenfull.request(canvas);
@@ -144,8 +160,12 @@ export default class WebVRManager extends EventEmitter {
       this.__setState(State.PRESENTING_360);
     }
     return true;
-  };
+  }
 
+  /**
+   * Exit fullscreen mode
+   * @return {boolean}
+   */
   exit360() {
     if (screenfull.enabled && screenfull.isFullscreen) {
       screenfull.exit();
@@ -153,9 +173,11 @@ export default class WebVRManager extends EventEmitter {
       this.checkDisplays();
     }
     return true;
-  };
+  }
 
   /**
+   * Change the state of the manager
+   * @param {State} state
    * @private
    */
   __setState(state) {
@@ -165,6 +187,11 @@ export default class WebVRManager extends EventEmitter {
     }
   }
 
+  /**
+   * Triggered on fullscreen change event
+   * @param {Event} e
+   * @private
+   */
   __onChangeFullscreen(e) {
     if (screenfull.isFullscreen) {
       this.__setState(State.PRESENTING_360);
@@ -174,19 +201,22 @@ export default class WebVRManager extends EventEmitter {
   }
 
   /**
+   * Triggered on vr present change
+   * @param {Event} event
    * @private
    */
   __onVRDisplayPresentChange(event) {
     try {
-
-      if(event.display.isPresenting && event.display.layers[0].source !== this.presentedSource){
-        //this means a different instance of WebVRManager has requested to present
+      if(event.display.isPresenting && event.display.layers[0].source !== this.presentedSource) {
+        // this means a different instance of WebVRManager has requested to present
         return;
       }
 
       const isPresenting = this.defaultDisplay && this.defaultDisplay.isPresenting;
       this.__setState(isPresenting ? State.PRESENTING : State.READY_TO_PRESENT);
-    } catch(err){}
+    } catch(err) {
+      // continue regardless of error
+    }
   }
 
 }
