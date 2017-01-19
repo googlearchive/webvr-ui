@@ -73,6 +73,7 @@ export default class EnterVRButton extends EventEmitter {
 
     // Create WebVR Manager
     this.manager = new WebVRManager();
+    this.manager.checkDisplays();
     this.manager.addListener('change', (state)=> this.__onStateChange(state));
 
     // Bind button click events to __onClick
@@ -84,7 +85,7 @@ export default class EnterVRButton extends EventEmitter {
   setTitle(text, disabled = false) {
     this.domElement.title = text;
     if (disabled) {
-      this.domElement.setAttribute('disabled', disabled);
+      this.domElement.setAttribute('disabled', 'true');
     } else {
       this.domElement.removeAttribute('disabled');
     }
