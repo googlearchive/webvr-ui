@@ -76,6 +76,19 @@ These are the supported options in `EnterVRButton`. All options are optional.
 - `domElement`: Provide a DOM element to use instead of default build in DOM. See [Custom DOM example](http://halfdanj.github.io/webvr-ui/examples/customDom.html) for more details how to use.
 - `injectCSS`: Set to false to disable CSS injection of button style *(default: `true`)*
 
+### Functions
+These are some of the functions that can be called on the EnterVRButton
+
+- `setTitle(title)`: Change the text in the button.
+- `setTooltip(tooltip)`: Change the hover tooltip of the button.
+- `show()` / `hide()`: Change the visibility of the button.
+- `disable()` / `enable()`: Change the disabled state of the button.
+- `getVRDisplay()`: Returns a promise retuning the VRDisplay associated to the button.
+- `isPresenting()`: Returns `true` if the canvas associated to the button is presenting in fullscreen or VR mode. 
+- `requestEnterVR()`: Requests to start presenting. Must be called from a user action ([read more](https://w3c.github.io/webvr/#dom-vrdisplay-requestpresent))
+- `requestEnterFullscreen()`: Requests to enter fullscreen mode if its supported in the browser. 
+- `requestExit()`: Request exiting presentation mode. 
+
 ## Development
 To run the example, install dependencies
 

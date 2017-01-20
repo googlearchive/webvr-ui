@@ -79,23 +79,17 @@ export default class EnterVRButton extends EventEmitter {
     // Bind button click events to __onClick
     this.domElement.addEventListener('click', ()=> this.__onEnterVRClick());
 
+    this.__forceDisabled = false;
     this.setTitle(this.options.textEnterVRTitle);
   }
 
   /**
    * Set the title of the button
    * @param {string} text
-   * @param {boolean} disabled set to true to disable the button
    * @return {EnterVRButton}
    */
-  setTitle(text, disabled = false) {
+  setTitle(text) {
     this.domElement.title = text;
-    if (disabled) {
-      this.domElement.setAttribute('disabled', 'true');
-    } else {
-      this.domElement.removeAttribute('disabled');
-    }
-
     ifChild(this.domElement, this.options.cssprefix, 'title', (title)=> {
       if (!text) {
         title.style.display = 'none';
@@ -135,6 +129,26 @@ export default class EnterVRButton extends EventEmitter {
   hide() {
     this.domElement.style.display = 'none';
     this.emit('hide');
+    return this;
+  }
+
+  /**
+   * Enable the button
+   * @return {EnterVRButton}
+   */
+  enable() {
+    this.__setDisabledAttribute(false);
+    this.__forceDisabled = false;
+    return this;
+  }
+
+  /**
+   * Disable the button from being clicked
+   * @return {EnterVRButton}
+   */
+  disable() {
+    this.__setDisabledAttribute(true);
+    this.__forceDisabled = true;
     return this;
   }
 
@@ -221,6 +235,19 @@ export default class EnterVRButton extends EventEmitter {
   }
 
   /**
+   * Set the disabled attribute
+   * @param disabled
+   * @private
+   */
+  __setDisabledAttribute(disabled){
+    if (disabled || this.__forceDisabled) {
+      this.domElement.setAttribute('disabled', 'true');
+    } else {
+      this.domElement.removeAttribute('disabled');
+    }
+  }
+
+  /**
    * Handling click event from button
    * @private
    */
@@ -250,6 +277,7 @@ export default class EnterVRButton extends EventEmitter {
           if (this.manager.defaultDisplay) {
             this.setTooltip('Enter VR using ' + this.manager.defaultDisplay.displayName);
           }
+          this.__setDisabledAttribute(false);
           this.emit('ready');
           break;
 
@@ -261,36 +289,41 @@ export default class EnterVRButton extends EventEmitter {
             this.hide();
           }
           this.setTitle(this.options.textExitVRTitle);
+          this.__setDisabledAttribute(false);
           this.emit('enter');
           break;
 
         // Error states
         case State.ERROR_BROWSER_NOT_SUPPORTED:
           this.show();
-          this.setTitle(this.options.textVRNotFoundTitle, true);
-          this.setTooltip('Browser not supported', true);
+          this.setTitle(this.options.textVRNotFoundTitle);
+          this.setTooltip('Browser not supported');
+          this.__setDisabledAttribute(true);
           this.emit('error', new Error(state));
           break;
 
         case State.ERROR_NO_PRESENTABLE_DISPLAYS:
           this.show();
-          this.setTitle(this.options.textVRNotFoundTitle, true);
+          this.setTitle(this.options.textVRNotFoundTitle);
           this.setTooltip('No VR headset found.');
+          this.__setDisabledAttribute(true);
           this.emit('error', new Error(state));
           break;
 
         case State.ERROR_REQUEST_TO_PRESENT_REJECTED:
           this.show();
-          this.setTitle(this.options.textVRNotFoundTitle, true);
+          this.setTitle(this.options.textVRNotFoundTitle);
           this.setTooltip('Something went wrong trying to start presenting to your headset.');
+          this.__setDisabledAttribute(true);
           this.emit('error', new Error(state));
           break;
 
         case State.ERROR_EXIT_PRESENT_REJECTED:
         default:
           this.show();
-          this.setTitle(this.options.textVRNotFoundTitle, true);
+          this.setTitle(this.options.textVRNotFoundTitle);
           this.setTooltip('Unknown error.');
+          this.__setDisabledAttribute(true);
           this.emit('error', new Error(state));
       }
     }
