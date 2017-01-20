@@ -236,10 +236,10 @@ export default class EnterVRButton extends EventEmitter {
 
   /**
    * Set the disabled attribute
-   * @param disabled
+   * @param {boolean} disabled
    * @private
    */
-  __setDisabledAttribute(disabled){
+  __setDisabledAttribute(disabled) {
     if (disabled || this.__forceDisabled) {
       this.domElement.setAttribute('disabled', 'true');
     } else {
