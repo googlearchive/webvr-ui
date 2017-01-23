@@ -1,7 +1,7 @@
 # WebVR UI
 A javascript library allowing easily to create the Enter VR button a [WebVR](https://webvr.info) site. It will automatically detect the support in the browser and show correct messages to the user. The intention for the library is to create an easy way to make a button solving as many of the common use cases of WebVR as possible, and show some best practices for how to work with WebVR.
 
-The library also supports adding a *Enter 360* link that allows entering a mode where on desktop you can use the mouse to drag around, and on mobile rotate the camera based on the gyroscope without rendering in stereoscopic mode (also known as *Magic Window*)
+The library also supports adding a *Enter Fullscreen* link that allows entering a mode where on desktop you can use the mouse to drag around, and on mobile rotate the camera based on the gyroscope without rendering in stereoscopic mode (also known as *Magic Window*)
 
 ### Examples
 - [Basic usage](http://halfdanj.github.io/webvr-ui/examples/basic.html) Shows how to simply add a button with the default styling to a site using three.js ([source](/examples/basic.html))
@@ -64,11 +64,16 @@ These are the supported options in `EnterVRButton`. All options are optional.
 - `textExitVRTitle`: The text in the button prompting to begin presenting *(default: `'EXIT VR'`)*
 - `textVRNotFoundTitle`: The text in the button when there is no VR headset found *(default: `'VR NOT FOUND'`)*
 
-**Events**
+**Events and callback**
 
-- `beforeEnter`: Function called right before entering VR. Should return a promise, giving opportunity to for example custom messaging.
-- `beforeExit`: Function called right before exiting VR. Should return a promise, giving opportunity to for example update UI.
-- `onRequestStateChange`: A function called before state is changed, use to intercept entering or exiting VR for example. Return `true` to continue with default behaviour, or `false` to stop the default behaviour.    
+- `beforeEnter()`: Callback function called right before entering VR. Should return a promise, giving opportunity to for example custom messaging.
+- `beforeExit()`: Callback function called right before exiting VR. Should return a promise, giving opportunity to for example update UI.
+- `onRequestStateChange(state)`: A function called before state is changed, use to intercept entering or exiting VR for example. Return `true` to continue with default behaviour, or `false` to stop the default behaviour.
+- `enter`: Event called when user enters VR
+- `exit`: Event called when user exits VR
+- `error`: Event called when an error occurs
+- `hide`: Event called when button is hidden 
+- `show`: Event called when button is shown
 
 **Advanced**
 

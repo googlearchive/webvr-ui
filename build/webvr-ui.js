@@ -931,7 +931,7 @@ var EnterVRButton = function (_EventEmitter) {
   }, {
     key: 'isPresenting',
     value: function isPresenting() {
-      return this.state === _states2.default.PRESENTING || this.state == _states2.default.PRESENTING_360;
+      return this.state === _states2.default.PRESENTING || this.state == _states2.default.PRESENTING_FULLSCREEN;
     }
 
     /**
@@ -993,7 +993,7 @@ var EnterVRButton = function (_EventEmitter) {
       var _this4 = this;
 
       return new Promise(function (resolve, reject) {
-        if (_this4.options.onRequestStateChange(_states2.default.PRESENTING_360)) {
+        if (_this4.options.onRequestStateChange(_states2.default.PRESENTING_FULLSCREEN)) {
           return _this4.options.beforeEnter().then(function () {
             return _this4.manager.enter360(_this4.sourceCanvas);
           }).then(resolve);
@@ -1043,7 +1043,7 @@ var EnterVRButton = function (_EventEmitter) {
     key: '__onStateChange',
     value: function __onStateChange(state) {
       if (state != this.state) {
-        if (this.state === _states2.default.PRESENTING || this.state === _states2.default.PRESENTING_360) {
+        if (this.state === _states2.default.PRESENTING || this.state === _states2.default.PRESENTING_FULLSCREEN) {
           this.emit('exit');
         }
         this.state = state;
@@ -1060,8 +1060,8 @@ var EnterVRButton = function (_EventEmitter) {
             break;
 
           case _states2.default.PRESENTING:
-          case _states2.default.PRESENTING_360:
-            if (!this.manager.defaultDisplay || !this.manager.defaultDisplay.capabilities.hasExternalDisplay || state == _states2.default.PRESENTING_360) {
+          case _states2.default.PRESENTING_FULLSCREEN:
+            if (!this.manager.defaultDisplay || !this.manager.defaultDisplay.capabilities.hasExternalDisplay || state == _states2.default.PRESENTING_FULLSCREEN) {
               this.hide();
             }
             this.setTitle(this.options.textExitVRTitle);

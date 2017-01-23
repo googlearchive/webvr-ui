@@ -176,7 +176,7 @@ export default class EnterVRButton extends EventEmitter {
    * @return {boolean}
    */
   isPresenting() {
-    return this.state === State.PRESENTING || this.state == State.PRESENTING_360;
+    return this.state === State.PRESENTING || this.state == State.PRESENTING_FULLSCREEN;
   }
 
   /**
@@ -207,10 +207,10 @@ export default class EnterVRButton extends EventEmitter {
         return this.options.beforeExit()
           .then(()=>
             // if we were presenting VR, exit VR, if we are
-            // exiting 360, exit 360
+            // exiting fullscreen, exit fullscreen
             initialState === State.PRESENTING ?
               this.manager.exitVR(this.manager.defaultDisplay) :
-              this.manager.exit360())
+              this.manager.exitFullscreen())
           .then(resolve);
       } else {
         reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
@@ -222,11 +222,11 @@ export default class EnterVRButton extends EventEmitter {
    * Request entering the site in fullscreen, but not VR
    * @return {Promise}
    */
-  requestEnter360() {
+  requestEnterFullscreen() {
     return new Promise((resolve, reject)=> {
-      if (this.options.onRequestStateChange(State.PRESENTING_360)) {
+      if (this.options.onRequestStateChange(State.PRESENTING_FULLSCREEN)) {
         return this.options.beforeEnter()
-          .then(()=>this.manager.enter360(this.sourceCanvas))
+          .then(()=>this.manager.enterFullscreen(this.sourceCanvas))
           .then(resolve);
       } else {
         reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
@@ -265,7 +265,7 @@ export default class EnterVRButton extends EventEmitter {
    */
   __onStateChange(state) {
     if (state != this.state) {
-      if (this.state === State.PRESENTING || this.state === State.PRESENTING_360) {
+      if (this.state === State.PRESENTING || this.state === State.PRESENTING_FULLSCREEN) {
         this.emit('exit');
       }
       this.state = state;
@@ -282,10 +282,10 @@ export default class EnterVRButton extends EventEmitter {
           break;
 
         case State.PRESENTING:
-        case State.PRESENTING_360:
+        case State.PRESENTING_FULLSCREEN:
           if (!this.manager.defaultDisplay ||
             !this.manager.defaultDisplay.capabilities.hasExternalDisplay ||
-            state == State.PRESENTING_360) {
+            state == State.PRESENTING_FULLSCREEN) {
             this.hide();
           }
           this.setTitle(this.options.textExitVRTitle);
