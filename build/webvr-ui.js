@@ -972,8 +972,8 @@ var EnterVRButton = function (_EventEmitter) {
           return _this3.options.beforeExit().then(function () {
             return (
               // if we were presenting VR, exit VR, if we are
-              // exiting 360, exit 360
-              initialState === _states2.default.PRESENTING ? _this3.manager.exitVR(_this3.manager.defaultDisplay) : _this3.manager.exit360()
+              // exiting fullscreen, exit fullscreen
+              initialState === _states2.default.PRESENTING ? _this3.manager.exitVR(_this3.manager.defaultDisplay) : _this3.manager.exitFullscreen()
             );
           }).then(resolve);
         } else {
@@ -988,14 +988,14 @@ var EnterVRButton = function (_EventEmitter) {
      */
 
   }, {
-    key: 'requestEnter360',
-    value: function requestEnter360() {
+    key: 'requestEnterFullscreen',
+    value: function requestEnterFullscreen() {
       var _this4 = this;
 
       return new Promise(function (resolve, reject) {
         if (_this4.options.onRequestStateChange(_states2.default.PRESENTING_FULLSCREEN)) {
           return _this4.options.beforeEnter().then(function () {
-            return _this4.manager.enter360(_this4.sourceCanvas);
+            return _this4.manager.enterFullscreen(_this4.sourceCanvas);
           }).then(resolve);
         } else {
           reject(new Error(_states2.default.ERROR_REQUEST_STATE_CHANGE_REJECTED));
@@ -1177,7 +1177,7 @@ exports.WebVRManager = _webvrManager2.default; // Copyright 2016 Google Inc.
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 // Copyright 2016 Google Inc.
 //
@@ -1198,7 +1198,7 @@ var READY_TO_PRESENT = 'ready';
 
 // In presentation mode
 var PRESENTING = 'presenting';
-var PRESENTING_360 = 'presenting-360';
+var PRESENTING_FULLSCREEN = 'presenting-fullscreen';
 
 // Checking device availability
 var PREPARING = 'preparing';
@@ -1212,16 +1212,16 @@ var ERROR_REQUEST_STATE_CHANGE_REJECTED = 'error-request-state-change-rejected';
 var ERROR_UNKOWN = 'error-unkown';
 
 exports.default = {
-    READY_TO_PRESENT: READY_TO_PRESENT,
-    PRESENTING: PRESENTING,
-    PRESENTING_360: PRESENTING_360,
-    PREPARING: PREPARING,
-    ERROR_NO_PRESENTABLE_DISPLAYS: ERROR_NO_PRESENTABLE_DISPLAYS,
-    ERROR_BROWSER_NOT_SUPPORTED: ERROR_BROWSER_NOT_SUPPORTED,
-    ERROR_REQUEST_TO_PRESENT_REJECTED: ERROR_REQUEST_TO_PRESENT_REJECTED,
-    ERROR_EXIT_PRESENT_REJECTED: ERROR_EXIT_PRESENT_REJECTED,
-    ERROR_REQUEST_STATE_CHANGE_REJECTED: ERROR_REQUEST_STATE_CHANGE_REJECTED,
-    ERROR_UNKOWN: ERROR_UNKOWN
+  READY_TO_PRESENT: READY_TO_PRESENT,
+  PRESENTING: PRESENTING,
+  PRESENTING_FULLSCREEN: PRESENTING_FULLSCREEN,
+  PREPARING: PREPARING,
+  ERROR_NO_PRESENTABLE_DISPLAYS: ERROR_NO_PRESENTABLE_DISPLAYS,
+  ERROR_BROWSER_NOT_SUPPORTED: ERROR_BROWSER_NOT_SUPPORTED,
+  ERROR_REQUEST_TO_PRESENT_REJECTED: ERROR_REQUEST_TO_PRESENT_REJECTED,
+  ERROR_EXIT_PRESENT_REJECTED: ERROR_EXIT_PRESENT_REJECTED,
+  ERROR_REQUEST_STATE_CHANGE_REJECTED: ERROR_REQUEST_STATE_CHANGE_REJECTED,
+  ERROR_UNKOWN: ERROR_UNKOWN
 };
 
 },{}],8:[function(_dereq_,module,exports){
@@ -1387,19 +1387,19 @@ var WebVRManager = function (_EventEmitter) {
     }
 
     /**
-     * Enter 360 mode
+     * Enter fullscreen mode
      * @param {HTMLCanvasElement} canvas
      * @return {boolean}
      */
 
   }, {
-    key: 'enter360',
-    value: function enter360(canvas) {
+    key: 'enterFullscreen',
+    value: function enterFullscreen(canvas) {
       if (_screenfull2.default.enabled) {
         _screenfull2.default.request(canvas);
       } else {
         // iOS
-        this.__setState(_states2.default.PRESENTING_360);
+        this.__setState(_states2.default.PRESENTING_FULLSCREEN);
       }
       return true;
     }
@@ -1410,11 +1410,11 @@ var WebVRManager = function (_EventEmitter) {
      */
 
   }, {
-    key: 'exit360',
-    value: function exit360() {
+    key: 'exitFullscreen',
+    value: function exitFullscreen() {
       if (_screenfull2.default.enabled && _screenfull2.default.isFullscreen) {
         _screenfull2.default.exit();
-      } else if (this.state == _states2.default.PRESENTING_360) {
+      } else if (this.state == _states2.default.PRESENTING_FULLSCREEN) {
         this.checkDisplays();
       }
       return true;
@@ -1445,7 +1445,7 @@ var WebVRManager = function (_EventEmitter) {
     key: '__onChangeFullscreen',
     value: function __onChangeFullscreen(e) {
       if (_screenfull2.default.isFullscreen) {
-        this.__setState(_states2.default.PRESENTING_360);
+        this.__setState(_states2.default.PRESENTING_FULLSCREEN);
       } else {
         this.checkDisplays();
       }
