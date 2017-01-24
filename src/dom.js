@@ -162,11 +162,15 @@ export const generateCSS = (options, fontSize=18)=> {
         background: ${options.background ? options.background : 'none'};
 
         height: ${height}px;
-        min-width: ${125}px;
+        min-width: ${fontSize * 9.6}px;
         display: inline-block;
         position: relative;
 
         cursor: pointer;
+    }
+    
+    button.${cssPrefix}-button:focus {
+      outline: none;
     }
 
     /*
