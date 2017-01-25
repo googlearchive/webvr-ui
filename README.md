@@ -4,10 +4,10 @@ A javascript library allowing easily to create the Enter VR button a [WebVR](htt
 The library also supports adding a *Enter Fullscreen* link that allows entering a mode where on desktop you can use the mouse to drag around, and on mobile rotate the camera based on the gyroscope without rendering in stereoscopic mode (also known as *Magic Window*)
 
 ### Examples
-- [Basic usage](http://halfdanj.github.io/webvr-ui/examples/basic.html) Shows how to simply add a button with the default styling to a site using three.js ([source](/examples/basic.html))
-- [A-Frame usage](http://halfdanj.github.io/webvr-ui/examples/aframe.html) Shows how to use the library with [A-Frame](https://aframe.io) ([source](/examples/aframe.html))
-- [Styling options](http://halfdanj.github.io/webvr-ui/examples/styling.html) Shows how customize the styling through options ([source](/examples/styling.html))
-- [Custom DOM](http://halfdanj.github.io/webvr-ui/examples/customDom.html) Shows how to use the library with a custom DOM for the button [A-Frame](https://aframe.io) ([source](/examples/customDom.html))
+- [Basic usage](http://googlevr.github.io/webvr-ui/examples/basic.html) Shows how to simply add a button with the default styling to a site using three.js ([source](/examples/basic.html))
+- [A-Frame usage](http://googlevr.github.io/webvr-ui/examples/aframe.html) Shows how to use the library with [A-Frame](https://aframe.io) ([source](/examples/aframe.html))
+- [Styling options](http://googlevr.github.io/webvr-ui/examples/styling.html) Shows how customize the styling through options ([source](/examples/styling.html))
+- [Custom DOM](http://googlevr.github.io/webvr-ui/examples/customDom.html) Shows how to use the library with a custom DOM for the button [A-Frame](https://aframe.io) ([source](/examples/customDom.html))
 
 
 ## Library Usage
@@ -77,7 +77,7 @@ These are the supported options in `EnterVRButton`. All options are optional.
 
 **Advanced**
 
-- `domElement`: Provide a DOM element to use instead of default build in DOM. See [Custom DOM example](http://halfdanj.github.io/webvr-ui/examples/customDom.html) for more details how to use.
+- `domElement`: Provide a DOM element to use instead of default build in DOM. See [Custom DOM example](http://googlevr.github.io/webvr-ui/examples/customDom.html) for more details how to use.
 - `injectCSS`: Set to false to disable CSS injection of button style *(default: `true`)*
 
 ### Functions
