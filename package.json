@@ -13,7 +13,8 @@
     "browserifymin": "browserify -g uglifyify src/index.js --standalone webvrui | derequire > build/webvr-ui.min.js",
     "start": "budo src/index.js:build/webvr-ui.js --live --verbose --port 3000 -- --standalone webvrui",
     "lint": "eslint -c .eslintrc.json src",
-    "prepublish": "npm run lint && npm run build"
+    "prepublish": "npm run lint && npm run build",
+    "postinstall": "cd examples; npm install"
   },
   "dependencies": {
     "eventemitter3": "^2.0.2",

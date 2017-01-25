@@ -2,16 +2,10 @@
   "name": "webvr-ui-example",
   "version": "0.0.1",
   "description": "Example of using WebVR UI Library",
-  "main": "src/main.js",
   "authors": [
-    "Jonas Jongejan <jonas@halfdanj.dk>"
+    "Kyle Phillips <kylephillips@google.com>",
+    "Jonas Jongejan <jongejan@google.com>"
   ],
-  "scripts": {
-    "build": "browserify src/main.js | derequire > build/webvr-ui.js",
-    "watch": "watchify src/main.js -v -d -o 'derequire > build/webvr-ui.js'",
-    "start": "npm run watch & serve example",
-    "prepublish": "npm run build"
-  },
   "dependencies": {
     "three": "^0.81.2",
     "webvr-polyfill": "^0.9.25"
@@ -35,6 +29,5 @@
   },
   "directories": {
     "example": "example"
-  },
-  "author": "Jonas Jongejan"
+  }
 }
