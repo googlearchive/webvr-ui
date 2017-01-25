@@ -7,15 +7,8 @@
     "Jonas Jongejan <jongejan@google.com>"
   ],
   "dependencies": {
-    "three": "^0.81.2",
+    "three": "^0.84.0",
     "webvr-polyfill": "^0.9.25"
-  },
-  "devDependencies": {
-    "babel-preset-es2015": "^6.16.0",
-    "babelify": "^7.3.0",
-    "browserify": "^13.1.0",
-    "derequire": "^2.0.3",
-    "watchify": "^3.7.0"
   },
   "keywords": [
     "vr",
