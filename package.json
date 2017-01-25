@@ -7,6 +7,10 @@
     "Kyle Phillips <kylephillips@google.com>",
     "Jonas Jongejan <jongejan@google.com>"
   ],
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/googlevr/webvr-ui.git"
+  },
   "scripts": {
     "build": "npm run browserify & npm run browserifymin",
     "browserify": "browserify src/index.js --standalone webvrui | derequire > build/webvr-ui.js",
