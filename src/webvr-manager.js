@@ -207,7 +207,9 @@ export default class WebVRManager extends EventEmitter {
    */
   __onVRDisplayPresentChange(event) {
     try {
-      if(event.display.isPresenting && event.display.layers[0].source !== this.presentedSource) {
+      // Polyfill stores display under detail
+      let display = event.display ? event.display : event.detail.display;
+      if(display.isPresenting && display.getLayers()[0].source !== this.presentedSource) {
         // this means a different instance of WebVRManager has requested to present
         return;
       }

@@ -1461,7 +1461,9 @@ var WebVRManager = function (_EventEmitter) {
     key: '__onVRDisplayPresentChange',
     value: function __onVRDisplayPresentChange(event) {
       try {
-        if (event.display.isPresenting && event.display.layers[0].source !== this.presentedSource) {
+        // Polyfill stores display under detail
+        var display = event.display ? event.display : event.detail.display;
+        if (display.isPresenting && display.getLayers()[0].source !== this.presentedSource) {
           // this means a different instance of WebVRManager has requested to present
           return;
         }
