@@ -12,7 +12,7 @@ The library also supports adding a *Enter Fullscreen* link that allows entering 
 
 ## Library Usage
 ### Include WebVR UI
-Get the library either by cloning or downloading it (will come to npm).
+Get the library either by cloning, downloading or installing through npm `npm install webvr-ui`
 
 Include the ES5 transpiled library in a script tag
 
