@@ -1445,7 +1445,9 @@ var WebVRManager = function (_EventEmitter) {
     key: '__onChangeFullscreen',
     value: function __onChangeFullscreen(e) {
       if (_screenfull2.default.isFullscreen) {
-        this.__setState(_states2.default.PRESENTING_FULLSCREEN);
+        if (this.state != _states2.default.PRESENTING) {
+          this.__setState(_states2.default.PRESENTING_FULLSCREEN);
+        }
       } else {
         this.checkDisplays();
       }
