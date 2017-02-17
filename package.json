@@ -1,6 +1,6 @@
 {
   "name": "webvr-ui",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "Library that creates a UI wrapping the WebVR experience",
   "main": "src/index.js",
   "authors": [
