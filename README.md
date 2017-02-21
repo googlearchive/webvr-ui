@@ -1,4 +1,6 @@
 # WebVR UI
+<img src="examples/example.png" width="200">
+
 A javascript library allowing easily to create the Enter VR button a [WebVR](https://webvr.info) site. It will automatically detect the support in the browser and show correct messages to the user. The intention for the library is to create an easy way to make a button solving as many of the common use cases of WebVR as possible, and show some best practices for how to work with WebVR.
 
 The library also supports adding a *Enter Fullscreen* link that allows entering a mode where on desktop you can use the mouse to drag around, and on mobile rotate the camera based on the gyroscope without rendering in stereoscopic mode (also known as *Magic Window*)
