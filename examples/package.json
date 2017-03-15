@@ -8,7 +8,7 @@
   ],
   "dependencies": {
     "three": "^0.84.0",
-    "webvr-polyfill": "^0.9.25"
+    "webvr-polyfill": "^0.9.26"
   },
   "keywords": [
     "vr",
