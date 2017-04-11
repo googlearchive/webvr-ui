@@ -57,7 +57,7 @@ export default class EnterVRButton extends EventEmitter {
     options.textExitVRTitle = options.textExitVRTitle || 'EXIT VR';
 
     options.onRequestStateChange = options.onRequestStateChange || (() => true);
-    options.beforeEnter = options.beforeEnter || (()=> new Promise((resolve)=> resolve()));
+    options.beforeEnter = options.beforeEnter || undefined;
     options.beforeExit = options.beforeExit || (()=> new Promise((resolve)=> resolve()));
 
     options.injectCSS = options.injectCSS !== false;
@@ -186,9 +186,14 @@ export default class EnterVRButton extends EventEmitter {
   requestEnterVR() {
     return new Promise((resolve, reject)=> {
       if (this.options.onRequestStateChange(State.PRESENTING)) {
-        return this.options.beforeEnter()
-          .then(()=> this.manager.enterVR(this.manager.defaultDisplay, this.sourceCanvas))
-          .then(resolve);
+        if(this.options.beforeEnter){
+          return this.options.beforeEnter()
+            .then(()=> this.manager.enterVR(this.manager.defaultDisplay, this.sourceCanvas))
+            .then(resolve);
+        } else {
+          return this.manager.enterVR(this.manager.defaultDisplay, this.sourceCanvas)
+            .then(resolve);
+        }
       } else {
         reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
       }
@@ -225,9 +230,14 @@ export default class EnterVRButton extends EventEmitter {
   requestEnterFullscreen() {
     return new Promise((resolve, reject)=> {
       if (this.options.onRequestStateChange(State.PRESENTING_FULLSCREEN)) {
-        return this.options.beforeEnter()
-          .then(()=>this.manager.enterFullscreen(this.sourceCanvas))
-          .then(resolve);
+        if(this.options.beforeEnter){
+          return this.options.beforeEnter()
+            .then(()=>this.manager.enterFullscreen(this.sourceCanvas))
+            .then(resolve);
+        } else {
+          return this.manager.enterFullscreen(this.sourceCanvas)
+            .then(resolve);
+        }
       } else {
         reject(new Error(State.ERROR_REQUEST_STATE_CHANGE_REJECTED));
       }
