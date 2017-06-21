@@ -57,6 +57,7 @@ export default class EnterVRButton extends EventEmitter {
     options.textExitVRTitle = options.textExitVRTitle || 'EXIT VR';
 
     options.onRequestStateChange = options.onRequestStateChange || (() => true);
+    // Currently `beforeEnter` is unsupported by Firefox
     options.beforeEnter = options.beforeEnter || undefined;
     options.beforeExit = options.beforeExit || (()=> new Promise((resolve)=> resolve()));
 
@@ -186,7 +187,7 @@ export default class EnterVRButton extends EventEmitter {
   requestEnterVR() {
     return new Promise((resolve, reject)=> {
       if (this.options.onRequestStateChange(State.PRESENTING)) {
-        if(this.options.beforeEnter){
+        if(this.options.beforeEnter) {
           return this.options.beforeEnter()
             .then(()=> this.manager.enterVR(this.manager.defaultDisplay, this.sourceCanvas))
             .then(resolve);
@@ -230,7 +231,7 @@ export default class EnterVRButton extends EventEmitter {
   requestEnterFullscreen() {
     return new Promise((resolve, reject)=> {
       if (this.options.onRequestStateChange(State.PRESENTING_FULLSCREEN)) {
-        if(this.options.beforeEnter){
+        if(this.options.beforeEnter) {
           return this.options.beforeEnter()
             .then(()=>this.manager.enterFullscreen(this.sourceCanvas))
             .then(resolve);
@@ -276,7 +277,7 @@ export default class EnterVRButton extends EventEmitter {
   __onStateChange(state) {
     if (state != this.state) {
       if (this.state === State.PRESENTING || this.state === State.PRESENTING_FULLSCREEN) {
-        this.emit('exit');
+        this.emit('exit', this.manager.defaultDisplay);
       }
       this.state = state;
 
@@ -288,7 +289,7 @@ export default class EnterVRButton extends EventEmitter {
             this.setTooltip('Enter VR using ' + this.manager.defaultDisplay.displayName);
           }
           this.__setDisabledAttribute(false);
-          this.emit('ready');
+          this.emit('ready', this.manager.defaultDisplay);
           break;
 
         case State.PRESENTING:
@@ -300,7 +301,7 @@ export default class EnterVRButton extends EventEmitter {
           }
           this.setTitle(this.options.textExitVRTitle);
           this.__setDisabledAttribute(false);
-          this.emit('enter');
+          this.emit('enter', this.manager.defaultDisplay);
           break;
 
         // Error states

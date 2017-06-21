@@ -314,18 +314,18 @@ if ('undefined' !== typeof module) {
 },{}],2:[function(_dereq_,module,exports){
 /*!
 * screenfull
-* v3.0.0 - 2015-11-24
+* v3.2.2 - 2017-06-14
 * (c) Sindre Sorhus; MIT License
 */
 (function () {
 	'use strict';
 
+	var document = typeof window !== 'undefined' && typeof window.document !== 'undefined' ? window.document : {};
 	var isCommonjs = typeof module !== 'undefined' && module.exports;
 	var keyboardAllowed = typeof Element !== 'undefined' && 'ALLOW_KEYBOARD_INPUT' in Element;
 
 	var fn = (function () {
 		var val;
-		var valLength;
 
 		var fnMap = [
 			[
@@ -336,7 +336,7 @@ if ('undefined' !== typeof module) {
 				'fullscreenchange',
 				'fullscreenerror'
 			],
-			// new WebKit
+			// New WebKit
 			[
 				'webkitRequestFullscreen',
 				'webkitExitFullscreen',
@@ -346,7 +346,7 @@ if ('undefined' !== typeof module) {
 				'webkitfullscreenerror'
 
 			],
-			// old WebKit (Safari 5.1)
+			// Old WebKit (Safari 5.1)
 			[
 				'webkitRequestFullScreen',
 				'webkitCancelFullScreen',
@@ -381,7 +381,7 @@ if ('undefined' !== typeof module) {
 		for (; i < l; i++) {
 			val = fnMap[i];
 			if (val && val[1] in document) {
-				for (i = 0, valLength = val.length; i < valLength; i++) {
+				for (i = 0; i < val.length; i++) {
 					ret[fnMap[0][i]] = val[i];
 				}
 				return ret;
@@ -401,7 +401,7 @@ if ('undefined' !== typeof module) {
 			// keyboard in fullscreen even though it doesn't.
 			// Browser sniffing, since the alternative with
 			// setTimeout is even worse.
-			if (/5\.1[\.\d]* Safari/.test(navigator.userAgent)) {
+			if (/5\.1[.\d]* Safari/.test(navigator.userAgent)) {
 				elem[request]();
 			} else {
 				elem[request](keyboardAllowed && Element.ALLOW_KEYBOARD_INPUT);
@@ -416,6 +416,12 @@ if ('undefined' !== typeof module) {
 			} else {
 				this.request(elem);
 			}
+		},
+		onchange: function (callback) {
+			document.addEventListener(fn.fullscreenchange, callback, false);
+		},
+		onerror: function (callback) {
+			document.addEventListener(fn.fullscreenerror, callback, false);
 		},
 		raw: fn
 	};
@@ -679,7 +685,7 @@ var generateCSS = exports.generateCSS = function generateCSS(options) {
         borderRadius = options.corners;
     }
 
-    return '\n    @font-face {\n        font-family: \'Karla\';\n        font-style: normal;\n        font-weight: 400;\n        src: local(\'Karla\'), local(\'Karla-Regular\'), \n             url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format(\'woff2\');\n        unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n    }\n    @font-face {\n        font-family: \'Karla\';\n        font-style: normal;\n        font-weight: 400;\n        src: local(\'Karla\'), local(\'Karla-Regular\'), \n             url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format(\'woff2\');\n        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, \n                       U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n    }\n\n    button.' + cssPrefix + '-button {\n        font-family: \'Karla\', sans-serif;\n\n        border: ' + borderColor + ' ' + borderWidth + 'px solid;\n        border-radius: ' + borderRadius + 'px;\n        box-sizing: border-box;\n        background: ' + (options.background ? options.background : 'none') + ';\n\n        height: ' + height + 'px;\n        min-width: ' + fontSize * 9.6 + 'px;\n        display: inline-block;\n        position: relative;\n\n        cursor: pointer;\n    }\n    \n    button.' + cssPrefix + '-button:focus {\n      outline: none;\n    }\n\n    /*\n    * Logo\n    */\n\n    .' + cssPrefix + '-logo {\n        width: ' + height + 'px;\n        height: ' + height + 'px;\n        position: absolute;\n        top:0px;\n        left:0px;\n        width: ' + (height - 4) + 'px;\n        height: ' + (height - 4) + 'px;\n    }\n    .' + cssPrefix + '-svg {\n        fill: ' + options.color + ';\n        margin-top: ' + ((height - fontSize * _LOGO_SCALE) / 2 - 2) + 'px;\n        margin-left: ' + height / 3 + 'px;\n    }\n    .' + cssPrefix + '-svg-error {\n        fill: ' + options.color + ';\n        display:none;\n        margin-top: ' + ((height - 28 / 18 * fontSize * _LOGO_SCALE) / 2 - 2) + 'px;\n        margin-left: ' + height / 3 + 'px;\n    }\n\n\n    /*\n    * Title\n    */\n\n    .' + cssPrefix + '-title {\n        color: ' + options.color + ';\n        position: relative;\n        font-size: ' + fontSize + 'px;\n        padding-left: ' + height * 1.05 + 'px;\n        padding-right: ' + (borderRadius - 10 < 5 ? height / 3 : borderRadius - 10) + 'px;\n    }\n\n    /*\n    * disabled\n    */\n\n    button.' + cssPrefix + '-button[disabled=true] {\n        opacity: ' + options.disabledOpacity + ';\n    }\n\n    button.' + cssPrefix + '-button[disabled=true] > .' + cssPrefix + '-logo > .' + cssPrefix + '-svg {\n        display:none;\n    }\n\n    button.' + cssPrefix + '-button[disabled=true] > .' + cssPrefix + '-logo > .' + cssPrefix + '-svg-error {\n        display:initial;\n    }\n  ';
+    return '\n    @font-face {\n        font-family: \'Karla\';\n        font-style: normal;\n        font-weight: 400;\n        src: local(\'Karla\'), local(\'Karla-Regular\'), \n             url(https://fonts.gstatic.com/s/karla/v5/31P4mP32i98D9CEnGyeX9Q.woff2) format(\'woff2\');\n        unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;\n    }\n    @font-face {\n        font-family: \'Karla\';\n        font-style: normal;\n        font-weight: 400;\n        src: local(\'Karla\'), local(\'Karla-Regular\'), \n             url(https://fonts.gstatic.com/s/karla/v5/Zi_e6rBgGqv33BWF8WTq8g.woff2) format(\'woff2\');\n        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, \n                       U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;\n    }\n\n    button.' + cssPrefix + '-button {\n        font-family: \'Karla\', sans-serif;\n\n        border: ' + borderColor + ' ' + borderWidth + 'px solid;\n        border-radius: ' + borderRadius + 'px;\n        box-sizing: border-box;\n        background: ' + (options.background ? options.background : 'none') + ';\n\n        height: ' + height + 'px;\n        min-width: ' + fontSize * 9.6 + 'px;\n        display: inline-block;\n        position: relative;\n\n        cursor: pointer;\n    }\n    \n    button.' + cssPrefix + '-button:focus {\n      outline: none;\n    }\n\n    /*\n    * Logo\n    */\n\n    .' + cssPrefix + '-logo {\n        width: ' + height + 'px;\n        height: ' + height + 'px;\n        position: absolute;\n        top:0px;\n        left:0px;\n        width: ' + (height - 4) + 'px;\n        height: ' + (height - 4) + 'px;\n    }\n    .' + cssPrefix + '-svg {\n        fill: ' + options.color + ';\n        margin-top: ' + ((height - fontSize * _LOGO_SCALE) / 2 - 2) + 'px;\n        margin-left: ' + height / 3 + 'px;\n    }\n    .' + cssPrefix + '-svg-error {\n        fill: ' + options.color + ';\n        display:none;\n        margin-top: ' + ((height - 28 / 18 * fontSize * _LOGO_SCALE) / 2 - 2) + 'px;\n        margin-left: ' + height / 3 + 'px;\n    }\n\n\n    /*\n    * Title\n    */\n\n    .' + cssPrefix + '-title {\n        color: ' + options.color + ';\n        position: relative;\n        font-size: ' + fontSize + 'px;\n        padding-left: ' + height * 1.05 + 'px;\n        padding-right: ' + (borderRadius - 10 < 5 ? height / 3 : borderRadius - 10) + 'px;\n    }\n\n    /*\n    * disabled\n    */\n\n    button.' + cssPrefix + '-button[disabled=true] {\n        opacity: ' + options.disabledOpacity + ';\n        cursor: default;\n    }\n\n    button.' + cssPrefix + '-button[disabled=true] > .' + cssPrefix + '-logo > .' + cssPrefix + '-svg {\n        display:none;\n    }\n\n    button.' + cssPrefix + '-button[disabled=true] > .' + cssPrefix + '-logo > .' + cssPrefix + '-svg-error {\n        display:initial;\n    }\n  ';
 };
 
 },{}],5:[function(_dereq_,module,exports){
@@ -772,11 +778,8 @@ var EnterVRButton = function (_EventEmitter) {
     options.onRequestStateChange = options.onRequestStateChange || function () {
       return true;
     };
-    options.beforeEnter = options.beforeEnter || function () {
-      return new Promise(function (resolve) {
-        return resolve();
-      });
-    };
+    // Currently `beforeEnter` is unsupported by Firefox
+    options.beforeEnter = options.beforeEnter || undefined;
     options.beforeExit = options.beforeExit || function () {
       return new Promise(function (resolve) {
         return resolve();
@@ -946,9 +949,13 @@ var EnterVRButton = function (_EventEmitter) {
 
       return new Promise(function (resolve, reject) {
         if (_this2.options.onRequestStateChange(_states2.default.PRESENTING)) {
-          return _this2.options.beforeEnter().then(function () {
-            return _this2.manager.enterVR(_this2.manager.defaultDisplay, _this2.sourceCanvas);
-          }).then(resolve);
+          if (_this2.options.beforeEnter) {
+            return _this2.options.beforeEnter().then(function () {
+              return _this2.manager.enterVR(_this2.manager.defaultDisplay, _this2.sourceCanvas);
+            }).then(resolve);
+          } else {
+            return _this2.manager.enterVR(_this2.manager.defaultDisplay, _this2.sourceCanvas).then(resolve);
+          }
         } else {
           reject(new Error(_states2.default.ERROR_REQUEST_STATE_CHANGE_REJECTED));
         }
@@ -994,9 +1001,13 @@ var EnterVRButton = function (_EventEmitter) {
 
       return new Promise(function (resolve, reject) {
         if (_this4.options.onRequestStateChange(_states2.default.PRESENTING_FULLSCREEN)) {
-          return _this4.options.beforeEnter().then(function () {
-            return _this4.manager.enterFullscreen(_this4.sourceCanvas);
-          }).then(resolve);
+          if (_this4.options.beforeEnter) {
+            return _this4.options.beforeEnter().then(function () {
+              return _this4.manager.enterFullscreen(_this4.sourceCanvas);
+            }).then(resolve);
+          } else {
+            return _this4.manager.enterFullscreen(_this4.sourceCanvas).then(resolve);
+          }
         } else {
           reject(new Error(_states2.default.ERROR_REQUEST_STATE_CHANGE_REJECTED));
         }
@@ -1044,7 +1055,7 @@ var EnterVRButton = function (_EventEmitter) {
     value: function __onStateChange(state) {
       if (state != this.state) {
         if (this.state === _states2.default.PRESENTING || this.state === _states2.default.PRESENTING_FULLSCREEN) {
-          this.emit('exit');
+          this.emit('exit', this.manager.defaultDisplay);
         }
         this.state = state;
 
@@ -1056,7 +1067,7 @@ var EnterVRButton = function (_EventEmitter) {
               this.setTooltip('Enter VR using ' + this.manager.defaultDisplay.displayName);
             }
             this.__setDisabledAttribute(false);
-            this.emit('ready');
+            this.emit('ready', this.manager.defaultDisplay);
             break;
 
           case _states2.default.PRESENTING:
@@ -1066,7 +1077,7 @@ var EnterVRButton = function (_EventEmitter) {
             }
             this.setTitle(this.options.textExitVRTitle);
             this.__setDisabledAttribute(false);
-            this.emit('enter');
+            this.emit('enter', this.manager.defaultDisplay);
             break;
 
           // Error states

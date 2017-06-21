@@ -77,10 +77,10 @@ These are the supported options in `EnterVRButton`. All options are optional.
 
 ### Events
 The following events will be broadcasted by `EnterVRButton`, and can be subscribed to using the function `.on([event])` on the button.
-- `ready` Event called when VR support is first detected
-- `enter` Event called when user enters VR
-- `exit` Event called when user exits VR
-- `error` Event called when an error occurs, i.e. VR is not supported
+- `ready` Event called when VR support is first detected, the `VRDisplay` is provided as the first parameter.
+- `enter` Event called when user enters VR,  the `VRDisplay` is provided as the first parameter.
+- `exit` Event called when user exits VR,  the `VRDisplay` is provided as the first parameter.
+- `error` Event called when an error occurs, i.e. VR is not supported, an `Error` is provided as the first parameter.
 - `hide` Event called when button is hidden 
 - `show` Event called when button is shown
 

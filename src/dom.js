@@ -217,6 +217,7 @@ export const generateCSS = (options, fontSize=18)=> {
 
     button.${cssPrefix}-button[disabled=true] {
         opacity: ${options.disabledOpacity};
+        cursor: default;
     }
 
     button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-logo > .${cssPrefix}-svg {
