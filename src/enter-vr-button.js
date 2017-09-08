@@ -47,7 +47,7 @@ export default class EnterVRButton extends EventEmitter {
 
     options.color = options.color || 'rgb(80,168,252)';
     options.background = options.background || false;
-    options.disabledOpacity = options.disabledOpacity || 0.5;
+    options.disabledOpacity = options.disabledOpacity === undefined ? 0.5 : options.disabledOpacity;
     options.height = options.height || 55;
     options.corners = options.corners || 'square';
     options.cssprefix = options.cssprefix || 'webvr-ui';
